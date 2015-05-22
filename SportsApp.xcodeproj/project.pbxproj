@@ -10,7 +10,6 @@
 		5384D5C11B0C9321009B6CD3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C01B0C9321009B6CD3 /* main.m */; };
 		5384D5C41B0C9321009B6CD3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C31B0C9321009B6CD3 /* AppDelegate.m */; };
 		5384D5C61B0C9321009B6CD3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5384D5C51B0C9321009B6CD3 /* Images.xcassets */; };
-		5384D5C91B0C9321009B6CD3 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5384D5C71B0C9321009B6CD3 /* LaunchScreen.xib */; };
 		5384D5D51B0C9321009B6CD3 /* SportsAppTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5D41B0C9321009B6CD3 /* SportsAppTests.m */; };
 		53B994D41B0D076F00558169 /* GamesListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53B994D31B0D076F00558169 /* GamesListViewController.m */; };
 		53B994D71B0D078900558169 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53B994D61B0D078900558169 /* LoginViewController.m */; };
@@ -69,7 +68,6 @@
 		5384D5C21B0C9321009B6CD3 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5384D5C31B0C9321009B6CD3 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		5384D5C51B0C9321009B6CD3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		5384D5C81B0C9321009B6CD3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		5384D5CE1B0C9321009B6CD3 /* SportsAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SportsAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5384D5D31B0C9321009B6CD3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5384D5D41B0C9321009B6CD3 /* SportsAppTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SportsAppTests.m; sourceTree = "<group>"; };
@@ -170,7 +168,6 @@
 				5384D5C31B0C9321009B6CD3 /* AppDelegate.m */,
 				53B994DB1B0D085200558169 /* AppColors.h */,
 				5384D5C51B0C9321009B6CD3 /* Images.xcassets */,
-				5384D5C71B0C9321009B6CD3 /* LaunchScreen.xib */,
 				5384D5BE1B0C9321009B6CD3 /* Supporting Files */,
 			);
 			path = SportsApp;
@@ -392,7 +389,6 @@
 				53DCC1B91B0DEE2D002EE36E /* NewEventViewController.xib in Resources */,
 				53DCC18C1B0DB266002EE36E /* icon_plus_active@2x.png in Resources */,
 				53DCC1981B0DB266002EE36E /* icon_star_small@2x.png in Resources */,
-				5384D5C91B0C9321009B6CD3 /* LaunchScreen.xib in Resources */,
 				53DCC1851B0DB266002EE36E /* background@2x.png in Resources */,
 				53DCC18E1B0DB266002EE36E /* icon_settings_active@2x.png in Resources */,
 				53DCC18F1B0DB266002EE36E /* icon_settings@2x.png in Resources */,
@@ -449,17 +445,6 @@
 			targetProxy = 5384D5CF1B0C9321009B6CD3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
-
-/* Begin PBXVariantGroup section */
-		5384D5C71B0C9321009B6CD3 /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				5384D5C81B0C9321009B6CD3 /* Base */,
-			);
-			name = LaunchScreen.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5384D5D61B0C9321009B6CD3 /* Debug */ = {

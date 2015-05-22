@@ -54,14 +54,16 @@
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTempClick)];
     [ivLogo addGestureRecognizer:tapGesture];
+    ivLogo.userInteractionEnabled = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    //[[self navigationController] setNavigationBarHidden:YES animated:NO];
+    [[self navigationController] setNavigationBarHidden:YES animated:NO];
 }
 
 - (void) btnTempClick {
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
     GamesListViewController *controller = [[GamesListViewController alloc] init];
     //MemberViewController *controller = [[MemberViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];

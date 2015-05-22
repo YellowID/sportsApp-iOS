@@ -12,6 +12,21 @@
 
 @interface NewEventViewController ()
 
+@property (strong, nonatomic) IBOutlet UIScrollView* scrollView;
+
+@property (strong, nonatomic) IBOutlet UIView* fielsGroupView;
+@property (strong, nonatomic) IBOutlet UIView* timeGroupView;
+@property (strong, nonatomic) IBOutlet UIView* gamerGroupView;
+
+@property (strong, nonatomic) IBOutlet UITextField* tfKindOfSport;
+@property (strong, nonatomic) IBOutlet UITextField* tfLocation;
+
+@property (strong, nonatomic) IBOutlet UILabel* lblTime;
+
+@property (strong, nonatomic) IBOutlet UIImageView* ivOneStar;
+@property (strong, nonatomic) IBOutlet UIImageView* ivTwoStar;
+@property (strong, nonatomic) IBOutlet UIImageView* ivThreeStar;
+
 @end
 
 @implementation NewEventViewController{
@@ -37,15 +52,15 @@
     _gamerGroupView.layer.cornerRadius = 6.0;
     _gamerGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     
-    /*
+    /**/
     UIBarButtonItem *btnCancel = [[UIBarButtonItem alloc] initWithTitle:@"Отмена" style:UIBarButtonItemStylePlain target:self action:@selector(btnCancelClick)];
     self.navigationItem.leftBarButtonItem = btnCancel;
     
     UIBarButtonItem *btnCreate = [[UIBarButtonItem alloc] initWithTitle:@"Создать" style:UIBarButtonItemStylePlain target:self action:@selector(btnCreateClick)];
     self.navigationItem.rightBarButtonItem = btnCreate;
-    */
     
-    [self setNavigationItems];
+    
+    //[self setNavigationItems];
     
     grayStarImage = [UIImage imageNamed:@"icon_star_small.png"];
     activeStarImage = [UIImage imageNamed:@"icon_star_small_active.png"];
@@ -64,6 +79,22 @@
     _ivThreeStar.image = grayStarImage;
     UITapGestureRecognizer *tapThreeStarGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(threeStarClick)];
     [_ivThreeStar addGestureRecognizer:tapThreeStarGesture];
+    
+    self.automaticallyAdjustsScrollViewInsets = NO;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    // register for keyboard notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    // unregister for keyboard notifications while not visible.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
 #pragma mark -
@@ -82,11 +113,10 @@
     //[btnCreate setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, 3, 0.0)];
     [btnCreate sizeToFit];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCreate];
-    
 }
 
 - (void) btnCancelClick {
-    NSLog(@"btnCancelClick");
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void) btnCreateClick {
@@ -96,13 +126,11 @@
 #pragma mark -
 #pragma mark Stars methods
 - (void) oneStarClick {
-    //_ivOneStar.image = activeStarImage;
     _ivTwoStar.image = grayStarImage;
     _ivThreeStar.image = grayStarImage;
 }
 
 - (void) twoStarClick {
-    //_ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = grayStarImage;
 }
@@ -110,6 +138,25 @@
 - (void) threeStarClick {
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = activeStarImage;
+}
+
+# pragma mark -
+# pragma mark Keyboard show/hide
+- (void)keyboardWillShow:(NSNotification*)notification {
+    CGFloat bottomView = _gamerGroupView.frame.origin.y + _gamerGroupView.frame.size.height + 160;
+    
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    UIEdgeInsets contentInsets = UIEdgeInsetsMake(_scrollView.contentInset.top, 0.0, kbSize.height, 0.0);
+    //UIEdgeInsets contentInsets = UIEdgeInsetsMake(_scrollView.contentInset.top, 0.0, bottomSide, 0.0);
+    _scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, bottomView);
+    _scrollView.contentInset = contentInsets;
+    _scrollView.scrollIndicatorInsets = contentInsets;
+}
+
+- (void)keyboardWillHide:(NSNotification*)aNotification {
+    _scrollView.contentInset = UIEdgeInsetsZero;
+    _scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 @end
