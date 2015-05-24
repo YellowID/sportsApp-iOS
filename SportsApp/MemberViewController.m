@@ -30,6 +30,7 @@
     UIButton *btnClose = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnClose setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnClose setTitle:@"Закрыть" forState:UIControlStateNormal];
+    [btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
     [btnClose sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnClose];
     
@@ -42,6 +43,10 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
+}
+
+- (void) btnCloseClick {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark -

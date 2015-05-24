@@ -11,6 +11,10 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+
+
 @interface AppDelegate ()
 
 @end
@@ -36,6 +40,9 @@
     
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
+    
+    //[Fabric with:@[CrashlyticsKit]];
+
     return YES;
 }
 

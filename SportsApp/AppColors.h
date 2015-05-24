@@ -19,6 +19,14 @@
 #define BORDER_COLOR 0xe7e5e5ff
 #define VIEW_SEPARATOR_COLOR 0xd1d1d1ff
 
+#define TXT_ACTIVE_COLOR 0x000000ff
+#define TXT_INACTIVE_COLOR 0xe7e5e5ff
+
+#define BG_GROUP_LABLE_COLOR 0xfdfafaff
+
+#define BG_BUTTON_COLOR 0x737581ff
+
+
 
 
 #define TITLE_TEXT_COLOR 0x6d6d72ff

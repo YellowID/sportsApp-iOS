@@ -7,8 +7,10 @@
 //
 
 #import "GamesListViewController.h"
-#import "NewEventViewController.h"
+#import "MemberViewController.h"
+#import "NewEvenViewController.h"
 #import "GamesListTableViewCell.h"
+#import "MemberSettingViewController.h"
 #import "GameInfo.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -96,16 +98,18 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (void) btnMyGamesClick {
-    NSLog(@"btnMyGamesClick");
+    MemberViewController *controller = [[MemberViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void) btnAddClick {
-    NewEventViewController *controller = [[NewEventViewController alloc] init];
+    NewEvenViewController *controller = [[NewEvenViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void) btnSettingClick {
-    NSLog(@"btnSettingClick");
+    MemberSettingViewController* controller = [[MemberSettingViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void) btnExitClick {
