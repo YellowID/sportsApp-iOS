@@ -79,7 +79,7 @@
                     <constraint firstItem="ibR-Mh-OqS" firstAttribute="leading" secondItem="Tct-wu-Z7T" secondAttribute="trailing" constant="13" id="j6Q-8y-hVI"/>
                     <constraint firstItem="Tct-wu-Z7T" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="jZZ-Rr-x4Y"/>
                     <constraint firstItem="wZU-cV-RHa" firstAttribute="leading" secondItem="aG4-uY-kl9" secondAttribute="trailing" constant="4" id="lUn-kc-WYc"/>
-                    <constraint firstItem="tfJ-4X-VmO" firstAttribute="centerY" secondItem="wZU-cV-RHa" secondAttribute="centerY" constant="0.5" id="nbk-NS-tr9"/>
+                    <constraint firstItem="tfJ-4X-VmO" firstAttribute="centerY" secondItem="wZU-cV-RHa" secondAttribute="centerY" id="nbk-NS-tr9"/>
                     <constraint firstItem="hYs-qt-NXP" firstAttribute="leading" secondItem="tfJ-4X-VmO" secondAttribute="trailing" constant="4" id="w55-ze-WMs"/>
                 </constraints>
             </tableViewCellContentView>

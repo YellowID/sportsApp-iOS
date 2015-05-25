@@ -164,14 +164,16 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView *view = nil;
+    UIView* view = nil;
     
     if(section == SECTION_PUBLIC_GAMES){
         view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 34.0f)];
-        view.backgroundColor = [UIColor colorWithRGBA:PUBLIC_SECTION_COLOR];
+        view.layer.borderWidth = 0.5;
+        view.layer.borderColor = [[UIColor colorWithRGBA:PUBLIC_SECTION_BORDER_COLOR] CGColor];
+        view.layer.backgroundColor = [[UIColor colorWithRGBA:PUBLIC_SECTION_COLOR] CGColor];
         
-        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, tableView.frame.size.width, 34.0f)];
-        [label setFont:[UIFont boldSystemFontOfSize:13]];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, tableView.frame.size.width, 34.0f)];
+        [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Публичные игры";
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
@@ -190,7 +192,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     }
     else {
         [cell setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
-        
     }
     
     GamesListTableViewCell* gameCell = (GamesListTableViewCell *)cell;

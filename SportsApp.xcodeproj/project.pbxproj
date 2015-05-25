@@ -54,6 +54,10 @@
 		53E519821B122C7400B85DDD /* SportItemUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519811B122C7400B85DDD /* SportItemUI.m */; };
 		53E519851B12472700B85DDD /* NewEvenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519841B12472700B85DDD /* NewEvenViewController.m */; };
 		53E519881B1260CE00B85DDD /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */; };
+		53E5198B1B131EED00B85DDD /* bg_btn_fb@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E519891B131EED00B85DDD /* bg_btn_fb@2x.png */; };
+		53E5198C1B131EED00B85DDD /* bg_btn_vk@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */; };
+		53E5198F1B131EFF00B85DDD /* bg_btn_fb@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */; };
+		53E519901B131EFF00B85DDD /* bg_btn_vk@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198E1B131EFF00B85DDD /* bg_btn_vk@3x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -132,6 +136,10 @@
 		53E519841B12472700B85DDD /* NewEvenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewEvenViewController.m; sourceTree = "<group>"; };
 		53E519861B1260CE00B85DDD /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
 		53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
+		53E519891B131EED00B85DDD /* bg_btn_fb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_fb@2x.png"; sourceTree = "<group>"; };
+		53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_vk@2x.png"; sourceTree = "<group>"; };
+		53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_fb@3x.png"; sourceTree = "<group>"; };
+		53E5198E1B131EFF00B85DDD /* bg_btn_vk@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_vk@3x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -282,6 +290,10 @@
 		53DCC1691B0DB23F002EE36E /* icons */ = {
 			isa = PBXGroup;
 			children = (
+				53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */,
+				53E5198E1B131EFF00B85DDD /* bg_btn_vk@3x.png */,
+				53E519891B131EED00B85DDD /* bg_btn_fb@2x.png */,
+				53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */,
 				53DCC16A1B0DB266002EE36E /* background@2x.png */,
 				53DCC16B1B0DB266002EE36E /* icon_age_active@2x.png */,
 				53DCC16C1B0DB266002EE36E /* icon_age@2x.png */,
@@ -398,6 +410,7 @@
 				53DCC1961B0DB266002EE36E /* icon_star_active@2x.png in Resources */,
 				53DCC1911B0DB266002EE36E /* icon_sport_01@2x.png in Resources */,
 				53DCC19C1B0DB266002EE36E /* icon_status_no@2x.png in Resources */,
+				53E5198F1B131EFF00B85DDD /* bg_btn_fb@3x.png in Resources */,
 				53DCC1891B0DB266002EE36E /* icon_exit_active@2x.png in Resources */,
 				53DCC1901B0DB266002EE36E /* icon_sport_01_active@2x.png in Resources */,
 				53DCC1BE1B0E0DA0002EE36E /* photo@2x.png in Resources */,
@@ -411,13 +424,16 @@
 				53DCC19A1B0DB266002EE36E /* icon_status_admin@2x.png in Resources */,
 				53DCC1941B0DB266002EE36E /* icon_sport_03_active@2x.png in Resources */,
 				53DCC1881B0DB266002EE36E /* icon_date@2x.png in Resources */,
+				53E519901B131EFF00B85DDD /* bg_btn_vk@3x.png in Resources */,
 				53DCC1931B0DB266002EE36E /* icon_sport_02@2x.png in Resources */,
+				53E5198B1B131EED00B85DDD /* bg_btn_fb@2x.png in Resources */,
 				53DCC1971B0DB266002EE36E /* icon_star_small_active@2x.png in Resources */,
 				53DCC18C1B0DB266002EE36E /* icon_plus_active@2x.png in Resources */,
 				53DCC1981B0DB266002EE36E /* icon_star_small@2x.png in Resources */,
 				53DCC1851B0DB266002EE36E /* background@2x.png in Resources */,
 				53DCC18E1B0DB266002EE36E /* icon_settings_active@2x.png in Resources */,
 				53DCC18F1B0DB266002EE36E /* icon_settings@2x.png in Resources */,
+				53E5198C1B131EED00B85DDD /* bg_btn_vk@2x.png in Resources */,
 				53DCC18D1B0DB266002EE36E /* icon_plus@2x.png in Resources */,
 				53DCC19F1B0DB266002EE36E /* logo@2x.png in Resources */,
 				5384D5C61B0C9321009B6CD3 /* Images.xcassets in Resources */,

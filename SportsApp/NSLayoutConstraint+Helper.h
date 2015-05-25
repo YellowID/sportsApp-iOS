@@ -11,5 +11,5 @@
 @interface NSLayoutConstraint (Helper)
 
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view;
-
++ (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
 @end

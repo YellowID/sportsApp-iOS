@@ -13,7 +13,7 @@
 #import "SportInfo.h"
 #import "SportItemUI.h"
 
-#define PADDING_H 12
+#define PADDING_H 12.5
 #define MAIN_SCROLL_CONTENT_HEIGHT 415
 #define SCROLL_ITEM_HEIGHT 99
 
@@ -82,8 +82,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"";
+    self.title = @"Новая игра";
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
+    [self setNavigationItems];
     
     kScrollItemWidht = self.view.bounds.size.width - PADDING_H * 2;
     
@@ -135,7 +136,7 @@
 - (void) viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
-    [self setupButtonInParentView:self.view];
+    //[self setupButtonInParentView:self.view];
     [self setupContainerScroll];
     [self setupContainerView];
     
@@ -145,11 +146,35 @@
 }
 
 #pragma mark -
+#pragma mark Navigation Items
+- (void) setNavigationItems {
+    UIButton *btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+    [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
+    [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [btnCancel sizeToFit];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
+    
+    UIButton* btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnAdd setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+    [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnAdd setTitle:@"Добавить" forState:UIControlStateNormal];
+    [btnAdd setUserInteractionEnabled:NO];
+    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+    [btnAdd sizeToFit];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
+    [btnAdd setEnabled:NO]; // !!
+}
+
+#pragma mark -
 #pragma mark Containers
+#pragma mark -
 - (void) setupButtonInParentView:(UIView*)container {
     _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     _btnSave.translatesAutoresizingMaskIntoConstraints = NO;
-    [_btnSave addTarget:self action:@selector(btnSaveClick) forControlEvents:UIControlEventTouchUpInside];
+    //[_btnSave addTarget:self action:@selector(btnSaveClick) forControlEvents:UIControlEventTouchUpInside];
     [_btnSave setTitle:@"Сохранить" forState:UIControlStateNormal];
     [_btnSave setTintColor:[UIColor whiteColor]];
     _btnSave.titleLabel.font = [UIFont systemFontOfSize:13.0f];
@@ -222,7 +247,15 @@
                                                          multiplier:1
                                                            constant:0]];
     
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:0
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
     
+    /*
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:0
@@ -230,6 +263,7 @@
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1
                                                            constant:-8]];
+    */
 }
 
 - (void) setupContainerView {
@@ -239,6 +273,7 @@
 
 #pragma mark -
 #pragma mark SPORTs group
+#pragma mark -
 - (void) setupSportsGroupInParentView:(UIView*)container {
     _sportsGroupView = [UIView new];
     _sportsGroupView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -254,7 +289,7 @@
                                                              toItem:container
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1
-                                                           constant:8]];
+                                                           constant:7.5f]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_sportsGroupView
                                                           attribute:NSLayoutAttributeLeft
@@ -278,7 +313,7 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:156]];
+                                                                  constant:164]];
     
     // subviews
     _lbTitleSportsGrpup = [UILabel new];
@@ -298,6 +333,7 @@
     _sportsPageControl.numberOfPages = _sportInfoItems.count / 3;
     _sportsPageControl.currentPage = 0;
     [_sportsGroupView addSubview:_sportsPageControl];
+    //_sportsPageControl.backgroundColor = [UIColor greenColor];
     
     [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
                                                           attribute:NSLayoutAttributeBottom
@@ -305,7 +341,7 @@
                                                              toItem:_sportsGroupView
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:0]];
+                                                           constant:-8.0f]];
     
     [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
                                                           attribute:NSLayoutAttributeLeft
@@ -329,7 +365,7 @@
                                                                      toItem:nil
                                                                   attribute:0
                                                                  multiplier:1
-                                                                   constant:18]];
+                                                                   constant:10]];
 }
 
 - (void) setupSportsScroll {
@@ -444,8 +480,7 @@
     return view;
 }
 
-#pragma mark -
-#pragma mark Sport icons setup methods
+#pragma mark - Layout SPOTR icons
 - (void) layoutSportLeftIcon:(UIImageView*)icon intoContainer:(UIView*)container {
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:icon];
@@ -510,11 +545,11 @@
 }
 
 #pragma mark -
-#pragma mark Sport title setup methods
+#pragma mark Layout SPOTR titles
 - (void) layoutSportLable:(UILabel*)lable forIcon:(UIImageView*)icon intoContainer:(UIView*)container {
     [container addSubview:lable];
     lable.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:60 height:21 forView:lable];
+    [NSLayoutConstraint setWidht:60 height:10 forView:lable];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:lable
                                                           attribute:NSLayoutAttributeTop
@@ -522,7 +557,7 @@
                                                              toItem:icon
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:6]];
+                                                           constant:15.0f]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:lable
                                                           attribute:NSLayoutAttributeCenterX
@@ -533,7 +568,8 @@
                                                            constant:0]];
 }
 
-
+#pragma mark -
+#pragma mark LEVELs group
 #pragma mark -
 - (void) setupLevelsGroupInParentView:(UIView*)container {
     _levelGroupView = [UIView new];
@@ -550,7 +586,7 @@
                                                              toItem:_sportsGroupView
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:8]];
+                                                           constant:7.5f]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
                                                           attribute:NSLayoutAttributeLeft
@@ -586,6 +622,83 @@
     [self setLevelImagesGestureRecognizers];
 }
 
+#pragma mark -
+#pragma mark Layout LEVEL icons
+- (void) setupIconTwoStar {
+    _ivTwoStarLevel = [UIImageView new];
+    _ivTwoStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivTwoStarLevel.image = grayStarImage;
+    [_levelGroupView addSubview:_ivTwoStarLevel];
+    [NSLayoutConstraint setWidht:27 height:25 forView:_ivTwoStarLevel];
+    
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeTop
+                                                                relatedBy:0
+                                                                   toItem:_lbTitleLevelGrpup
+                                                                attribute:NSLayoutAttributeBottom
+                                                               multiplier:1
+                                                                 constant:20]];
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeCenterX
+                                                                relatedBy:0
+                                                                   toItem:_lbTitleLevelGrpup
+                                                                attribute:NSLayoutAttributeCenterX
+                                                               multiplier:1
+                                                                 constant:0]];
+}
+
+- (void) setupIconOneStar {
+    _ivOneStarLevel = [UIImageView new];
+    _ivOneStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivOneStarLevel.image = grayStarImage;
+    [_levelGroupView addSubview:_ivOneStarLevel];
+    [NSLayoutConstraint setWidht:27 height:25 forView:_ivOneStarLevel];
+    
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
+                                                                attribute:NSLayoutAttributeCenterY
+                                                                relatedBy:0
+                                                                   toItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeCenterY
+                                                               multiplier:1
+                                                                 constant:0]];
+    
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
+                                                                attribute:NSLayoutAttributeRight
+                                                                relatedBy:0
+                                                                   toItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeLeft
+                                                               multiplier:1
+                                                                 constant:-23]];
+    
+}
+
+- (void) setupIconThreeStar {
+    _ivThreeStarLevel = [UIImageView new];
+    _ivThreeStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivThreeStarLevel.image = grayStarImage;
+    [_levelGroupView addSubview:_ivThreeStarLevel];
+    [NSLayoutConstraint setWidht:27 height:25 forView:_ivThreeStarLevel];
+    
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
+                                                                attribute:NSLayoutAttributeCenterY
+                                                                relatedBy:0
+                                                                   toItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeCenterY
+                                                               multiplier:1
+                                                                 constant:0]];
+    
+    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
+                                                                attribute:NSLayoutAttributeLeft
+                                                                relatedBy:0
+                                                                   toItem:_ivTwoStarLevel
+                                                                attribute:NSLayoutAttributeRight
+                                                               multiplier:1
+                                                                 constant:23]];
+}
+
+#pragma mark -
+#pragma mark AGEs group
+#pragma mark -
 - (void) setupAgesGroupInParentView:(UIView*)container {
     _ageGroupView = [UIView new];
     _ageGroupView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -601,7 +714,7 @@
                                                              toItem:_levelGroupView
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:8]];
+                                                           constant:7.5f]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
                                                           attribute:NSLayoutAttributeLeft
@@ -625,7 +738,7 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:122]];
+                                                                  constant:136.5]];//122
 
     // subviews
     _lbTitleAgeGrpup = [UILabel new];
@@ -652,6 +765,137 @@
     [self setupAgeLable:_lbTitleFourAge forView:_ivFourAge withText:@"после 35" andColor:[UIColor colorWithRGBA:TXT_INACTIVE_COLOR]];
 }
 
+- (void) setupTitleAge {
+    _lbTitleOneAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
+    _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+}
+
+#pragma mark -
+#pragma mark Layout AGE icons
+- (void) setupIconAgeOne {
+    _ivOneAge = [UIImageView new];
+    _ivOneAge.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivOneAge.image = activeAgeImage;
+    [_ageGroupView addSubview:_ivOneAge];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivOneAge];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:0
+                                                                 toItem:_lbTitleAgeGrpup
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1
+                                                               constant:21]];
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
+                                                              attribute:NSLayoutAttributeRight
+                                                              relatedBy:0
+                                                                 toItem:_ivTwoAge
+                                                              attribute:NSLayoutAttributeLeft
+                                                             multiplier:1
+                                                               constant:-33.5]];
+}
+
+- (void) setupIconAgeTwo {
+    _ivTwoAge = [UIImageView new];
+    _ivTwoAge.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivTwoAge.image = grayAgeImage;
+    [_ageGroupView addSubview:_ivTwoAge];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivTwoAge];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
+                                                                attribute:NSLayoutAttributeTop
+                                                                relatedBy:0
+                                                                   toItem:_lbTitleAgeGrpup
+                                                                attribute:NSLayoutAttributeBottom
+                                                               multiplier:1
+                                                                 constant:21]];
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
+                                                                attribute:NSLayoutAttributeRight
+                                                                relatedBy:0
+                                                                   toItem:_lbTitleAgeGrpup
+                                                                attribute:NSLayoutAttributeCenterX
+                                                               multiplier:1
+                                                                 constant:-16.75f]];
+}
+
+- (void) setupIconAgeThree {
+    _ivThreeAge = [UIImageView new];
+    _ivThreeAge.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivThreeAge.image = grayAgeImage;
+    [_ageGroupView addSubview:_ivThreeAge];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivThreeAge];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:0
+                                                                 toItem:_lbTitleAgeGrpup
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1
+                                                               constant:21]];
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
+                                                              attribute:NSLayoutAttributeLeft
+                                                              relatedBy:0
+                                                                 toItem:_lbTitleAgeGrpup
+                                                              attribute:NSLayoutAttributeCenterX
+                                                             multiplier:1
+                                                               constant:16.75f]];
+}
+
+- (void) setupIconAgeFour {
+    _ivFourAge = [UIImageView new];
+    _ivFourAge.translatesAutoresizingMaskIntoConstraints = NO;
+    _ivFourAge.image = grayAgeImage;
+    [_ageGroupView addSubview:_ivFourAge];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivFourAge];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
+                                                              attribute:NSLayoutAttributeTop
+                                                              relatedBy:0
+                                                                 toItem:_lbTitleAgeGrpup
+                                                              attribute:NSLayoutAttributeBottom
+                                                             multiplier:1
+                                                               constant:21]];
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
+                                                                attribute:NSLayoutAttributeLeft
+                                                                relatedBy:0
+                                                                   toItem:_ivThreeAge
+                                                                attribute:NSLayoutAttributeRight
+                                                               multiplier:1
+                                                                 constant:33.5f]];
+}
+
+#pragma mark -
+#pragma mark Layout AGE titles
+- (void) setupAgeLable:(UILabel*)lable forView:(UIView*)view withText:(NSString*)text andColor:(UIColor*)color {
+    [_ageGroupView addSubview:lable];
+    lable.translatesAutoresizingMaskIntoConstraints = NO;
+    lable.text = text;
+    lable.textColor = color;
+    lable.textAlignment = NSTextAlignmentCenter;
+    lable.font = [UIFont systemFontOfSize:9.0f];
+    
+    [NSLayoutConstraint setWidht:47 height:21 forView:lable];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:12]];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:0
+                                                             toItem:view
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
+#pragma mark -
+#pragma mark Gesture Recognizers
+#pragma mark -
 - (void) setLevelImagesGestureRecognizers {
     _ivOneStarLevel.userInteractionEnabled = YES;
     UITapGestureRecognizer* tapOneStarGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneStarClick)];
@@ -684,206 +928,6 @@
     [_ivFourAge addGestureRecognizer:tapFourStarGesture];
 }
 
-- (void) setupTitleAge {
-    _lbTitleOneAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
-    _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
-}
-
-#pragma mark -
-#pragma mark Icons star methods setup
-- (void) setupIconTwoStar {
-    _ivTwoStarLevel = [UIImageView new];
-    _ivTwoStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivTwoStarLevel.image = grayStarImage;
-    [_levelGroupView addSubview:_ivTwoStarLevel];
-    [NSLayoutConstraint setWidht:27 height:25 forView:_ivTwoStarLevel];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeTop
-                                                                   relatedBy:0
-                                                                      toItem:_lbTitleLevelGrpup
-                                                                   attribute:NSLayoutAttributeBottom
-                                                                  multiplier:1
-                                                                    constant:20]];
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeCenterX
-                                                                   relatedBy:0
-                                                                      toItem:_lbTitleLevelGrpup
-                                                                   attribute:NSLayoutAttributeCenterX
-                                                                  multiplier:1
-                                                                    constant:0]];
-}
-
-- (void) setupIconOneStar {
-    _ivOneStarLevel = [UIImageView new];
-    _ivOneStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivOneStarLevel.image = activeStarImage;
-    [_levelGroupView addSubview:_ivOneStarLevel];
-    [NSLayoutConstraint setWidht:27 height:25 forView:_ivOneStarLevel];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                   relatedBy:0
-                                                                      toItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                  multiplier:1
-                                                                    constant:0]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
-                                                                   attribute:NSLayoutAttributeRight
-                                                                   relatedBy:0
-                                                                      toItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeLeft
-                                                                  multiplier:1
-                                                                    constant:-27]];
-    
-}
-
-- (void) setupIconThreeStar {
-    _ivThreeStarLevel = [UIImageView new];
-    _ivThreeStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivThreeStarLevel.image = grayStarImage;
-    [_levelGroupView addSubview:_ivThreeStarLevel];
-    [NSLayoutConstraint setWidht:27 height:25 forView:_ivThreeStarLevel];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                   relatedBy:0
-                                                                      toItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeCenterY
-                                                                  multiplier:1
-                                                                    constant:0]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
-                                                                   attribute:NSLayoutAttributeLeft
-                                                                   relatedBy:0
-                                                                      toItem:_ivTwoStarLevel
-                                                                   attribute:NSLayoutAttributeRight
-                                                                  multiplier:1
-                                                                    constant:27]];
-}
-
-#pragma mark -
-#pragma mark Icons age methods setup
-- (void) setupIconAgeOne {
-    _ivOneAge = [UIImageView new];
-    _ivOneAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivOneAge.image = activeAgeImage;
-    [_ageGroupView addSubview:_ivOneAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivOneAge];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:20]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
-                                                              attribute:NSLayoutAttributeRight
-                                                              relatedBy:0
-                                                                 toItem:_ivTwoAge
-                                                              attribute:NSLayoutAttributeLeft
-                                                             multiplier:1
-                                                               constant:-34]];
-}
-
-- (void) setupIconAgeTwo {
-    _ivTwoAge = [UIImageView new];
-    _ivTwoAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivTwoAge.image = grayAgeImage;
-    [_ageGroupView addSubview:_ivTwoAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivTwoAge];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
-                                                                attribute:NSLayoutAttributeTop
-                                                                relatedBy:0
-                                                                   toItem:_lbTitleAgeGrpup
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:20]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
-                                                                attribute:NSLayoutAttributeCenterX
-                                                                relatedBy:0
-                                                                   toItem:_lbTitleAgeGrpup
-                                                                attribute:NSLayoutAttributeCenterX
-                                                               multiplier:1
-                                                                 constant:-36]];
-}
-
-- (void) setupIconAgeThree {
-    _ivThreeAge = [UIImageView new];
-    _ivThreeAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivThreeAge.image = grayAgeImage;
-    [_ageGroupView addSubview:_ivThreeAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivThreeAge];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:20]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
-                                                              attribute:NSLayoutAttributeCenterX
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeCenterX
-                                                             multiplier:1
-                                                               constant:36]];
-}
-
-- (void) setupIconAgeFour {
-    _ivFourAge = [UIImageView new];
-    _ivFourAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivFourAge.image = grayAgeImage;
-    [_ageGroupView addSubview:_ivFourAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivFourAge];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:20]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
-                                                                attribute:NSLayoutAttributeLeft
-                                                                relatedBy:0
-                                                                   toItem:_ivThreeAge
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1
-                                                                 constant:34]];
-}
-
-- (void) setupAgeLable:(UILabel*)lable forView:(UIView*)view withText:(NSString*)text andColor:(UIColor*)color {
-    [_ageGroupView addSubview:lable];
-    lable.translatesAutoresizingMaskIntoConstraints = NO;
-    lable.text = text;
-    lable.textColor = color;
-    lable.textAlignment = NSTextAlignmentCenter;
-    lable.font = [UIFont systemFontOfSize:9.0f];
-    
-    [NSLayoutConstraint setWidht:47 height:21 forView:lable];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:view
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:6]];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:view
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
-}
-
 #pragma mark -
 #pragma mark UI helper methods
 - (void) setupTitle:(UILabel*)lable forGroup:(UIView*)groupView withText:(NSString*)text andWidht:(CGFloat)widht {
@@ -903,7 +947,7 @@
                                                              toItem:groupView
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1
-                                                           constant:12]];
+                                                           constant:13.5f]];
     
     [groupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
                                                           attribute:NSLayoutAttributeCenterX
@@ -931,7 +975,9 @@
 }
 
 #pragma mark -
-#pragma mark Sports icon click methods
+#pragma mark Clicks methods
+#pragma mark -
+#pragma mark Sport
 - (void) sportIconClick:(UIGestureRecognizer*)gestureRecognizer {
     UIImageView* icon = (UIImageView*)gestureRecognizer.view;
     
@@ -954,24 +1000,27 @@
 }
 
 #pragma mark -
-#pragma mark Stars click methods
+#pragma mark Level
 - (void) oneStarClick {
+    _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = grayStarImage;
     _ivThreeStarLevel.image = grayStarImage;
 }
 
 - (void) twoStarClick {
+    _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = grayStarImage;
 }
 
 - (void) threeStarClick {
+    _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = activeStarImage;
 }
 
 #pragma mark -
-#pragma mark Age click methods
+#pragma mark Age
 - (void) oneAgeClick {
     _ivOneAge.image = activeAgeImage;
     _ivTwoAge.image = grayAgeImage;
@@ -1033,8 +1082,13 @@
 
 #pragma mark -
 #pragma mark Other methods
-- (void) btnSaveClick {
-    NSLog(@"btnSaveClick");
+# pragma mark -
+# pragma mark Navigation button click
+- (void) btnCancelClick {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
+- (void) btnAddClick {
+    NSLog(@"btnAddClick");
+}
 @end

@@ -28,4 +28,14 @@
                                                        constant:h]];
 }
 
++ (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:0
+                                                             toItem:anchorView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
 @end

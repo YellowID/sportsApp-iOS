@@ -28,7 +28,6 @@
     LoginViewController *controller = [LoginViewController new];
     self.navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     self.navigationController.navigationBar.translucent = NO;
-    //self.navigationController.toolbarHidden = NO;
     
     self.window.rootViewController = self.navigationController;
     
