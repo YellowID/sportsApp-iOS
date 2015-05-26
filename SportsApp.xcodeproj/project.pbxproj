@@ -58,6 +58,11 @@
 		53E5198C1B131EED00B85DDD /* bg_btn_vk@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */; };
 		53E5198F1B131EFF00B85DDD /* bg_btn_fb@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */; };
 		53E519901B131EFF00B85DDD /* bg_btn_vk@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198E1B131EFF00B85DDD /* bg_btn_vk@3x.png */; };
+		53E519931B1374CE00B85DDD /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519921B1374CE00B85DDD /* FBSDKCoreKit.framework */; };
+		53E519951B1377B600B85DDD /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519941B1377B600B85DDD /* FBSDKLoginKit.framework */; };
+		53E519981B14502700B85DDD /* VKSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519961B14502700B85DDD /* VKSdk.framework */; };
+		53E519991B14502700B85DDD /* VKSdkResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 53E519971B14502700B85DDD /* VKSdkResources.bundle */; };
+		53E5199C1B14CBCF00B85DDD /* ChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E5199B1B14CBCF00B85DDD /* ChatViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -140,6 +145,12 @@
 		53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_vk@2x.png"; sourceTree = "<group>"; };
 		53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_fb@3x.png"; sourceTree = "<group>"; };
 		53E5198E1B131EFF00B85DDD /* bg_btn_vk@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_vk@3x.png"; sourceTree = "<group>"; };
+		53E519921B1374CE00B85DDD /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		53E519941B1377B600B85DDD /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
+		53E519961B14502700B85DDD /* VKSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = VKSdk.framework; sourceTree = "<group>"; };
+		53E519971B14502700B85DDD /* VKSdkResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = VKSdkResources.bundle; sourceTree = "<group>"; };
+		53E5199A1B14CBCF00B85DDD /* ChatViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChatViewController.h; sourceTree = "<group>"; };
+		53E5199B1B14CBCF00B85DDD /* ChatViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChatViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,6 +159,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				53E519771B10D60A00B85DDD /* Crashlytics.framework in Frameworks */,
+				53E519981B14502700B85DDD /* VKSdk.framework in Frameworks */,
+				53E519931B1374CE00B85DDD /* FBSDKCoreKit.framework in Frameworks */,
+				53E519951B1377B600B85DDD /* FBSDKLoginKit.framework in Frameworks */,
 				53E519761B10D60A00B85DDD /* Fabric.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -183,8 +197,7 @@
 		5384D5BD1B0C9321009B6CD3 /* SportsApp */ = {
 			isa = PBXGroup;
 			children = (
-				53E519741B10D60A00B85DDD /* Fabric.framework */,
-				53E519751B10D60A00B85DDD /* Crashlytics.framework */,
+				53E519911B13748500B85DDD /* Frameworks */,
 				53B994EB1B0D162400558169 /* Resources */,
 				53B994E71B0D0F0800558169 /* Models */,
 				53B994E11B0D0BE400558169 /* Views */,
@@ -238,6 +251,8 @@
 				53E519711B10B92600B85DDD /* MemberSettingViewController.m */,
 				53E519831B12472700B85DDD /* NewEvenViewController.h */,
 				53E519841B12472700B85DDD /* NewEvenViewController.m */,
+				53E5199A1B14CBCF00B85DDD /* ChatViewController.h */,
+				53E5199B1B14CBCF00B85DDD /* ChatViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -323,6 +338,19 @@
 				53DCC1841B0DB266002EE36E /* logo@2x.png */,
 			);
 			name = icons;
+			sourceTree = "<group>";
+		};
+		53E519911B13748500B85DDD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				53E519961B14502700B85DDD /* VKSdk.framework */,
+				53E519971B14502700B85DDD /* VKSdkResources.bundle */,
+				53E519941B1377B600B85DDD /* FBSDKLoginKit.framework */,
+				53E519921B1374CE00B85DDD /* FBSDKCoreKit.framework */,
+				53E519741B10D60A00B85DDD /* Fabric.framework */,
+				53E519751B10D60A00B85DDD /* Crashlytics.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -417,6 +445,7 @@
 				53DCC18B1B0DB266002EE36E /* icon_location@2x.png in Resources */,
 				53DCC18A1B0DB266002EE36E /* icon_exit@2x.png in Resources */,
 				53DCC19B1B0DB266002EE36E /* icon_status_go@2x.png in Resources */,
+				53E519991B14502700B85DDD /* VKSdkResources.bundle in Resources */,
 				53DCC19E1B0DB266002EE36E /* icon_time@2x.png in Resources */,
 				53DCC19D1B0DB266002EE36E /* icon_status_q@2x.png in Resources */,
 				53DCC1991B0DB266002EE36E /* icon_star@2x.png in Resources */,
@@ -475,6 +504,7 @@
 			files = (
 				53B994D71B0D078900558169 /* LoginViewController.m in Sources */,
 				53DCC1A21B0DD88D002EE36E /* UINavigationBar+VCenter.m in Sources */,
+				53E5199C1B14CBCF00B85DDD /* ChatViewController.m in Sources */,
 				53B994E51B0D0C3200558169 /* GamesListTableViewCell.m in Sources */,
 				53DCC1BC1B0E0A2D002EE36E /* MemberViewController.m in Sources */,
 				53E519721B10B92600B85DDD /* MemberSettingViewController.m in Sources */,
@@ -526,8 +556,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -549,7 +579,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PROVISIONING_PROFILE = "2b79e5a9-f593-452c-96e5-cbb4d8a905b5";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -571,8 +601,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -587,7 +617,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "2b79e5a9-f593-452c-96e5-cbb4d8a905b5";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -597,8 +627,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SportsApp",
@@ -606,7 +636,7 @@
 				INFOPLIST_FILE = SportsApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2b79e5a9-f593-452c-96e5-cbb4d8a905b5";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -614,8 +644,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SportsApp",
@@ -623,7 +653,7 @@
 				INFOPLIST_FILE = SportsApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "2b79e5a9-f593-452c-96e5-cbb4d8a905b5";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

@@ -11,6 +11,7 @@
 #import "NewEvenViewController.h"
 #import "GamesListTableViewCell.h"
 #import "MemberSettingViewController.h"
+#import "ChatViewController.h"
 #import "GameInfo.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -219,6 +220,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    ChatViewController* controller = [[ChatViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
+    
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 

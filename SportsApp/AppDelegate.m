@@ -13,7 +13,8 @@
 
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
-
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <VKSdk/VKSdk.h>
 
 @interface AppDelegate ()
 
@@ -41,6 +42,7 @@
     [self.window makeKeyAndVisible];
     
     //[Fabric with:@[CrashlyticsKit]];
+    [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
 
     return YES;
 }
@@ -60,7 +62,33 @@
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+    [FBSDKAppEvents activateApp];
+}
+
+#pragma mark -
+#pragma mark - FB openURL
+/*
+- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
+    return [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                          openURL:url
+                                                sourceApplication:sourceApplication
+                                                       annotation:annotation];
+}
+*/
+#pragma mark -
+#pragma mark - VK openURL
+-(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
+    BOOL callBack = NO;
+    if ([[url scheme] isEqualToString:@"fb900291803360698"]){
+        callBack = [[FBSDKApplicationDelegate sharedInstance] application:application
+                                                                  openURL:url
+                                                        sourceApplication:sourceApplication
+                                                               annotation:annotation];
+    }
+    else if ([[url scheme] isEqualToString:@"vk4932732"]){
+        callBack = [VKSdk processOpenURL:url fromApplication:sourceApplication];
+    }
+    return callBack;
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application {

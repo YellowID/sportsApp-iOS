@@ -11,7 +11,15 @@
 #import "MemberViewController.h"
 #import "NSLayoutConstraint+Helper.h"
 
-@interface LoginViewController ()
+#import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKLoginKit/FBSDKLoginKit.h>
+#import <VKSdk/VKSdk.h>
+
+#define VK_APP_ID 4932732
+
+static NSArray* SCOPE = nil;
+
+@interface LoginViewController () <VKSdkDelegate>
 
 @end
 
@@ -26,6 +34,8 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background.png"]];
+    
+    SCOPE = @[VK_PER_EMAIL];
     
     ivLogo = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo.png"]];
     ivLogo.translatesAutoresizingMaskIntoConstraints = NO;
@@ -53,23 +63,15 @@
     [NSLayoutConstraint setWidht:229.0f height:40.0f forView:btnVK];
     [NSLayoutConstraint centerHorizontal:btnVK withView:self.view inContainer:self.view];
     
-    NSDictionary *views = NSDictionaryOfVariableBindings(ivLogo, lbAppName, btnVK, btnFB);
-    NSArray *verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-100-[ivLogo]-20-[lbAppName]-(>=20)-[btnVK]-25-[btnFB]-45-|"
+    NSDictionary* views = NSDictionaryOfVariableBindings(ivLogo, lbAppName, btnVK, btnFB);
+    NSArray* verticalConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"V:|-108-[ivLogo]-30-[lbAppName]-(>=20)-[btnVK]-25-[btnFB]-45-|"
                                                                            options:0
                                                                            metrics:nil
                                                                              views:views];
-    /*
-    NSArray *verticalConstraints2 = [NSLayoutConstraint constraintsWithVisualFormat:@"V:[btnVK]-90-|"
-                                                                           options:0
-                                                                           metrics:nil
-                                                                             views:views];
-     */
     [self.view addConstraints:verticalConstraints];
-    //[self.view addConstraints:verticalConstraints2];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:ivLogo attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:lbAppName attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0]];
-    
     
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(btnTempClick)];
     [ivLogo addGestureRecognizer:tapGesture];
@@ -85,6 +87,7 @@
 #pragma mark create VK button
 - (UIButton*) createButtonVK {
     btnVK = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnVK addTarget:self action:@selector(loginWithVkontakte) forControlEvents:UIControlEventTouchUpInside];
     [btnVK setTitle:@"Войти через Вконтакте" forState:UIControlStateNormal];
     btnVK.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnVK setBackgroundImage:[UIImage imageNamed:@"bg_btn_vk.png"] forState:UIControlStateNormal];
@@ -96,6 +99,7 @@
 
 - (UIButton*) createButtonFB {
     btnFB = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnFB addTarget:self action:@selector(loginWithFacebook) forControlEvents:UIControlEventTouchUpInside];
     [btnFB setTitle:@"Войти через Facebook" forState:UIControlStateNormal];
     btnFB.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnFB setBackgroundImage:[UIImage imageNamed:@"bg_btn_fb.png"] forState:UIControlStateNormal];
@@ -108,10 +112,73 @@
 #pragma mark -
 #pragma mark Buttons handler
 - (void) btnTempClick {
+    [self goToNextScreen];
+}
+
+- (void) goToNextScreen {
     [[self navigationController] setNavigationBarHidden:NO animated:YES];
     GamesListViewController *controller = [[GamesListViewController alloc] init];
-    //MemberViewController *controller = [[MemberViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
+}
+
+#pragma mark -
+#pragma mark LOGIN
+- (void) loginWithFacebook {
+    FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
+    if (fbToken) {
+        // User is logged in, do work such as go to next view controller.
+        NSLog(@"FB: %@",  fbToken.tokenString);
+        [self goToNextScreen];
+    }
+    else{
+        FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
+        [login logInWithReadPermissions:@[@"email"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+            if (error) {
+                NSLog(@"FB Error: %@", error.debugDescription);
+            }
+            else if (result.isCancelled) {
+                NSLog(@"FB Cancelled");
+            }
+            else {
+                if ([result.grantedPermissions containsObject:@"email"]) {
+                    NSLog(@"FB email Permissions granted!");
+                }
+                else{
+                    NSLog(@"FB email Permissions deny!");
+                }
+            }
+        }];
+    }
+}
+
+- (void) loginWithVkontakte {
+    [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
+    if ([VKSdk wakeUpSession]){
+        NSLog(@"VK: %@", [VKSdk getAccessToken].accessToken);
+        [self goToNextScreen];
+    }
+    else{
+        [VKSdk authorize:SCOPE revokeAccess:YES];
+    }
+}
+
+#pragma mark -
+#pragma mark VK delegate
+- (void) vkSdkReceivedNewToken:(VKAccessToken*) newToken {
+    NSLog(@"VK: %@", newToken.accessToken);
+    [self goToNextScreen];
+}
+
+- (void) vkSdkUserDeniedAccess:(VKError*) authorizationError {
+    NSLog(@"VK Error: %@", authorizationError.debugDescription);
+}
+
+- (void) vkSdkTokenHasExpired:(VKAccessToken *)expiredToken {
+    NSLog(@"VK expiredToken: %@",  expiredToken.accessToken);
+}
+
+- (void)vkSdkShouldPresentViewController:(UIViewController *)controller {
+    [self presentViewController:controller animated:YES completion:nil];
 }
 
 @end

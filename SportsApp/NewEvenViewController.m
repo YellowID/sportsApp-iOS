@@ -47,6 +47,8 @@
     UIImage* grayStarImage;
     UIImage* activeStarImage;
     
+    BOOL oneStarStatus, twoStarStatus, threeStarStatus;
+    
     NSMutableArray* peopleNumberItems;
 }
 
@@ -84,21 +86,12 @@
     _dateTimePicker.minimumDate = todayDate;
     _dateTimePicker.maximumDate = twoYearsFromToday;
     
+    [self setupContainers];
+    [self setupFieldsGroup];
+    [self setupTimeGroup];
+    [self setupLevelGroup];
     
-    _ivOneStar.userInteractionEnabled = YES;
-    _ivOneStar.image = activeStarImage;
-    UITapGestureRecognizer *tapOneStarGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(oneStarClick)];
-    [_ivOneStar addGestureRecognizer:tapOneStarGesture];
     
-    _ivTwoStar.userInteractionEnabled = YES;
-    _ivTwoStar.image = grayStarImage;
-    UITapGestureRecognizer *tapTwoStarGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(twoStarClick)];
-    [_ivTwoStar addGestureRecognizer:tapTwoStarGesture];
-    
-    _ivThreeStar.userInteractionEnabled = YES;
-    _ivThreeStar.image = grayStarImage;
-    UITapGestureRecognizer *tapThreeStarGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(threeStarClick)];
-    [_ivThreeStar addGestureRecognizer:tapThreeStarGesture];
     
     self.automaticallyAdjustsScrollViewInsets = NO;
 }
@@ -108,13 +101,6 @@
     // register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-    
-    
-    
-    [self setupContainers];
-    [self setupFieldsGroup];
-    [self setupTimeGroup];
-    [self setupLevelGroup];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -144,7 +130,7 @@
     [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     [btnCreate sizeToFit];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCreate];
-    [btnCreate setEnabled:NO]; // !!
+    [btnCreate setEnabled:NO]; // !! 
 }
 
 # pragma mark -
@@ -689,18 +675,31 @@
 #pragma mark -
 #pragma mark Star icon click
 - (void) oneStarClick {
-    _ivOneStar.image = activeStarImage;
+    twoStarStatus = threeStarStatus = NO;
     _ivTwoStar.image = grayStarImage;
     _ivThreeStar.image = grayStarImage;
+    
+    if(oneStarStatus){
+        oneStarStatus = NO;
+        _ivOneStar.image = grayStarImage;
+    }
+    else{
+        oneStarStatus = YES;
+        _ivOneStar.image = activeStarImage;
+    }
 }
 
 - (void) twoStarClick {
+    oneStarStatus = twoStarStatus = YES;
+    threeStarStatus = NO;
     _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = grayStarImage;
 }
 
 - (void) threeStarClick {
+    oneStarStatus = twoStarStatus = threeStarStatus = YES;
+    
     _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = activeStarImage;

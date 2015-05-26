@@ -10,6 +10,26 @@
 
 @implementation NSLayoutConstraint (Helper)
 
++ (void) setWidht:(CGFloat)w forView:(UIView*)view {
+    [view addConstraint: [NSLayoutConstraint constraintWithItem:view
+                                                      attribute:NSLayoutAttributeWidth
+                                                      relatedBy:0
+                                                         toItem:nil
+                                                      attribute:0
+                                                     multiplier:1
+                                                       constant:w]];
+}
+
++ (void) setHeight:(CGFloat)h forView:(UIView*)view {
+    [view addConstraint: [NSLayoutConstraint constraintWithItem:view
+                                                      attribute:NSLayoutAttributeHeight
+                                                      relatedBy:0
+                                                         toItem:nil
+                                                      attribute:0
+                                                     multiplier:1
+                                                       constant:h]];
+}
+
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view {
     [view addConstraint: [NSLayoutConstraint constraintWithItem:view
                                                       attribute:NSLayoutAttributeWidth
@@ -34,6 +54,16 @@
                                                           relatedBy:0
                                                              toItem:anchorView
                                                           attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
++ (void) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeCenterY
+                                                          relatedBy:0
+                                                             toItem:anchorView
+                                                          attribute:NSLayoutAttributeCenterY
                                                          multiplier:1
                                                            constant:0]];
 }
