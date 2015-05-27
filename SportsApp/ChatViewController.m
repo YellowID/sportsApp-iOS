@@ -7,9 +7,12 @@
 //
 
 #import "ChatViewController.h"
+#import "InviteUserViewController.h"
 #import "NSLayoutConstraint+Helper.h"
+#import "UIColor+Helper.h"
+#import "AppColors.h"
 
-#define CURTAIN_HEIGT 276
+#define CURTAIN_HEIGT 161
 
 // curtain
 @interface ChatViewController ()
@@ -25,7 +28,16 @@
 @property (strong, nonatomic) UIView* curtainRowOneView;
 @property (strong, nonatomic) UIView* curtainRowTwoView;
 @property (strong, nonatomic) UIView* curtainRowThreeView;
-@property (strong, nonatomic) UIView* curtainArrowView;
+//@property (strong, nonatomic) UIView* curtainArrowView;
+@property (strong, nonatomic) UIButton* curtainArrowButton;
+
+@property (strong, nonatomic) UILabel* peopleInGame;
+@property (strong, nonatomic) UILabel* peopleNeed;
+
+@property (strong, nonatomic) UIButton* btnInviteUser;
+@property (strong, nonatomic) UIButton* btnAnswerYes;
+@property (strong, nonatomic) UIButton* btnAnswerPerhaps;
+@property (strong, nonatomic) UIButton* btnAnswerNo;
 
 @end
 
@@ -50,6 +62,7 @@
     _curtainView = [UIView new];
     _curtainView.translatesAutoresizingMaskIntoConstraints = NO;
     _curtainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    _curtainView.clipsToBounds = YES;
     [self.view addSubview:_curtainView];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainView
@@ -82,11 +95,45 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:CURTAIN_HEIGT];
+                                                                  constant:0];
     [_curtainView addConstraint: curtainHeigtContraint];
     
     [self setupCurtainArrowView];
     [self layoutFirstRowCurtain];
+    [self layoutSecondRowCurtain];
+    [self layoutThirdRowCurtain];
+}
+
+#pragma mark -
+#pragma mark Arrow View
+- (void) setupCurtainArrowView { // 224 104
+    _curtainArrowButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    _curtainArrowButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [_curtainArrowButton addTarget:self action:@selector(tapCurtainArrow) forControlEvents:UIControlEventTouchUpInside];
+    
+    _curtainArrowButton.adjustsImageWhenHighlighted = NO;
+    //_curtainArrowButton.showsTouchWhenHighlighted = NO;
+    
+    [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down.png"] forState:UIControlStateNormal];
+    [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down_active.png"] forState:UIControlStateHighlighted];
+    [self.view addSubview:_curtainArrowButton];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:_curtainView
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:-1]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:0
+                                                             toItem:_curtainView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1
+                                                           constant:0]];
+    [NSLayoutConstraint setWidht:60 height:30 forView:_curtainArrowButton];
 }
 
 #pragma mark -
@@ -155,13 +202,9 @@
     
     
     NSDictionary* views = NSDictionaryOfVariableBindings(locTitle, locIcon, timeTitle, timeIcon);
-    NSString* hc1_str = @"H:|-5-[locIcon]-4-[locTitle]";
-    NSArray* hz1Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc1_str options:0 metrics:nil views:views];
-    [_curtainRowOneView addConstraints:hz1Constraints];
-    
-    NSString* hc2_str = @"H:[timeIcon]-4-[timeTitle]-5-|";
-    NSArray* hz2Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc2_str options:0 metrics:nil views:views];
-    [_curtainRowOneView addConstraints:hz2Constraints];
+    NSString* hc_str = @"H:|-5-[locIcon]-4-[locTitle]-(>=1)-[timeIcon]-4-[timeTitle]-5-|";
+    NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
+    [_curtainRowOneView addConstraints:hzConstraints];
 }
 
 - (UIImageView*) makeFirstRowIconWithImage:(UIImage*)image {
@@ -189,33 +232,221 @@
 }
 
 #pragma mark -
-#pragma mark Arrow View
-- (void) setupCurtainArrowView {
-    _curtainArrowView = [UIView new];
-    _curtainArrowView.translatesAutoresizingMaskIntoConstraints = NO;
-    _curtainArrowView.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:_curtainArrowView];
+#pragma mark Second row
+- (void) layoutSecondRowCurtain {
+    _curtainRowTwoView = [UIView new];
+    _curtainRowTwoView.translatesAutoresizingMaskIntoConstraints = NO;
+    _curtainRowTwoView.backgroundColor = [UIColor whiteColor];
+    [_curtainView addSubview:_curtainRowTwoView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_curtainView
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1
-                                                                constant:0]];
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
+                                                             attribute:NSLayoutAttributeTop
+                                                             relatedBy:0
+                                                                toItem:_curtainRowOneView
+                                                             attribute:NSLayoutAttributeBottom
+                                                            multiplier:1
+                                                              constant:1]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                               relatedBy:0
-                                                                  toItem:_curtainView
-                                                               attribute:NSLayoutAttributeCenterX
-                                                              multiplier:1
-                                                                constant:0]];
-    [NSLayoutConstraint setWidht:60 height:30 forView:_curtainArrowView];
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
+                                                             attribute:NSLayoutAttributeLeft
+                                                             relatedBy:0
+                                                                toItem:_curtainView
+                                                             attribute:NSLayoutAttributeLeft
+                                                            multiplier:1
+                                                              constant:0]];
     
-    _curtainArrowView.userInteractionEnabled = YES;
-    UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapCurtainArrow)];
-    [_curtainArrowView addGestureRecognizer:tapGesture];
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
+                                                             attribute:NSLayoutAttributeRight
+                                                             relatedBy:0
+                                                                toItem:_curtainView
+                                                             attribute:NSLayoutAttributeRight
+                                                            multiplier:1
+                                                              constant:0]];
+    
+    [_curtainRowTwoView addConstraint: [NSLayoutConstraint constraintWithItem:_curtainRowTwoView
+                                                                    attribute:NSLayoutAttributeHeight
+                                                                    relatedBy:0
+                                                                       toItem:nil
+                                                                    attribute:0
+                                                                   multiplier:1
+                                                                     constant:60]];
+    
+    [self createPeopleInGameLable];
+    [_curtainRowTwoView addSubview:_peopleInGame];
+    _peopleInGame.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setHeight:20 forView:_peopleInGame];
+    [NSLayoutConstraint centerVertical:_peopleInGame withView:_curtainRowTwoView inContainer:_curtainRowTwoView];
+    
+    [self createPeopleNeedLable];
+    [_curtainRowTwoView addSubview:_peopleNeed];
+    _peopleNeed.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setHeight:20 forView:_peopleInGame];
+    [NSLayoutConstraint centerVertical:_peopleNeed withView:_curtainRowTwoView inContainer:_curtainRowTwoView];
+    
+    [self createInviteUserButton];
+    [_curtainRowTwoView addSubview:_btnInviteUser];
+    _btnInviteUser.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setWidht:80 height:30 forView:_btnInviteUser];
+    [NSLayoutConstraint centerVertical:_btnInviteUser withView:_curtainRowTwoView inContainer:_curtainRowTwoView];
+    
+    
+    NSDictionary* views = NSDictionaryOfVariableBindings(_peopleInGame, _peopleNeed, _btnInviteUser);
+    NSString* hc_str = @"H:|-5-[_peopleInGame]-10-[_peopleNeed]-(>=1)-[_btnInviteUser]-5-|";
+    NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
+    [_curtainRowTwoView addConstraints:hzConstraints];
+}
+
+- (void) createPeopleInGameLable {
+    _peopleInGame = [UILabel new];
+    _peopleInGame.text = @"Идут 7 человек";
+    _peopleInGame.textAlignment = NSTextAlignmentLeft;
+    _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
+    _peopleInGame.textColor = [UIColor blueColor];
+    [_peopleInGame sizeToFit];
+}
+
+- (void) createPeopleNeedLable {
+    _peopleNeed = [UILabel new];
+    _peopleNeed.text = @"Нужно ещё 3";
+    _peopleNeed.textAlignment = NSTextAlignmentLeft;
+    _peopleNeed.font = [UIFont systemFontOfSize:12.0f];
+    _peopleNeed.textColor = [UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR];
+    [_peopleNeed sizeToFit];
+}
+
+- (void) createInviteUserButton {
+    _btnInviteUser = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnInviteUser addTarget:self action:@selector(btnInviteUserClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnInviteUser setTitle:@"Позвать" forState:UIControlStateNormal];
+    [_btnInviteUser setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateNormal];
+    _btnInviteUser.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    _btnInviteUser.layer.borderWidth = 0.5;
+    _btnInviteUser.layer.cornerRadius = 6.0;
+    //_btnInviteUser.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
+    _btnInviteUser.layer.borderColor = [[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] CGColor];
+}
+
+#pragma mark -
+#pragma mark Third row
+- (void) layoutThirdRowCurtain {
+    _curtainRowThreeView = [UIView new];
+    _curtainRowThreeView.translatesAutoresizingMaskIntoConstraints = NO;
+    _curtainRowThreeView.backgroundColor = [UIColor whiteColor];
+    [_curtainView addSubview:_curtainRowThreeView];
+    
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
+                                                             attribute:NSLayoutAttributeTop
+                                                             relatedBy:0
+                                                                toItem:_curtainRowTwoView
+                                                             attribute:NSLayoutAttributeBottom
+                                                            multiplier:1
+                                                              constant:1]];
+    
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
+                                                             attribute:NSLayoutAttributeLeft
+                                                             relatedBy:0
+                                                                toItem:_curtainView
+                                                             attribute:NSLayoutAttributeLeft
+                                                            multiplier:1
+                                                              constant:0]];
+    
+    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
+                                                             attribute:NSLayoutAttributeRight
+                                                             relatedBy:0
+                                                                toItem:_curtainView
+                                                             attribute:NSLayoutAttributeRight
+                                                            multiplier:1
+                                                              constant:0]];
+    
+    [_curtainRowThreeView addConstraint: [NSLayoutConstraint constraintWithItem:_curtainRowThreeView
+                                                                    attribute:NSLayoutAttributeHeight
+                                                                    relatedBy:0
+                                                                       toItem:nil
+                                                                    attribute:0
+                                                                   multiplier:1
+                                                                     constant:60]];
+    
+    [self createYesButton];
+    [_curtainRowThreeView addSubview:_btnAnswerYes];
+    _btnAnswerYes.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setWidht:80 height:30 forView:_btnAnswerYes];
+    [NSLayoutConstraint centerVertical:_btnAnswerYes withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
+    
+    [self createPerhapsButton];
+    [_curtainRowThreeView addSubview:_btnAnswerPerhaps];
+    _btnAnswerPerhaps.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setWidht:80 height:30 forView:_btnAnswerPerhaps];
+    [NSLayoutConstraint centerVertical:_btnAnswerPerhaps withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
+    [NSLayoutConstraint centerHorizontal:_btnAnswerPerhaps withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
+    
+    [self createNoButton];
+    [_curtainRowThreeView addSubview:_btnAnswerNo];
+    _btnAnswerNo.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setWidht:80 height:30 forView:_btnAnswerNo];
+    [NSLayoutConstraint centerVertical:_btnAnswerNo withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
+    
+    
+    NSDictionary* views = NSDictionaryOfVariableBindings(_btnAnswerYes, _btnAnswerPerhaps, _btnAnswerNo);
+    NSString* hc_str = @"H:|-5-[_btnAnswerYes]-(>=1)-[_btnAnswerPerhaps]-(>=1)-[_btnAnswerNo]-5-|";
+    NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
+    [_curtainRowThreeView addConstraints:hzConstraints];
+}
+
+- (void) createYesButton {
+    _btnAnswerYes = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnAnswerYes addTarget:self action:@selector(btnInviteUserClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnAnswerYes setTitle:@"Иду" forState:UIControlStateNormal];
+    [_btnAnswerYes setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    _btnAnswerYes.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    _btnAnswerYes.layer.borderWidth = 0.5;
+    _btnAnswerYes.layer.cornerRadius = 6.0;
+    _btnAnswerYes.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
+}
+
+- (void) createPerhapsButton {
+    _btnAnswerPerhaps = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnAnswerPerhaps addTarget:self action:@selector(btnInviteUserClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnAnswerPerhaps setTitle:@"Возможно" forState:UIControlStateNormal];
+    [_btnAnswerPerhaps setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateNormal];
+    _btnAnswerPerhaps.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    _btnAnswerPerhaps.layer.borderWidth = 0.5;
+    _btnAnswerPerhaps.layer.cornerRadius = 6.0;
+    _btnAnswerPerhaps.layer.borderColor = [[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] CGColor];
+}
+
+- (void) createNoButton {
+    _btnAnswerNo = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnAnswerNo addTarget:self action:@selector(btnInviteUserClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnAnswerNo setTitle:@"Нет" forState:UIControlStateNormal];
+    [_btnAnswerNo setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    _btnAnswerNo.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    _btnAnswerNo.layer.borderWidth = 0.5;
+    _btnAnswerNo.layer.cornerRadius = 6.0;
+    _btnAnswerNo.layer.borderColor = [[UIColor redColor] CGColor];
+}
+
+/*
+- (void) setupToolbar {
+    // Toolbar
+    UIBarButtonItem* spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+    UIBarButtonItem *barButtonPlus = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_settings.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(btnCallUserClick)];
+    UIBarButtonItem *barButtonLocation = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_map.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(btnCallUserClick)];
+    UIBarButtonItem* barButtonAction = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(btnCallUserClick)];
+    barButtonAction.style = UIBarButtonItemStyleBordered;
+    
+    [self setToolbarItems:@[barButtonPlus, spacer, barButtonLocation, spacer, barButtonAction] animated:NO];
+    
+    //textField
+    UIBarButtonItem *textFieldItem = [[UIBarButtonItem alloc] initWithCustomView:textField];
+    toolbar.items = @[textFieldItem];
+}
+*/
+
+#pragma mark -
+#pragma mark Buttons click methods
+- (void) btnInviteUserClick {
+    InviteUserViewController* controller = [[InviteUserViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 #pragma mark -
@@ -224,10 +455,18 @@
     if(isCurtainOpen){
         isCurtainOpen = NO;
         [self closeCurtainView];
+        
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down.png"] forState:UIControlStateNormal];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down_active.png"] forState:UIControlStateSelected];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down_active.png"] forState:UIControlStateHighlighted];
     }
     else{
         isCurtainOpen = YES;
         [self openCurtainView];
+        
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_up.png"] forState:UIControlStateNormal];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_up_active.png"] forState:UIControlStateSelected];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_up_active.png"] forState:UIControlStateHighlighted];
     }
 }
 

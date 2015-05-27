@@ -30,6 +30,9 @@
 
 #define BG_BUTTON_COLOR 0x737581ff
 
+#define BG_SEARCH_FIELD_COLOR 0xe1e1e1ff
+#define TXT_SEARCH_FIELD_COLOR 0x626262ff
+
 
 
 

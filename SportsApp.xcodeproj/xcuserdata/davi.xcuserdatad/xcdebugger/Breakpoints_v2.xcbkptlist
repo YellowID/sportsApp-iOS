@@ -179,13 +179,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SportsApp/ChatViewController.m"
-            timestampString = "454355657.258042"
+            filePath = "SportsApp/InviteUserViewController.m"
+            timestampString = "454429745.002739"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
-            landmarkName = "-setupCurtainArrowView"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "-layoutSearchBarInContainer:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
