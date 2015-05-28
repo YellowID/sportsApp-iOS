@@ -169,6 +169,10 @@ static NSArray* SCOPE = nil;
     [self goToNextScreen];
 }
 
+- (void)vkSdkShouldPresentViewController:(UIViewController *)controller {
+    [self presentViewController:controller animated:YES completion:nil];
+}
+
 - (void) vkSdkUserDeniedAccess:(VKError*) authorizationError {
     NSLog(@"VK Error: %@", authorizationError.debugDescription);
 }
@@ -177,8 +181,9 @@ static NSArray* SCOPE = nil;
     NSLog(@"VK expiredToken: %@",  expiredToken.accessToken);
 }
 
-- (void)vkSdkShouldPresentViewController:(UIViewController *)controller {
-    [self presentViewController:controller animated:YES completion:nil];
+- (void) vkSdkNeedCaptchaEnter:(VKError *)captchaError {
+    NSLog(@"VK captchaError: %@",  captchaError.debugDescription);
 }
+
 
 @end

@@ -16,7 +16,7 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
-#define SECTION_PRIVATE_GAMES 0
+#define SECTION_MY_GAMES 0
 #define SECTION_PUBLIC_GAMES 1
 
 @interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -48,8 +48,8 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.separatorColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
     
-    UINib *nib = [UINib nibWithNibName:@"GamesListTableViewCell" bundle:nil];
-    [self.tableView registerNib:nib forCellReuseIdentifier:GamesListCellTableIdentifier];
+    //UINib *nib = [UINib nibWithNibName:@"GamesListTableViewCell" bundle:nil];
+    //[self.tableView registerNib:nib forCellReuseIdentifier:GamesListCellTableIdentifier];
     [self.view addSubview:self.tableView];
     
     [self loadData];
@@ -58,6 +58,15 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
+    // left
+    UIButton *btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnAdd setFrame:CGRectMake(0, 8.0f, 40.0f, 36.0f)];
+    [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnAdd setTitle:@"Создать игру" forState:UIControlStateNormal];
+    btnAdd.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    [btnAdd sizeToFit];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
+    
     //right
     NSMutableArray *rightBarItems = [[NSMutableArray alloc] init];
     
@@ -67,35 +76,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     UIBarButtonItem *btnSetting = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_settings.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnSettingClick)];
     [rightBarItems addObject:btnSetting];
     self.navigationItem.rightBarButtonItems = rightBarItems;
-    
-    //left
-    NSMutableArray *leftBarItems = [[NSMutableArray alloc] init];
-    
-    /*
-    UIButton *btnMyGames = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnMyGames setFrame:CGRectMake(0, 8.0f, 40.0f, 36.0f)];
-    [btnMyGames setTitle:@"Мои игры" forState:UIControlStateNormal];
-    [btnMyGames setTitleEdgeInsets:UIEdgeInsetsMake(0.0, 0.0, 3, 0.0)];
-    [btnMyGames sizeToFit];
-    [leftBarItems addObject:[[UIBarButtonItem alloc] initWithCustomView:btnMyGames]];
-    */
-    
-    UIBarButtonItem* btnMyGames = [[UIBarButtonItem alloc] initWithTitle:@"Мои игры" style:UIBarButtonItemStylePlain target:self action:@selector(btnMyGamesClick)];
-    [leftBarItems addObject:btnMyGames];
-    //[btnMyGames setTitlePositionAdjustment:UIOffsetMake(10, -30) forBarMetrics:UIBarMetricsDefault];
-    
-    /*
-    UIBarButtonItem *spaceItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace target:nil action:nil];
-    spaceItem.width = -16.0f;
-    [leftBarItems addObject:spaceItem];
-    */
-    
-    UIBarButtonItem *btnAdd = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon_plus.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnAddClick)];
-    [leftBarItems addObject:btnAdd];
-    self.navigationItem.leftBarButtonItems = leftBarItems;
-    
-    [self.navigationItem.leftBarButtonItems[0] setTitlePositionAdjustment:UIOffsetMake(8, 0) forBarMetrics:UIBarMetricsDefault];
-    //[self.navigationItem.leftBarButtonItems[1] setImageEdgeInsets:UIEdgeInsetsMake(0.0, -10.0, 0.0, 0.0)];
 }
 
 - (void) btnMyGamesClick {
@@ -141,7 +121,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if(section == SECTION_PRIVATE_GAMES)
+    if(section == SECTION_MY_GAMES)
         return _privateGames.count;
     else if(section == SECTION_PUBLIC_GAMES)
         return _publicGames.count;
@@ -157,7 +137,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     if(section == SECTION_PUBLIC_GAMES)
         return 34.0f;
     else
-        return 0.01f;
+        return 34.0f; //0.1
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
@@ -170,12 +150,24 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     if(section == SECTION_PUBLIC_GAMES){
         view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 34.0f)];
         view.layer.borderWidth = 0.5;
-        view.layer.borderColor = [[UIColor colorWithRGBA:PUBLIC_SECTION_BORDER_COLOR] CGColor];
-        view.layer.backgroundColor = [[UIColor colorWithRGBA:PUBLIC_SECTION_COLOR] CGColor];
+        view.layer.borderColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_BORDER_COLOR] CGColor];
+        view.layer.backgroundColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR] CGColor];
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, tableView.frame.size.width, 34.0f)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Публичные игры";
+        label.textColor = [UIColor whiteColor];
+        [view addSubview:label];
+    }
+    else if(section == SECTION_MY_GAMES){
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 34.0f)];
+        view.layer.borderWidth = 0.5;
+        view.layer.borderColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_BORDER_COLOR] CGColor];
+        view.layer.backgroundColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR] CGColor];
+        
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, tableView.frame.size.width, 34.0f)];
+        [label setFont:[UIFont systemFontOfSize:13]];
+        label.text = @"Мои игры";
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
     }
@@ -198,23 +190,34 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     GamesListTableViewCell* gameCell = (GamesListTableViewCell *)cell;
     
     GameInfo* game = nil;
-    if(indexPath.section == SECTION_PRIVATE_GAMES){
+    if(indexPath.section == SECTION_MY_GAMES){
         game = _privateGames[indexPath.row];
-        gameCell.gameNameLabel.textColor = [UIColor blackColor];
+        gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR];
         
     }
     else if(indexPath.section == SECTION_PUBLIC_GAMES){
         game = _publicGames[indexPath.row];
-        gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:PUBLIC_SECTION_COLOR];
+        gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR];
     }
     
     
     gameCell.gameNameLabel.text = game.gameName;
-    gameCell.addressLabel.text = game.address;
+    
+    gameCell.addressLabel.text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
+    gameCell.addressLabel.textColor = [UIColor grayColor];
+    
     gameCell.dateLabel.text = game.date;
+    gameCell.dateLabel.textColor = [UIColor grayColor];
+    
     gameCell.timeLabel.text = game.time;
+    gameCell.timeLabel.textColor = [UIColor grayColor];
+    
     gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
     gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
+    
+    gameCell.ivLocation.image = [UIImage imageNamed:@"icon_location.png"];
+    gameCell.ivTime.image = [UIImage imageNamed:@"icon_time.png"];
+    gameCell.ivDate.image = [UIImage imageNamed:@"icon_date.png"];
     
     return cell;
 }
@@ -232,9 +235,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     _privateGames = [NSMutableArray new];
     for(int i = 0; i < 4; ++i){
         GameInfo* game = [GameInfo new];
-        game.gameName = [NSString stringWithFormat:@"Private Game %lu", (unsigned long)i];
-        game.address = @"ул. Пушкина 12б";
-        game.addressName = @"Суперзал";
+        game.gameName = [NSString stringWithFormat:@"My Game %lu", (unsigned long)i];
+        game.address = @"просп. Независимости 192б";
+        game.addressName = @"Всем спорт";
         game.date = @"через 3 дня";
         game.time = @"20:00";
         
@@ -245,9 +248,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     for(int i = 0; i < 4; ++i){
         GameInfo* game = [GameInfo new];
         game.gameName = [NSString stringWithFormat:@"Public Game %lu", (unsigned long)i];
-        game.address = @"ул. Пушкина 12б";
-        game.addressName = @"Суперзал";
-        game.date = @"через 3 дня";
+        game.address = @"просп. Независимости 999 Ш/2";
+        game.addressName = @"Ооочень длинный бассейн";
+        game.date = @"через 13 дней";
         game.time = @"20:00";
         
         [_publicGames addObject:game];

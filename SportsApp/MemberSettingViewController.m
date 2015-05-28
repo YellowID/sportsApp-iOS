@@ -82,7 +82,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"Новая игра";
+    self.title = @"Мои настройки";
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     [self setNavigationItems];
     
@@ -151,15 +151,17 @@
     UIButton *btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
+    [btnCancel setTitle:@"Отменить" forState:UIControlStateNormal];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    btnCancel.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
     
     UIButton* btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnAdd setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnAdd setTitle:@"Добавить" forState:UIControlStateNormal];
+    [btnAdd setTitle:@"Сохранить" forState:UIControlStateNormal];
+    btnAdd.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [btnAdd setUserInteractionEnabled:NO];
     [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];

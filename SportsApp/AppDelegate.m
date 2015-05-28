@@ -66,17 +66,7 @@
 }
 
 #pragma mark -
-#pragma mark - FB openURL
-/*
-- (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
-    return [[FBSDKApplicationDelegate sharedInstance] application:application
-                                                          openURL:url
-                                                sourceApplication:sourceApplication
-                                                       annotation:annotation];
-}
-*/
-#pragma mark -
-#pragma mark - VK openURL
+#pragma mark - openURL
 -(BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation{
     BOOL callBack = NO;
     if ([[url scheme] isEqualToString:@"fb900291803360698"]){

@@ -117,6 +117,7 @@
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
     [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
+    btnCancel.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
@@ -125,6 +126,7 @@
     [btnCreate setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
     [btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
+    btnCreate.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [btnCreate setUserInteractionEnabled:NO];
     [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];

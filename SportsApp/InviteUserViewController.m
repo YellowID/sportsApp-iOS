@@ -341,6 +341,7 @@
     if (textField == _tfEmail){
         if([textField.text isEmpty]){
             _btnInvite.enabled = NO;
+            _btnInvite.userInteractionEnabled = NO;
             _btnInvite.layer.backgroundColor = [[UIColor clearColor] CGColor];
             
             _btnInvite.layer.borderWidth = 0.5;
@@ -350,6 +351,7 @@
         }
         else{
             _btnInvite.enabled = YES;
+            _btnInvite.userInteractionEnabled = YES;
             _btnInvite.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
             
             _btnInvite.layer.borderWidth = 0.0;

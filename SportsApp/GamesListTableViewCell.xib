@@ -14,13 +14,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="через неделю" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hYs-qt-NXP">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="через неделю" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hYs-qt-NXP">
                         <rect key="frame" x="318" y="54" width="90" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="&quot;Мегазал&quot;, ул. Лермонтова, 46" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZU-cV-RHa">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="&quot;Мегазал&quot;, ул. Лермонтова, 46" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZU-cV-RHa">
                         <rect key="frame" x="24" y="53" width="180" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
@@ -32,34 +32,40 @@
                         <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tct-wu-Z7T">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tct-wu-Z7T">
                         <rect key="frame" x="333" y="8" width="22" height="22"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="22" id="6NH-X2-pyL"/>
                             <constraint firstAttribute="height" constant="22" id="foU-9q-sdr"/>
                         </constraints>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="icon_location.png" translatesAutoresizingMaskIntoConstraints="NO" id="aG4-uY-kl9">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="icon_location.png" translatesAutoresizingMaskIntoConstraints="NO" id="aG4-uY-kl9">
                         <rect key="frame" x="8" y="53" width="8" height="10"/>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="icon_time.png" translatesAutoresizingMaskIntoConstraints="NO" id="pC6-R5-tRG">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="icon_time.png" translatesAutoresizingMaskIntoConstraints="NO" id="pC6-R5-tRG">
                         <rect key="frame" x="209" y="55" width="10" height="11"/>
                     </imageView>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="icon_date.png" translatesAutoresizingMaskIntoConstraints="NO" id="tfJ-4X-VmO">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" image="icon_date.png" translatesAutoresizingMaskIntoConstraints="NO" id="tfJ-4X-VmO">
                         <rect key="frame" x="293" y="56" width="10" height="10"/>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="20:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ziT-Go-SCH">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="20:00" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ziT-Go-SCH">
                         <rect key="frame" x="230" y="54" width="43" height="15"/>
                         <fontDescription key="fontDescription" type="system" pointSize="9"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ibR-Mh-OqS">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ibR-Mh-OqS">
                         <rect key="frame" x="368" y="8" width="22" height="22"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="22" id="BzL-Db-XNp"/>
                             <constraint firstAttribute="height" constant="22" id="xmk-k6-euQ"/>
                         </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="BzL-Db-XNp"/>
+                                <exclude reference="xmk-k6-euQ"/>
+                            </mask>
+                        </variation>
                     </imageView>
                 </subviews>
                 <constraints>
@@ -68,6 +74,7 @@
                     <constraint firstItem="9rt-Md-Yum" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leadingMargin" constant="10" id="9Qr-gg-9MJ"/>
                     <constraint firstItem="9rt-Md-Yum" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="AUP-Ut-ijd"/>
                     <constraint firstItem="wZU-cV-RHa" firstAttribute="centerY" secondItem="aG4-uY-kl9" secondAttribute="centerY" id="GFr-ad-bnj"/>
+                    <constraint firstItem="pC6-R5-tRG" firstAttribute="leading" secondItem="wZU-cV-RHa" secondAttribute="trailing" priority="750" constant="5" id="O4Y-Lp-8FD"/>
                     <constraint firstAttribute="trailingMargin" secondItem="ibR-Mh-OqS" secondAttribute="trailing" constant="10" id="QaR-OW-Nw1"/>
                     <constraint firstItem="tfJ-4X-VmO" firstAttribute="leading" secondItem="ziT-Go-SCH" secondAttribute="trailing" constant="12" id="XGq-32-TC6"/>
                     <constraint firstAttribute="trailingMargin" secondItem="hYs-qt-NXP" secondAttribute="trailing" constant="10" id="ZZS-Dc-4F5"/>
@@ -79,9 +86,16 @@
                     <constraint firstItem="ibR-Mh-OqS" firstAttribute="leading" secondItem="Tct-wu-Z7T" secondAttribute="trailing" constant="13" id="j6Q-8y-hVI"/>
                     <constraint firstItem="Tct-wu-Z7T" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" constant="6" id="jZZ-Rr-x4Y"/>
                     <constraint firstItem="wZU-cV-RHa" firstAttribute="leading" secondItem="aG4-uY-kl9" secondAttribute="trailing" constant="4" id="lUn-kc-WYc"/>
-                    <constraint firstItem="tfJ-4X-VmO" firstAttribute="centerY" secondItem="wZU-cV-RHa" secondAttribute="centerY" id="nbk-NS-tr9"/>
+                    <constraint firstItem="tfJ-4X-VmO" firstAttribute="centerY" secondItem="wZU-cV-RHa" secondAttribute="centerY" constant="-1" id="nbk-NS-tr9"/>
                     <constraint firstItem="hYs-qt-NXP" firstAttribute="leading" secondItem="tfJ-4X-VmO" secondAttribute="trailing" constant="4" id="w55-ze-WMs"/>
                 </constraints>
+                <variation key="default">
+                    <mask key="constraints">
+                        <exclude reference="QaR-OW-Nw1"/>
+                        <exclude reference="aRu-va-hOT"/>
+                        <exclude reference="j6Q-8y-hVI"/>
+                    </mask>
+                </variation>
             </tableViewCellContentView>
             <connections>
                 <outlet property="addressLabel" destination="wZU-cV-RHa" id="Rrb-Rh-0NL"/>
