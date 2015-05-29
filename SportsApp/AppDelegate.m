@@ -15,6 +15,7 @@
 #import <Crashlytics/Crashlytics.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <VKSdk/VKSdk.h>
+#import <Quickblox/Quickblox.h>
 
 @interface AppDelegate ()
 
@@ -43,6 +44,11 @@
     
     //[Fabric with:@[CrashlyticsKit]];
     [[FBSDKApplicationDelegate sharedInstance] application:application didFinishLaunchingWithOptions:launchOptions];
+    
+    [QBApplication sharedApplication].applicationId = 23789;
+    [QBConnection registerServiceKey:@"JL8zy5TG4avnDE9"];
+    [QBConnection registerServiceSecret:@"jFhh6pUh-SzBkKu"];
+    [QBSettings setAccountKey:@"aawJFzj4EfZLsw9tGY6N"];
 
     return YES;
 }

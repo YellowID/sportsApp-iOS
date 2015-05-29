@@ -10,24 +10,29 @@
 
 @implementation NSLayoutConstraint (Helper)
 
-+ (void) setWidht:(CGFloat)w forView:(UIView*)view {
-    [view addConstraint: [NSLayoutConstraint constraintWithItem:view
-                                                      attribute:NSLayoutAttributeWidth
-                                                      relatedBy:0
-                                                         toItem:nil
-                                                      attribute:0
-                                                     multiplier:1
-                                                       constant:w]];
++ (NSLayoutConstraint*) setWidht:(CGFloat)w forView:(UIView*)view {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:0
+                                                                     toItem:nil
+                                                                  attribute:0
+                                                                 multiplier:1
+                                                                   constant:w];
+    [view addConstraint: constraint];
+    return constraint;
 }
 
-+ (void) setHeight:(CGFloat)h forView:(UIView*)view {
-    [view addConstraint: [NSLayoutConstraint constraintWithItem:view
-                                                      attribute:NSLayoutAttributeHeight
-                                                      relatedBy:0
-                                                         toItem:nil
-                                                      attribute:0
-                                                     multiplier:1
-                                                       constant:h]];
++ (NSLayoutConstraint*) setHeight:(CGFloat)h forView:(UIView*)view {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeHeight
+                                                                  relatedBy:0
+                                                                     toItem:nil
+                                                                  attribute:0
+                                                                 multiplier:1
+                                                                   constant:h];
+    
+    [view addConstraint: constraint];
+    return constraint;
 }
 
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view {

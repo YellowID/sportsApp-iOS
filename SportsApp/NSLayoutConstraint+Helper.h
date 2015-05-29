@@ -10,8 +10,8 @@
 
 @interface NSLayoutConstraint (Helper)
 
-+ (void) setWidht:(CGFloat)w forView:(UIView*)view;
-+ (void) setHeight:(CGFloat)w forView:(UIView*)view;
++ (NSLayoutConstraint*) setWidht:(CGFloat)w forView:(UIView*)view;
++ (NSLayoutConstraint*) setHeight:(CGFloat)w forView:(UIView*)view;
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view;
 + (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
 + (void) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;

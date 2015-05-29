@@ -13,6 +13,8 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
+#import <Quickblox/Quickblox.h>
+
 #define CURTAIN_HEIGT 175.5 //161
 #define PADDING_H 12
 
@@ -57,6 +59,33 @@
     
     [self setupCurtainView];
     
+    
+    [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
+        //NSLog(@"QBResponse: %@", response.debugDescription);
+        //NSLog(@"QBASession: %@", session.debugDescription);
+        
+        /*
+        QBUUser *user = [QBUUser user];
+        user.login = @"TestUser1";
+        user.password = @"ahtrahtrahtr1";
+        user.externalUserID = 758902384;
+        
+        [QBRequest signUp:user successBlock:^(QBResponse *response, QBUUser *user) {
+            NSLog(@"QBUUser: %@", user.debugDescription);
+        }
+        errorBlock:^(QBResponse *response) {
+            NSLog(@"QBResponse: %@", response.debugDescription);
+        }];
+        */
+        
+        [QBRequest logInWithUserLogin:@"TestUser1" password:@"ahtrahtrahtr1" successBlock:^(QBResponse *response, QBUUser *user) {
+            NSLog(@"QBUUser: %@", user.debugDescription);
+        } errorBlock:^(QBResponse *response) {
+            NSLog(@"QBResponse: %@", response.debugDescription);
+        }];
+    } errorBlock:^(QBResponse *response) {
+        NSLog(@"QBResponse: %@", response.debugDescription);
+    }];
 }
 
 #pragma mark -

@@ -76,6 +76,8 @@
     UIImage* grayAgeImage;
     UIImage* activeAgeImage;
     
+    BOOL oneStarStatus, twoStarStatus, threeStarStatus;
+    
     CGFloat kScrollItemWidht;
 }
 
@@ -1004,18 +1006,31 @@
 #pragma mark -
 #pragma mark Level
 - (void) oneStarClick {
-    _ivOneStarLevel.image = activeStarImage;
+    twoStarStatus = threeStarStatus = NO;
     _ivTwoStarLevel.image = grayStarImage;
     _ivThreeStarLevel.image = grayStarImage;
+    
+    if(oneStarStatus){
+        oneStarStatus = NO;
+        _ivOneStarLevel.image = grayStarImage;
+    }
+    else{
+        oneStarStatus = YES;
+        _ivOneStarLevel.image = activeStarImage;
+    }
 }
 
 - (void) twoStarClick {
+    oneStarStatus = twoStarStatus = YES;
+    threeStarStatus = NO;
     _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = grayStarImage;
 }
 
 - (void) threeStarClick {
+    oneStarStatus = twoStarStatus = threeStarStatus = YES;
+    
     _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = activeStarImage;

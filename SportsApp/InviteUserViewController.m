@@ -12,10 +12,13 @@
 #import "NSString+Common.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "MemberInfo.h"
 
+#define PHOTO_SIZE 40
 #define PADDING_H 12
+#define SEARCH_HEIGHT 38
 
-@interface InviteUserViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface InviteUserViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) UIView* searchFieldContainer; // because you can not properly configure the appearance of UISearchBar
 @property (strong, nonatomic) CustomSearchBar* searchBar;
@@ -28,14 +31,13 @@
 @property (strong, nonatomic) UITableView* tableView;
 //@property (strong, nonatomic) UITextField* tfSearch;
 
-
-
-
 @end
 
 @implementation InviteUserViewController{
     NSMutableArray* members;
     NSMutableArray* filteredMembers;
+    
+    NSLayoutConstraint* tableHeigtContraint;
 }
 
 - (void)viewDidLoad {
@@ -49,6 +51,48 @@
     _searchFieldContainer = [self layoutSearchBarContaiter];
     [self layoutSearchBarInContainer:_searchFieldContainer];
     [self layoutInviteFromEmailViewGroup];
+    
+    [self setupTableView];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    // register for keyboard notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    // unregister for keyboard notifications while not visible.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void) setupTableView {
+    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    //[_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
+    [_tableView setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
+    
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    _tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
+    [self.view addSubview:self.tableView];
+    
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
+    tableHeigtContraint = [NSLayoutConstraint setHeight:200 forView:_tableView];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_tableView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:_searchFieldContainer
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    _tableView.hidden = YES;
 }
 
 - (UIView*) layoutSearchBarContaiter {
@@ -59,7 +103,7 @@
     //sbContaiter.backgroundColor = [UIColor grayColor];
     [self.view addSubview:sbContaiter];
     
-    [NSLayoutConstraint setHeight:38 forView:sbContaiter];
+    [NSLayoutConstraint setHeight:SEARCH_HEIGHT forView:sbContaiter];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:sbContaiter
                                                           attribute:NSLayoutAttributeTop
@@ -89,6 +133,7 @@
 
 - (void) layoutSearchBarInContainer:(UIView*)container {
     _searchBar = [CustomSearchBar new];
+    _searchBar.delegate = self;
     _searchBar.translatesAutoresizingMaskIntoConstraints = NO;
     //_searchBar.translucent = YES;
     
@@ -277,6 +322,29 @@
 
 #pragma mark -
 #pragma mark UITableView delegate methods
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Remove seperator inset
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    // Prevent the cell from inheriting the Table View's margin settings
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+        [cell setPreservesSuperviewLayoutMargins:NO];
+    }
+    
+    // Explictly set your cell's layout margins
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        //[cell setLayoutMargins:UIEdgeInsetsZero];
+        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
+    }
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 59;
+}
+
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return members.count;
 }
@@ -288,9 +356,25 @@
     if(cell == nil)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier];
     
-    NSString* seekCity = members[indexPath.row];
+    MemberInfo* member = members[indexPath.row];
     
-    cell.textLabel.text = seekCity;
+    [cell setBackgroundColor:[UIColor clearColor]];
+    
+    UIImage* im = [UIImage imageNamed:@"photo.png"];
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
+    [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
+    UIImage* im2 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    cell.imageView.image = im2;
+    cell.imageView.contentMode = UIViewContentModeCenter;
+    
+    cell.imageView.layer.borderWidth = 0.0;
+    cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
+    cell.imageView.layer.masksToBounds = YES;
+    
+    cell.textLabel.text = member.name;
+    cell.textLabel.textColor = [UIColor blackColor];
+    cell.textLabel.font = [UIFont systemFontOfSize:15];
     
     return cell;
 }
@@ -298,7 +382,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     //NSString* selectedCity = members[indexPath.row];
     
-    [_tableView reloadData];
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:@"Пригласить этого участника?"
+                          message:nil
+                          delegate:self
+                          cancelButtonTitle:@"Отмена"
+                          otherButtonTitles:@"Да", nil];
+    [alert show];
+    
+    //[_tableView reloadData];
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -319,7 +411,14 @@
 # pragma mark -
 # pragma mark Navigation button click
 - (void) btnCancelClick {
-    [self.navigationController popViewControllerAnimated:YES];
+    if(_tableView.hidden){
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+    else{
+        _tableView.hidden = YES;
+        _inviteFromEmailViewGroup.hidden = NO;
+        [_searchBar resignFirstResponder];
+    }
 }
 
 - (void) btnInviteClick {
@@ -358,6 +457,61 @@
             _btnInvite.layer.cornerRadius = 6.0;
         }
     }
+}
+
+#pragma mark -
+#pragma mark UISearchBar delegate
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    //NSLog(@"%@", searchText);
+}
+
+- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    [self loadData];
+    
+    _inviteFromEmailViewGroup.hidden = YES;
+    _tableView.hidden = NO;
+    [_tableView reloadData];
+    
+    return YES;
+}
+
+# pragma mark -
+# pragma mark Alerts buttons
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if(buttonIndex == 1){
+        // send data
+        NSLog(@"alertView");
+    }
+}
+
+#pragma mark -
+#pragma mark loadData
+- (void) loadData {
+    members = [NSMutableArray new];
+    for(int i = 0; i < 14; ++i){
+        MemberInfo* member = [MemberInfo new];
+        member.name = [NSString stringWithFormat:@"User Name %lu", (unsigned long)i];
+        member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
+        member.selected = YES;
+        
+        [members addObject:member];
+    }
+}
+
+# pragma mark -
+# pragma mark Keyboard show/hide
+- (void)keyboardWillShow:(NSNotification*)notification {
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    CGFloat bottom = _searchFieldContainer.frame.origin.y + SEARCH_HEIGHT;
+    tableHeigtContraint.constant = self.view.frame.size.height - kbSize.height - bottom;
+    [self.view layoutIfNeeded];
+}
+
+- (void)keyboardWillHide:(NSNotification*)aNotification {
+    _tableView.contentInset = UIEdgeInsetsZero;
+    _tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
 @end
