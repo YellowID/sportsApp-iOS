@@ -7,7 +7,9 @@
 //
 
 #import "ChatViewController.h"
+#import "UIViewController+Navigation.h"
 #import "InviteUserViewController.h"
+#import "MemberViewController.h"
 #import "CustomButton.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
@@ -15,7 +17,7 @@
 
 #import <Quickblox/Quickblox.h>
 
-#define CURTAIN_HEIGT 175.5 //161
+#define CURTAIN_HEIGT 174.5 //161
 #define PADDING_H 12
 
 // curtain
@@ -52,7 +54,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"Волейбол";
+    //self.title = @"Волейбол";
+    [self setNavTitle:@"Волейбол"];
     self.view.backgroundColor = [UIColor grayColor];
     
     [self setNavigationItems];
@@ -112,7 +115,7 @@
     [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnChange addTarget:self action:@selector(btnChangeClick) forControlEvents:UIControlEventTouchUpInside];
     [btnChange setTitle:@"Изменить" forState:UIControlStateNormal];
-    btnChange.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    btnChange.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnChange setUserInteractionEnabled:NO];
     [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
@@ -125,7 +128,7 @@
 - (void) setupCurtainView {
     _curtainView = [UIView new];
     _curtainView.translatesAutoresizingMaskIntoConstraints = NO;
-    _curtainView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    _curtainView.backgroundColor = [UIColor colorWithRGBA:ROW_SEPARATOR_COLOR];
     _curtainView.clipsToBounds = YES;
     [self.view addSubview:_curtainView];
     
@@ -239,7 +242,7 @@
     UIImageView* locIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_location.png"]];
     [_curtainRowOneView addSubview:locIcon];
     locIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:8 height:10 forView:locIcon];
+    [NSLayoutConstraint setWidht:8 height:10.5 forView:locIcon];
     //[NSLayoutConstraint centerVertical:locIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     UILabel* locTitle = [self makeLocationLable];
@@ -251,7 +254,7 @@
     UIImageView* timeIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_time.png"]];
     [_curtainRowOneView addSubview:timeIcon];
     timeIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:10 height:11 forView:timeIcon];
+    [NSLayoutConstraint setWidht:10.5 height:11 forView:timeIcon];
     //[NSLayoutConstraint centerVertical:timeIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     UILabel* timeTitle = [self makeTimeLable];
@@ -263,7 +266,7 @@
     
     NSDictionary* views = NSDictionaryOfVariableBindings(locTitle, locIcon, timeTitle, timeIcon, separator);
     
-    NSString* hc1_str = @"H:|-12-[locIcon]-4-[locTitle]";
+    NSString* hc1_str = @"H:|-12-[locIcon]-6.5-[locTitle]";
     NSArray* hz1Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc1_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz1Constraints];
     
@@ -283,7 +286,7 @@
 
 - (void) setupSeparator:(UIView*)separator intoGroup:(UIView*)group {
     separator.translatesAutoresizingMaskIntoConstraints = NO;
-    separator.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    separator.backgroundColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
     [group addSubview:separator];
     
     [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
@@ -359,7 +362,7 @@
                                                                 toItem:_curtainRowOneView
                                                              attribute:NSLayoutAttributeBottom
                                                             multiplier:1
-                                                              constant:1]];
+                                                              constant:0.5f]];
     
     [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
                                                              attribute:NSLayoutAttributeLeft
@@ -405,18 +408,22 @@
 - (void) createPeopleInGameLable {
     _peopleInGame = [UILabel new];
     
-    /*
+    /**/
     NSMutableAttributedString* attributeString = [[NSMutableAttributedString alloc] initWithString:@"Идут 7 человек"];
     [attributeString addAttribute:NSUnderlineStyleAttributeName
                             value:[NSNumber numberWithInt:1]
                             range:(NSRange){0,[attributeString length]}];
     _peopleInGame.attributedText = [attributeString copy];
-    */
-    _peopleInGame.text = @"Идут 7 человек";
+    
+    //_peopleInGame.text = @"Идут 7 человек";
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
     [_peopleInGame sizeToFit];
+    
+    _peopleInGame.userInteractionEnabled = YES;
+    UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showGamers)];
+    [_peopleInGame addGestureRecognizer:tapGesture];
 }
 
 - (void) createPeopleNeedLable {
@@ -466,7 +473,7 @@
                                                                 toItem:_curtainRowTwoView
                                                              attribute:NSLayoutAttributeBottom
                                                             multiplier:1
-                                                              constant:1]];
+                                                              constant:0.5f]];
     
     [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
                                                              attribute:NSLayoutAttributeLeft
@@ -620,6 +627,11 @@
 
 - (void) btnChangeClick {
     
+}
+
+- (void) showGamers {
+    MemberViewController* controller = [[MemberViewController alloc] init];
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 #pragma mark -

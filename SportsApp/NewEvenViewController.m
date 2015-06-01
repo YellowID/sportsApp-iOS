@@ -7,6 +7,8 @@
 //
 
 #import "NewEvenViewController.h"
+#import "UIViewController+Navigation.h"
+#import "PlaceSearchViewController.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -55,7 +57,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"Новое событие";
+    //self.title = @"Новое событие";
+    [self setNavTitle:@"Новое событие"];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
     [self setNavigationItems];
@@ -91,8 +94,6 @@
     [self setupTimeGroup];
     [self setupLevelGroup];
     
-    
-    
     self.automaticallyAdjustsScrollViewInsets = NO;
 }
 
@@ -108,6 +109,8 @@
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    
+    [_tfLocation resignFirstResponder];
 }
 
 #pragma mark -
@@ -117,7 +120,7 @@
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
     [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
-    btnCancel.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    btnCancel.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
@@ -126,7 +129,7 @@
     [btnCreate setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
     [btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
-    btnCreate.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    btnCreate.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnCreate setUserInteractionEnabled:NO];
     [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
@@ -239,6 +242,7 @@
 
 - (void) setupLocationField {
     _tfLocation = [UITextField new];
+    _tfLocation.delegate = self;
     _tfLocation.translatesAutoresizingMaskIntoConstraints = NO;
     _tfLocation.placeholder = @"Место";
     _tfLocation.font = [UIFont systemFontOfSize:12.0f];
@@ -360,7 +364,7 @@
     _tfTime.font = [UIFont systemFontOfSize:12.0f];
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
-    [df setDateFormat:@"d MMMM yyyy hh:mm"];
+    [df setDateFormat:@"d MMMM yyyy HH:mm"];
     _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:[NSDate date]]];
     
     [_timeGroupView addSubview:_tfTime];
@@ -736,7 +740,7 @@
 - (void) datePickerDateChanged:(UIDatePicker *)datePicker {
     if (datePicker == _dateTimePicker){
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"d MMMM yyyy hh:mm"];
+        [df setDateFormat:@"d MMMM yyyy HH:mm"];
         _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:datePicker.date]];
     }
 }
@@ -750,6 +754,10 @@
     }
     else if(textField == _tfTime){
         textField.inputView = _dateTimePicker;
+    }
+    else if(textField == _tfLocation){
+        PlaceSearchViewController *controller = [[PlaceSearchViewController alloc] init];
+        [self.navigationController pushViewController:controller animated:YES];
     }
 }
 

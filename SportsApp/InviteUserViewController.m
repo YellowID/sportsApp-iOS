@@ -7,6 +7,7 @@
 //
 
 #import "InviteUserViewController.h"
+#import "UIViewController+Navigation.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "CustomSearchBar.h"
 #import "NSString+Common.h"
@@ -43,7 +44,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"Позвать друга";
+    //self.title = @"Позвать друга";
+    [self setNavTitle:@"Позвать друга"];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
     [self setNavigationItems];
@@ -401,6 +403,7 @@
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
     [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
+    btnCancel.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];

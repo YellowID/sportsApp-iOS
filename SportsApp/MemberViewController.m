@@ -7,6 +7,7 @@
 //
 
 #import "MemberViewController.h"
+#import "UIViewController+Navigation.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
@@ -24,12 +25,16 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.title = @"Участники";
+    //self.title = @"Участники";
+    [self setNavTitle:@"Участники"];
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *btnClose = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnClose setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnClose setTitle:@"Закрыть" forState:UIControlStateNormal];
+    [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+    btnClose.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnClose addTarget:self action:@selector(btnCloseClick) forControlEvents:UIControlEventTouchUpInside];
     [btnClose sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnClose];

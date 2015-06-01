@@ -65,6 +65,7 @@
 		53DCC1A21B0DD88D002EE36E /* UINavigationBar+VCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DCC1A11B0DD88D002EE36E /* UINavigationBar+VCenter.m */; };
 		53DCC1BC1B0E0A2D002EE36E /* MemberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DCC1BB1B0E0A2D002EE36E /* MemberViewController.m */; };
 		53DCC1BE1B0E0DA0002EE36E /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */; };
+		53DD7FF11B1B77060019B5BE /* UIViewController+Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */; };
 		53E519721B10B92600B85DDD /* MemberSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519711B10B92600B85DDD /* MemberSettingViewController.m */; };
 		53E519761B10D60A00B85DDD /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519741B10D60A00B85DDD /* Fabric.framework */; };
 		53E519771B10D60A00B85DDD /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519751B10D60A00B85DDD /* Crashlytics.framework */; };
@@ -179,6 +180,8 @@
 		53DCC1BA1B0E0A2D002EE36E /* MemberViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberViewController.h; sourceTree = "<group>"; };
 		53DCC1BB1B0E0A2D002EE36E /* MemberViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberViewController.m; sourceTree = "<group>"; };
 		53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
+		53DD7FEF1B1B77060019B5BE /* UIViewController+Navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Navigation.h"; sourceTree = "<group>"; };
+		53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Navigation.m"; sourceTree = "<group>"; };
 		53E519701B10B92600B85DDD /* MemberSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberSettingViewController.h; sourceTree = "<group>"; };
 		53E519711B10B92600B85DDD /* MemberSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberSettingViewController.m; sourceTree = "<group>"; };
 		53E519741B10D60A00B85DDD /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
@@ -352,6 +355,8 @@
 				53DCC1A11B0DD88D002EE36E /* UINavigationBar+VCenter.m */,
 				53E519861B1260CE00B85DDD /* NSLayoutConstraint+Helper.h */,
 				53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */,
+				53DD7FEF1B1B77060019B5BE /* UIViewController+Navigation.h */,
+				53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -626,6 +631,7 @@
 			files = (
 				53B994D71B0D078900558169 /* LoginViewController.m in Sources */,
 				53DCC1A21B0DD88D002EE36E /* UINavigationBar+VCenter.m in Sources */,
+				53DD7FF11B1B77060019B5BE /* UIViewController+Navigation.m in Sources */,
 				53E519BF1B15B0FD00B85DDD /* InviteUserViewController.m in Sources */,
 				531F70BC1B1710E800C48478 /* CustomButton.m in Sources */,
 				53E5199C1B14CBCF00B85DDD /* ChatViewController.m in Sources */,
@@ -787,6 +793,11 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SportsApp",
+				);
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = SportsApp/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

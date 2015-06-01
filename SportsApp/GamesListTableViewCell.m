@@ -8,10 +8,10 @@
 
 #import "GamesListTableViewCell.h"
 
-#define PADDING_TOP 16
-#define PADDING_BOTTOM 16
-#define PADDING_LEFT 18
-#define PADDING_RIGHT 18
+#define PADDING_TOP 17
+#define PADDING_BOTTOM 17
+#define PADDING_LEFT 13.5
+#define PADDING_RIGHT 13.5
 
 #define SMALL_LABLE_HEIGHT 10
 
@@ -40,18 +40,21 @@
         
         _addressLabel = [UILabel new];
         _addressLabel.font = [UIFont systemFontOfSize:9.0f];
+        [_addressLabel sizeToFit];
         _addressLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_addressLabel];
         //_addressLabel.backgroundColor = [UIColor greenColor];
         
         _timeLabel = [UILabel new];
         _timeLabel.font = [UIFont systemFontOfSize:9.0f];
+        [_timeLabel sizeToFit];
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_timeLabel];
         //_timeLabel.backgroundColor = [UIColor greenColor];
         
         _dateLabel = [UILabel new];
         _dateLabel.font = [UIFont systemFontOfSize:9.0f];
+        [_dateLabel sizeToFit];
         _dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_dateLabel];
         //_dateLabel.backgroundColor = [UIColor greenColor];
@@ -67,14 +70,17 @@
         _ivLocation = [UIImageView new];
         _ivLocation.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_ivLocation];
+        //_ivLocation.backgroundColor = [UIColor greenColor];
         
         _ivTime = [UIImageView new];
         _ivTime.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_ivTime];
+        //_ivTime.backgroundColor = [UIColor greenColor];
         
         _ivDate = [UIImageView new];
         _ivDate.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_ivDate];
+        //_ivDate.backgroundColor = [UIColor greenColor];
     }
     
     return self;
@@ -95,7 +101,7 @@
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_addressLabel, _ivTime);
     
-    NSString* hc_str = @"H:[_addressLabel]-(>=2)-[_ivTime]";
+    NSString* hc_str = @"H:[_addressLabel]-(>=11)-[_ivTime]";
     NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
     [self addConstraints:hzConstraints];
 }
@@ -141,7 +147,7 @@
                                                                   toItem:self
                                                                attribute:NSLayoutAttributeRight
                                                               multiplier:1
-                                                                constant:-18]];
+                                                                constant:-PADDING_RIGHT]];
     
     [_ivStatus addConstraint: [NSLayoutConstraint constraintWithItem:_ivStatus
                                                            attribute:NSLayoutAttributeWidth
@@ -209,7 +215,7 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
-                                                      constant:18]];
+                                                      constant:PADDING_LEFT]];
     
     [_ivLocation addConstraint: [NSLayoutConstraint constraintWithItem:_ivLocation
                                                           attribute:NSLayoutAttributeWidth
@@ -225,7 +231,7 @@
                                                              toItem:nil
                                                           attribute:0
                                                          multiplier:1
-                                                           constant:10]];
+                                                           constant:10.5]];
 }
 
 - (void) layoutAddressLabel {
@@ -269,7 +275,7 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeRight
                                                     multiplier:1
-                                                      constant:-18]];
+                                                      constant:-PADDING_RIGHT]];
     
     [_dateLabel addConstraint: [NSLayoutConstraint constraintWithItem:_dateLabel
                                                                attribute:NSLayoutAttributeHeight
@@ -287,7 +293,7 @@
                                                         toItem:self
                                                      attribute:NSLayoutAttributeBottom
                                                     multiplier:1
-                                                      constant:-PADDING_BOTTOM]];
+                                                      constant:-(PADDING_BOTTOM + 0.5)]];
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivDate
                                                      attribute:NSLayoutAttributeRight
@@ -303,7 +309,7 @@
                                                                 toItem:nil
                                                              attribute:0
                                                             multiplier:1
-                                                              constant:10]];
+                                                              constant:10.5]];
     
     [_ivDate addConstraint: [NSLayoutConstraint constraintWithItem:_ivDate
                                                              attribute:NSLayoutAttributeHeight
@@ -311,7 +317,7 @@
                                                                 toItem:nil
                                                              attribute:0
                                                             multiplier:1
-                                                              constant:10]];
+                                                              constant:10.5]];
 }
 
 - (void) layoutTimeLabel {
@@ -329,7 +335,7 @@
                                                         toItem:_ivDate
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
-                                                      constant:-12]];
+                                                      constant:-11]];
     
     [_timeLabel addConstraint: [NSLayoutConstraint constraintWithItem:_timeLabel
                                                             attribute:NSLayoutAttributeHeight
@@ -363,7 +369,7 @@
                                                             toItem:nil
                                                          attribute:0
                                                         multiplier:1
-                                                          constant:10]];
+                                                          constant:10.5]];
     
     [_ivTime addConstraint: [NSLayoutConstraint constraintWithItem:_ivTime
                                                          attribute:NSLayoutAttributeHeight

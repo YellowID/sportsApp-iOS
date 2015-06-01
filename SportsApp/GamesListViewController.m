@@ -22,7 +22,7 @@
 @interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
-@property (strong, nonatomic) NSMutableArray *privateGames;
+@property (strong, nonatomic) NSMutableArray *myGames;
 @property (strong, nonatomic) NSMutableArray *publicGames;
 
 @end
@@ -63,7 +63,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     [btnAdd setFrame:CGRectMake(0, 8.0f, 40.0f, 36.0f)];
     [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
     [btnAdd setTitle:@"Создать игру" forState:UIControlStateNormal];
-    btnAdd.titleLabel.font = [UIFont systemFontOfSize:14.0f];
+    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+    btnAdd.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnAdd sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
     
@@ -122,7 +124,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if(section == SECTION_MY_GAMES)
-        return _privateGames.count;
+        return _myGames.count;
     else if(section == SECTION_PUBLIC_GAMES)
         return _publicGames.count;
     else
@@ -153,7 +155,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         view.layer.borderColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_BORDER_COLOR] CGColor];
         view.layer.backgroundColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR] CGColor];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, tableView.frame.size.width, 34.0f)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 34.0f)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Публичные игры";
         label.textColor = [UIColor whiteColor];
@@ -165,7 +167,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         view.layer.borderColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_BORDER_COLOR] CGColor];
         view.layer.backgroundColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR] CGColor];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(18, 0, tableView.frame.size.width, 34.0f)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 34.0f)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Мои игры";
         label.textColor = [UIColor whiteColor];
@@ -191,7 +193,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     
     GameInfo* game = nil;
     if(indexPath.section == SECTION_MY_GAMES){
-        game = _privateGames[indexPath.row];
+        game = _myGames[indexPath.row];
         gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR];
         
     }
@@ -204,13 +206,13 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     gameCell.gameNameLabel.text = game.gameName;
     
     gameCell.addressLabel.text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
-    gameCell.addressLabel.textColor = [UIColor grayColor];
+    gameCell.addressLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
     
     gameCell.dateLabel.text = game.date;
-    gameCell.dateLabel.textColor = [UIColor grayColor];
+    gameCell.dateLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
     
     gameCell.timeLabel.text = game.time;
-    gameCell.timeLabel.textColor = [UIColor grayColor];
+    gameCell.timeLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
     
     gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
     gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
@@ -232,7 +234,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 #pragma mark -
 #pragma mark Other
 - (void) loadData {
-    _privateGames = [NSMutableArray new];
+    _myGames = [NSMutableArray new];
     for(int i = 0; i < 4; ++i){
         GameInfo* game = [GameInfo new];
         game.gameName = [NSString stringWithFormat:@"My Game %lu", (unsigned long)i];
@@ -241,7 +243,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         game.date = @"через 3 дня";
         game.time = @"20:00";
         
-        [_privateGames addObject:game];
+        [_myGames addObject:game];
     }
     
     _publicGames = [NSMutableArray new];
