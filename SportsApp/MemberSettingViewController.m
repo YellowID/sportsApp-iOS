@@ -8,6 +8,7 @@
 
 #import "MemberSettingViewController.h"
 #import "UIViewController+Navigation.h"
+#import "CustomDotPageControl.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -40,7 +41,8 @@
 #pragma mark -
 #pragma mark Sports group views
 @property (strong, nonatomic) UIScrollView* sportsScrollView;
-@property (strong, nonatomic) UIPageControl* sportsPageControl;
+//@property (strong, nonatomic) UIPageControl* sportsPageControl;
+@property (strong, nonatomic) CustomDotPageControl* sportsPageControl;
 @property (strong, nonatomic) NSMutableArray* sportInfoItems;
 @property (strong, nonatomic) NSMutableArray* sportUIItems;
 
@@ -333,7 +335,10 @@
 }
 
 - (void) setupSportsPageControl {
-    _sportsPageControl = [UIPageControl new];
+    //_sportsPageControl = [UIPageControl new];
+    _sportsPageControl = [CustomDotPageControl new];
+    [_sportsPageControl setDotImageActive:[UIImage imageNamed:@"ic_page_active.png"]];
+    [_sportsPageControl setDotImageInactive:[UIImage imageNamed:@"ic_page.png"]];
     _sportsPageControl.translatesAutoresizingMaskIntoConstraints = NO;
     _sportsPageControl.pageIndicatorTintColor = [UIColor groupTableViewBackgroundColor];
     _sportsPageControl.currentPageIndicatorTintColor = [UIColor blackColor];
@@ -342,6 +347,8 @@
     _sportsPageControl.currentPage = 0;
     [_sportsGroupView addSubview:_sportsPageControl];
     //_sportsPageControl.backgroundColor = [UIColor greenColor];
+    
+    //[_sportsPageControl setp];
     
     [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
                                                           attribute:NSLayoutAttributeBottom

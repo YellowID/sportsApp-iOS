@@ -36,6 +36,9 @@
     [self setNavTitle:@"Место"];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
+    UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnBackClick)];
+    self.navigationItem.leftBarButtonItem = btnBack;
+    
     _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
     _searchBar.delegate = self;
     [_searchBar setPlaceholder:@"Место геопозиции "];
@@ -124,6 +127,10 @@
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void) btnBackClick {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 # pragma mark -

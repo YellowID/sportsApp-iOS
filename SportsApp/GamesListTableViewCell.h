@@ -10,15 +10,15 @@
 
 @interface GamesListTableViewCell : UITableViewCell
 
-@property (strong, nonatomic) IBOutlet UILabel* gameNameLabel;
-@property (strong, nonatomic) IBOutlet UILabel* addressLabel;
-@property (strong, nonatomic) IBOutlet UILabel* timeLabel;
-@property (strong, nonatomic) IBOutlet UILabel* dateLabel;
+@property (strong, nonatomic) UILabel* gameNameLabel;
+@property (strong, nonatomic) UILabel* addressLabel;
+@property (strong, nonatomic) UILabel* timeLabel;
+@property (strong, nonatomic) UILabel* dateLabel;
 
-@property (strong, nonatomic) IBOutlet UIImageView* ivAdmin;
-@property (strong, nonatomic) IBOutlet UIImageView* ivStatus;
-@property (strong, nonatomic) IBOutlet UIImageView* ivLocation;
-@property (strong, nonatomic) IBOutlet UIImageView* ivTime;
-@property (strong, nonatomic) IBOutlet UIImageView* ivDate;
+@property (strong, nonatomic) UIImageView* ivAdmin;
+@property (strong, nonatomic) UIImageView* ivStatus;
+@property (strong, nonatomic) UIImageView* ivLocation;
+@property (strong, nonatomic) UIImageView* ivTime;
+@property (strong, nonatomic) UIImageView* ivDate;
 
 @end

@@ -45,8 +45,10 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     [self.tableView setDataSource:self];
     [self.tableView setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
     
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    self.tableView.separatorColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
+    //self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    //self.tableView.separatorColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
+    
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     
     //UINib *nib = [UINib nibWithNibName:@"GamesListTableViewCell" bundle:nil];
     //[self.tableView registerNib:nib forCellReuseIdentifier:GamesListCellTableIdentifier];
@@ -60,13 +62,18 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 - (void) setNavigationItems {
     // left
     UIButton *btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnAdd setFrame:CGRectMake(0, 8.0f, 40.0f, 36.0f)];
+    [btnAdd setFrame:CGRectMake(0, 8.0f, 120.0f, 36.0f)];
     [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
     [btnAdd setTitle:@"Создать игру" forState:UIControlStateNormal];
     [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     btnAdd.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    [btnAdd sizeToFit];
+    
+    [btnAdd setImage:[UIImage imageNamed:@"ic_plus.png"] forState:UIControlStateNormal];
+    btnAdd.imageEdgeInsets = UIEdgeInsetsMake(0, -21, 0, 0);
+    btnAdd.titleEdgeInsets = UIEdgeInsetsMake(0, -4, 0, 0);
+    
+    //[btnAdd sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
     
     //right
@@ -132,14 +139,14 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 80;
+    return 81;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     if(section == SECTION_PUBLIC_GAMES)
-        return 34.0f;
+        return 35.0f;
     else
-        return 34.0f; //0.1
+        return 35.0f; //0.1
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
@@ -150,24 +157,20 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     UIView* view = nil;
     
     if(section == SECTION_PUBLIC_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 34.0f)];
-        view.layer.borderWidth = 0.5;
-        view.layer.borderColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_BORDER_COLOR] CGColor];
-        view.layer.backgroundColor = [[UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR] CGColor];
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
+        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_blue.png"]];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 34.0f)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Публичные игры";
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
     }
     else if(section == SECTION_MY_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 34.0f)];
-        view.layer.borderWidth = 0.5;
-        view.layer.borderColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_BORDER_COLOR] CGColor];
-        view.layer.backgroundColor = [[UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR] CGColor];
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
+        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_green.png"]];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 34.0f)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Мои игры";
         label.textColor = [UIColor whiteColor];
@@ -182,26 +185,35 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     if(cell == nil)
         cell = [[GamesListTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:GamesListCellTableIdentifier];
     
-    if((indexPath.row % 2) == 0) {
-        [cell setBackgroundColor:[UIColor whiteColor]];
-    }
-    else {
-        [cell setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
-    }
-    
     GamesListTableViewCell* gameCell = (GamesListTableViewCell *)cell;
     
+    BOOL isLastRowInSection = NO;
     GameInfo* game = nil;
     if(indexPath.section == SECTION_MY_GAMES){
         game = _myGames[indexPath.row];
         gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR];
         
+        isLastRowInSection = (indexPath.row == _myGames.count - 1);
     }
     else if(indexPath.section == SECTION_PUBLIC_GAMES){
         game = _publicGames[indexPath.row];
         gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR];
+        
+        isLastRowInSection = (indexPath.row == _publicGames.count - 1);
     }
     
+    if((indexPath.row % 2) == 0) {
+        if(isLastRowInSection)
+            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white.png"]]];
+        else
+            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white_line.png"]]];
+    }
+    else {
+        if(isLastRowInSection)
+            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray.png"]]];
+        else
+            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray_line.png"]]];
+    }
     
     gameCell.gameNameLabel.text = game.gameName;
     

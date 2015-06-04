@@ -11,22 +11,24 @@
 #import "InviteUserViewController.h"
 #import "MemberViewController.h"
 #import "CustomButton.h"
+#import "ChatTableViewCell.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
 #import <Quickblox/Quickblox.h>
 
-#define CURTAIN_HEIGT 174.5 //161
+#define PHOTO_SIZE 40
+#define CURTAIN_HEIGT 174 //161
 #define PADDING_H 12
 
 // curtain
-@interface ChatViewController ()
+@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate>
 
 #pragma mark -
 #pragma mark Containers
-@property (strong, nonatomic) UIScrollView* chatScrollView;
-@property (strong, nonatomic) UIView* chatContentView;
+//@property (strong, nonatomic) UIScrollView* chatScrollView;
+//@property (strong, nonatomic) UIView* chatContentView;
 
 #pragma mark -
 #pragma mark Groups view
@@ -44,6 +46,10 @@
 @property (strong, nonatomic) CustomButton* btnAnswerPerhaps;
 @property (strong, nonatomic) CustomButton* btnAnswerNo;
 
+@property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) NSMutableArray *messages;
+@property (strong, nonatomic) NSArray *sectionNames;
+
 @end
 
 @implementation ChatViewController{
@@ -54,20 +60,26 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"Волейбол";
     [self setNavTitle:@"Волейбол"];
-    self.view.backgroundColor = [UIColor grayColor];
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_chat.png"]];
     
     [self setNavigationItems];
-    
     [self setupCurtainView];
     
+    _sectionNames = @[@"вчера", @"сегодня", @"завтра"];
+    _messages = [NSMutableArray new];
+    [_messages addObject:@[@"привет", @"как дела", @"что нового", @"пока"]];
+    [_messages addObject:@[@"привет", @"как дела", @"что нового"]];
+    [_messages addObject:@[@"привет", @"как дела"]];
     
+    [self setupChatTableView];
+    
+    /*
     [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
         //NSLog(@"QBResponse: %@", response.debugDescription);
         //NSLog(@"QBASession: %@", session.debugDescription);
         
-        /*
+        //register
         QBUUser *user = [QBUUser user];
         user.login = @"TestUser1";
         user.password = @"ahtrahtrahtr1";
@@ -79,8 +91,8 @@
         errorBlock:^(QBResponse *response) {
             NSLog(@"QBResponse: %@", response.debugDescription);
         }];
-        */
         
+        //login
         [QBRequest logInWithUserLogin:@"TestUser1" password:@"ahtrahtrahtr1" successBlock:^(QBResponse *response, QBUUser *user) {
             NSLog(@"QBUUser: %@", user.debugDescription);
         } errorBlock:^(QBResponse *response) {
@@ -89,27 +101,118 @@
     } errorBlock:^(QBResponse *response) {
         NSLog(@"QBResponse: %@", response.debugDescription);
     }];
+     */
+}
+
+#pragma mark -
+#pragma mark UITableView delegate methods
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+    return [_sectionNames count];
+}
+
+- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    NSArray *rows = [_messages objectAtIndex:section];
+    return [rows count];
+}
+
+/**/
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 100;
+}
+
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    return 44.0f;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+    return 0.01f;
+}
+
+/*
+-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    UIView* view = nil;
+    
+    if(section == SECTION_PUBLIC_GAMES){
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
+        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_blue.png"]];
+        
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
+        [label setFont:[UIFont systemFontOfSize:13]];
+        label.text = @"Публичные игры";
+        label.textColor = [UIColor whiteColor];
+        [view addSubview:label];
+    }
+    else if(section == SECTION_MY_GAMES){
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
+        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_green.png"]];
+        
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
+        [label setFont:[UIFont systemFontOfSize:13]];
+        label.text = @"Мои игры";
+        label.textColor = [UIColor whiteColor];
+        [view addSubview:label];
+    }
+    
+    return view;
+}
+*/
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
+    [[UILabel appearanceWhenContainedIn:[UITableViewHeaderFooterView class], nil] setFont:[UIFont boldSystemFontOfSize:25]];
+    [[UILabel appearanceWhenContainedIn:[UITableViewHeaderFooterView class], nil] setTextColor:[UIColor colorWithRGBA:0xffffffFF]];
+    return _sectionNames[section];
+}
+
+- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    static NSString *ChatCellIdentifier = @"ChatCellIdentifier";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ChatCellIdentifier];
+    if(cell == nil)
+        cell = [[ChatTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ChatCellIdentifier];
+    
+    [cell setBackgroundColor:[UIColor clearColor]];
+    
+    ChatTableViewCell *chatCell = (ChatTableViewCell *)cell;
+    
+    UIImage* im = [UIImage imageNamed:@"photo.png"];
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
+    [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
+    UIImage* im2 = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    chatCell.ivPhoto.image = im2;
+    chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
+    
+    chatCell.ivPhoto.layer.borderWidth = 0.0;
+    chatCell.ivPhoto.layer.cornerRadius = PHOTO_SIZE / 2;
+    chatCell.ivPhoto.layer.masksToBounds = YES;
+    
+    chatCell.userNameLabel.text = @"Антон Якушев";
+    chatCell.userNameLabel.textColor = [UIColor blueColor];
+    
+    chatCell.userMessageLabel.text = @"Всем привет! Сегодня играем!!";
+    chatCell.userMessageLabel.textColor = [UIColor grayColor];
+    
+    chatCell.timeLabel.text = @"10:00";
+    chatCell.timeLabel.textColor = [UIColor lightGrayColor];
+    
+    [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
+    
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    //ChatViewController* controller = [[ChatViewController alloc] init];
+    //[self.navigationController pushViewController:controller animated:YES];
+    
+    [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
-    /*
-    UIButton *btnBack = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnBack setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnBack addTarget:self action:@selector(btnBackClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnBack setTitle:@"<" forState:UIControlStateNormal];
-    [btnBack setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    btnBack.titleLabel.font = [UIFont systemFontOfSize:14.0f];
-    [btnBack sizeToFit];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnBack];
-    */
-    
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"" style:UIBarButtonItemStylePlain target:nil action:nil];
-    
-    //self.navigationController.navigationBar.topItem.title = @"";
-    
-    //self.navigationItem.backBarButtonItem.imageInsets = UIEdgeInsetsMake(0, 50, -10, 0);
+    UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnBackClick)];
+    self.navigationItem.leftBarButtonItem = btnBack;
     
     UIButton* btnChange = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
@@ -121,6 +224,18 @@
     [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     [btnChange sizeToFit];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnChange];
+}
+
+- (void) setupChatTableView {
+    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+    [_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    [_tableView setDelegate:self];
+    [_tableView setDataSource:self];
+    [_tableView setBackgroundColor:[UIColor clearColor]];
+    
+    _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
+    [self.view addSubview:_tableView];
 }
 
 #pragma mark -
@@ -190,7 +305,7 @@
                                                              toItem:_curtainView
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:-1]];
+                                                           constant:-0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton
                                                           attribute:NSLayoutAttributeCenterX
@@ -408,14 +523,15 @@
 - (void) createPeopleInGameLable {
     _peopleInGame = [UILabel new];
     
-    /**/
+    /*
     NSMutableAttributedString* attributeString = [[NSMutableAttributedString alloc] initWithString:@"Идут 7 человек"];
     [attributeString addAttribute:NSUnderlineStyleAttributeName
                             value:[NSNumber numberWithInt:1]
                             range:(NSRange){0,[attributeString length]}];
     _peopleInGame.attributedText = [attributeString copy];
+    */
     
-    //_peopleInGame.text = @"Идут 7 человек";
+    _peopleInGame.text = @"Идут 7 человек";
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
