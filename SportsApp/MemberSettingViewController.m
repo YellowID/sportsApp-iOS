@@ -945,18 +945,18 @@
 
 #pragma mark -
 #pragma mark UI helper methods
-- (void) setupTitle:(UILabel*)lable forGroup:(UIView*)groupView withText:(NSString*)text andWidht:(CGFloat)widht {
-    lable.translatesAutoresizingMaskIntoConstraints = NO;
-    lable.text = text;
-    lable.textAlignment = NSTextAlignmentCenter;
-    lable.font = [UIFont systemFontOfSize:11.0f];
-    lable.layer.borderWidth = 0.5;
-    lable.layer.cornerRadius = 12.0;
-    lable.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
-    lable.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
-    [groupView addSubview:lable];
+- (void) setupTitle:(UILabel*)label forGroup:(UIView*)groupView withText:(NSString*)text andWidht:(CGFloat)widht {
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.text = text;
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:11.0f];
+    label.layer.borderWidth = 0.5;
+    label.layer.cornerRadius = 12.0;
+    label.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+    label.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
+    [groupView addSubview:label];
     
-    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
+    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:label
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:0
                                                              toItem:groupView
@@ -964,7 +964,7 @@
                                                          multiplier:1
                                                            constant:13.5f]];
     
-    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
+    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:label
                                                           attribute:NSLayoutAttributeCenterX
                                                           relatedBy:0
                                                              toItem:groupView
@@ -972,7 +972,7 @@
                                                          multiplier:1
                                                            constant:0]];
     
-    [lable addConstraint: [NSLayoutConstraint constraintWithItem:lable
+    [label addConstraint: [NSLayoutConstraint constraintWithItem:label
                                                        attribute:NSLayoutAttributeWidth
                                                        relatedBy:0
                                                           toItem:nil
@@ -980,7 +980,7 @@
                                                       multiplier:1
                                                         constant:widht]];
     
-    [lable addConstraint: [NSLayoutConstraint constraintWithItem:lable
+    [label addConstraint: [NSLayoutConstraint constraintWithItem:label
                                                        attribute:NSLayoutAttributeHeight
                                                        relatedBy:0
                                                           toItem:nil

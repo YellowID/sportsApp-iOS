@@ -12,26 +12,32 @@
 #import "MemberViewController.h"
 #import "CustomButton.h"
 #import "ChatTableViewCell.h"
+#import "ChatRightTableViewCell.h"
 #import "NSLayoutConstraint+Helper.h"
+#import "NSString+Common.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "ChatMessage.h"
 
 #import <Quickblox/Quickblox.h>
 
 #define PHOTO_SIZE 40
-#define CURTAIN_HEIGT 174 //161
+#define CURTAIN_HEIGT 174
 #define PADDING_H 12
 
+#define TMP_MSG @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)"
+
 // curtain
-@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 
 #pragma mark -
 #pragma mark Containers
 //@property (strong, nonatomic) UIScrollView* chatScrollView;
-//@property (strong, nonatomic) UIView* chatContentView;
+@property (strong, nonatomic) UIView* chatContentView;
+@property (strong, nonatomic) UIView* chatFooterView;
+@property (strong, nonatomic) UITextField* tfMessage;
+@property (strong, nonatomic) UIButton* btnSend;
 
-#pragma mark -
-#pragma mark Groups view
 @property (strong, nonatomic) UIView* curtainView;
 @property (strong, nonatomic) UIView* curtainRowOneView;
 @property (strong, nonatomic) UIView* curtainRowTwoView;
@@ -55,6 +61,10 @@
 @implementation ChatViewController{
     NSLayoutConstraint* curtainHeigtContraint;
     BOOL isCurtainOpen;
+    
+    CGFloat mainViewHeight;
+    
+    NSUInteger currentUserId;
 }
 
 - (void)viewDidLoad {
@@ -62,17 +72,14 @@
     
     [self setNavTitle:@"Волейбол"];
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_chat.png"]];
+    [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     
     [self setNavigationItems];
+    
+    [self loadChatMessages];
+    
+    [self setupChatContentView];
     [self setupCurtainView];
-    
-    _sectionNames = @[@"вчера", @"сегодня", @"завтра"];
-    _messages = [NSMutableArray new];
-    [_messages addObject:@[@"привет", @"как дела", @"что нового", @"пока"]];
-    [_messages addObject:@[@"привет", @"как дела", @"что нового"]];
-    [_messages addObject:@[@"привет", @"как дела"]];
-    
-    [self setupChatTableView];
     
     /*
     [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
@@ -104,6 +111,95 @@
      */
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    // register for keyboard notifications
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    // unregister for keyboard notifications while not visible.
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+#pragma mark -
+#pragma mark TEMP
+- (void) loadChatMessages {
+    currentUserId = 0;
+    
+    _sectionNames = @[@"Апрель 23", @"сегодня"];
+    _messages = [NSMutableArray new];
+    
+    // day1
+    NSMutableArray *day1 = [NSMutableArray new];
+    ChatMessage *msg1 = [ChatMessage new];
+    msg1.userName = @"Антон Якушев";
+    msg1.userId = 1;
+    msg1.time = @"10:00";
+    msg1.message = @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)";
+    [day1 addObject:msg1];
+    
+    ChatMessage *msg2 = [ChatMessage new];
+    msg2.userName = @"Павел Ларчик";
+    msg2.userId = 2;
+    msg2.time = @"10:05";
+    msg2.message = @"Да?";
+    [day1 addObject:msg2];
+    
+    ChatMessage *msg3 = [ChatMessage new];
+    msg3.userName = @"Саша Лукашенко";
+    msg3.userId = 3;
+    msg3.time = @"10:12";
+    msg3.message = @"Я тоже у хакей!";
+    [day1 addObject:msg3];
+    
+    ChatMessage *msg4 = [ChatMessage new];
+    msg4.userName = @"Я";
+    msg4.userId = 0;
+    msg4.time = @"13:00";
+    msg4.message = @"У хакей играют самыя настоящие мужчыны.";
+    [day1 addObject:msg4];
+    
+    [_messages addObject:day1];
+    
+    // day2
+    NSMutableArray *day2 = [NSMutableArray new];
+    ChatMessage *msg21 = [ChatMessage new];
+    msg21.userName = @"Антон Якушев";
+    msg21.userId = 1;
+    msg21.time = @"11:02";
+    msg21.message = @"Саня, будешь шайбу подавать";
+    [day2 addObject:msg21];
+    
+    ChatMessage *msg22 = [ChatMessage new];
+    msg22.userName = @"Саша Лукашенко";
+    msg22.userId = 3;
+    msg22.time = @"11:03";
+    msg22.message = @"Я на усё сагаласен";
+    [day2 addObject:msg22];
+    
+    ChatMessage *msg23 = [ChatMessage new];
+    msg23.userName = @"Павел Ларчик";
+    msg23.userId = 2;
+    msg23.time = @"11:23";
+    msg23.message = @"А где играем?";
+    [day2 addObject:msg23];
+    
+    ChatMessage *msg24 = [ChatMessage new];
+    msg24.userName = @"Я";
+    msg24.userId = 0;
+    msg24.time = @"11:25";
+    msg24.message = @"В зале";
+    [day2 addObject:msg24];
+    
+    [_messages addObject:day2];
+    
+}
+
 #pragma mark -
 #pragma mark UITableView delegate methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -115,65 +211,88 @@
     return [rows count];
 }
 
-/**/
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 100;
+    NSArray *rows = [_messages objectAtIndex:indexPath.section];
+    if(!rows)
+        return 0;
+    
+    CGFloat height = 0;
+    
+    ChatMessage *chatMessage = rows[indexPath.row];
+    if(chatMessage.userId == currentUserId)
+        height = [ChatRightTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width];
+    else
+        height = [ChatTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width];
+    
+    return height;
 }
 
-
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    return 44.0f;
+    if(section == 0)
+        return 70.0f;
+    else
+        return 44.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
     return 0.01f;
 }
 
-/*
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    UIView* view = nil;
+    NSString *title = _sectionNames[section];
+    if(!title)
+        return nil;
     
-    if(section == SECTION_PUBLIC_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
-        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_blue.png"]];
-        
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
-        [label setFont:[UIFont systemFontOfSize:13]];
-        label.text = @"Публичные игры";
-        label.textColor = [UIColor whiteColor];
-        [view addSubview:label];
-    }
-    else if(section == SECTION_MY_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
-        view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_green.png"]];
-        
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, 35.0f)];
-        [label setFont:[UIFont systemFontOfSize:13]];
-        label.text = @"Мои игры";
-        label.textColor = [UIColor whiteColor];
-        [view addSubview:label];
-    }
+    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 35.0f)];
+    //view.backgroundColor = [UIColor redColor];
+    
+    UILabel *label = [UILabel new];
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    label.text = title;
+    label.textColor = [UIColor whiteColor];
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:11.0f];
+    
+    label.layer.borderWidth = 0.0;
+    label.layer.cornerRadius = 12.0;
+    label.layer.backgroundColor = [[UIColor colorWithRGBA:BG_CHAT_TITLE_COLOR] CGColor];
+    
+    [view addSubview:label];
+    
+    [NSLayoutConstraint setWidht:80 height:24 forView:label];
+    [NSLayoutConstraint alignBottom:label inContainer:view];
+    [NSLayoutConstraint centerHorizontal:label withView:view inContainer:view];
     
     return view;
 }
-*/
-
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    [[UILabel appearanceWhenContainedIn:[UITableViewHeaderFooterView class], nil] setFont:[UIFont boldSystemFontOfSize:25]];
-    [[UILabel appearanceWhenContainedIn:[UITableViewHeaderFooterView class], nil] setTextColor:[UIColor colorWithRGBA:0xffffffFF]];
-    return _sectionNames[section];
-}
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *ChatCellIdentifier = @"ChatCellIdentifier";
+    static NSString *LeftChatCellIdentifier = @"LeftChatCellIdentifier";
+    static NSString *RightChatCellIdentifier = @"RightChatCellIdentifier";
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:ChatCellIdentifier];
-    if(cell == nil)
-        cell = [[ChatTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:ChatCellIdentifier];
+    UITableViewCell *cell = nil;
+    
+    NSArray *rows = [_messages objectAtIndex:indexPath.section];
+    ChatMessage *chatMessage = rows[indexPath.row];
+    
+    BOOL isMessageOfCurrentUser = (chatMessage.userId == currentUserId);
+    
+    if(isMessageOfCurrentUser){
+        cell = [tableView dequeueReusableCellWithIdentifier:RightChatCellIdentifier];
+        if(cell == nil)
+            cell = [[ChatRightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:RightChatCellIdentifier];
+    }
+    else{
+        cell = [tableView dequeueReusableCellWithIdentifier:LeftChatCellIdentifier];
+        if(cell == nil)
+            cell = [[ChatTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LeftChatCellIdentifier];
+    }
     
     [cell setBackgroundColor:[UIColor clearColor]];
+    cell.userInteractionEnabled = YES;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     
-    ChatTableViewCell *chatCell = (ChatTableViewCell *)cell;
+    ChatRightTableViewCell *chatCell = (ChatRightTableViewCell *)cell;
     
     UIImage* im = [UIImage imageNamed:@"photo.png"];
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
@@ -187,24 +306,24 @@
     chatCell.ivPhoto.layer.cornerRadius = PHOTO_SIZE / 2;
     chatCell.ivPhoto.layer.masksToBounds = YES;
     
-    chatCell.userNameLabel.text = @"Антон Якушев";
+    chatCell.userNameLabel.text = chatMessage.userName;
     chatCell.userNameLabel.textColor = [UIColor blueColor];
     
-    chatCell.userMessageLabel.text = @"Всем привет! Сегодня играем!!";
-    chatCell.userMessageLabel.textColor = [UIColor grayColor];
+    chatCell.userMessage.text = chatMessage.message;
+    chatCell.userMessage.textColor = [UIColor blackColor];
     
-    chatCell.timeLabel.text = @"10:00";
-    chatCell.timeLabel.textColor = [UIColor lightGrayColor];
+    chatCell.timeLabel.text = chatMessage.time;
+    chatCell.timeLabel.textColor = [UIColor grayColor];
     
-    [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
+    if(isMessageOfCurrentUser)
+        [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_right_message.png"]];
+    else
+        [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    //ChatViewController* controller = [[ChatViewController alloc] init];
-    //[self.navigationController pushViewController:controller animated:YES];
-    
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -226,16 +345,84 @@
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnChange];
 }
 
-- (void) setupChatTableView {
-    _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
-    [_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+#pragma mark -
+#pragma mark ChatContent view
+- (void) setupChatContentView {
+    [self layoutChatContainerView];
+    
+    _chatFooterView = [UIView new];
+    _chatFooterView.translatesAutoresizingMaskIntoConstraints = NO;
+    _chatFooterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    [_chatContentView addSubview:_chatFooterView];
+    
+    _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     [_tableView setDelegate:self];
     [_tableView setDataSource:self];
     [_tableView setBackgroundColor:[UIColor clearColor]];
-    
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
+    [_chatContentView addSubview:_tableView];
     
-    [self.view addSubview:_tableView];
+    [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView];
+    [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView];
+    [NSLayoutConstraint setHeight:50 forView:_chatFooterView];
+    
+    NSDictionary* views = NSDictionaryOfVariableBindings(_tableView, _chatFooterView);
+    
+    NSString* vc_str = @"V:|-0-[_tableView]-0-[_chatFooterView]-0-|";
+    NSArray* vConstraints = [NSLayoutConstraint constraintsWithVisualFormat:vc_str options:0 metrics:nil views:views];
+    [_chatContentView addConstraints:vConstraints];
+    
+    [self layoutFooterContent];
+}
+
+- (void) layoutChatContainerView {
+    _chatContentView = [UIView new];
+    _chatContentView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_chatContentView];
+    
+    [NSLayoutConstraint stretch:_chatContentView inContainer:self.view];
+}
+
+- (void) layoutFooterContent {
+    [self setupMessageField];
+    [self setupSendButton];
+    
+    //[NSLayoutConstraint setWidht:20 height:18.5 forView:_btnSend];
+    [NSLayoutConstraint setWidht:30 height:30 forView:_btnSend];
+    [NSLayoutConstraint centerVertical:_btnSend withView:_chatFooterView inContainer:_chatFooterView];
+    
+    [NSLayoutConstraint setHeight:30 forView:_tfMessage];
+    [NSLayoutConstraint centerVertical:_tfMessage withView:_chatFooterView inContainer:_chatFooterView];
+    
+    NSDictionary* views = NSDictionaryOfVariableBindings(_tfMessage, _btnSend);
+    
+    NSString* hc_str = @"H:|-8-[_tfMessage]-8-[_btnSend]-8-|";
+    NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
+    [_chatFooterView addConstraints:hzConstraints];
+}
+
+- (void) setupMessageField {
+    _tfMessage = [UITextField new];
+    _tfMessage.translatesAutoresizingMaskIntoConstraints = NO;
+    [_tfMessage setBorderStyle:UITextBorderStyleRoundedRect];
+    [_tfMessage addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    _tfMessage.delegate = self;
+    _tfMessage.placeholder = @"";//@"ваше сообщение";
+    _tfMessage.backgroundColor = [UIColor whiteColor];
+    _tfMessage.font = [UIFont systemFontOfSize:12.0f];
+    [_chatFooterView addSubview:_tfMessage];
+}
+
+- (void) setupSendButton {
+    _btnSend = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _btnSend.enabled = NO;
+    _btnSend.translatesAutoresizingMaskIntoConstraints = NO;
+    [_btnSend addTarget:self action:@selector(btnSendClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnSend setImage:[UIImage imageNamed:@"ic_send_active.png"] forState:UIControlStateNormal];
+    [_btnSend setImage:[UIImage imageNamed:@"ic_send.png"] forState:UIControlStateDisabled];
+    [_chatFooterView addSubview:_btnSend];
 }
 
 #pragma mark -
@@ -639,7 +826,6 @@
     [_btnAnswerYes setTitle:@"Иду" forState:UIControlStateNormal];
     _btnAnswerYes.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
-    //_btnAnswerYes.adjustsImageWhenHighlighted = NO;
     _btnAnswerYes.titleLabel.shadowColor = [UIColor blackColor];
     
     [_btnAnswerYes setTitleColor:[UIColor colorWithRGBA:BTN_YES_COLOR] forState:UIControlStateNormal];
@@ -713,23 +899,6 @@
     button.selected = !button.selected;
 }
 
-/*
-- (void) setupToolbar {
-    // Toolbar
-    UIBarButtonItem* spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    UIBarButtonItem *barButtonPlus = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_settings.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(btnCallUserClick)];
-    UIBarButtonItem *barButtonLocation = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_map.png"] style:UIBarButtonItemStyleBordered target:self action:@selector(btnCallUserClick)];
-    UIBarButtonItem* barButtonAction = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(btnCallUserClick)];
-    barButtonAction.style = UIBarButtonItemStyleBordered;
-    
-    [self setToolbarItems:@[barButtonPlus, spacer, barButtonLocation, spacer, barButtonAction] animated:NO];
-    
-    //textField
-    UIBarButtonItem *textFieldItem = [[UIBarButtonItem alloc] initWithCustomView:textField];
-    toolbar.items = @[textFieldItem];
-}
-*/
-
 #pragma mark -
 #pragma mark Buttons click methods
 - (void) btnInviteUserClick {
@@ -742,6 +911,10 @@
 }
 
 - (void) btnChangeClick {
+    
+}
+
+- (void) btnSendClick {
     
 }
 
@@ -783,6 +956,51 @@
         curtainHeigtContraint.constant = CURTAIN_HEIGT;
         [self.view layoutIfNeeded];
     }];
+}
+
+#pragma mark -
+#pragma mark UITextField delegate
+-(void)textFieldDidBeginEditing:(UITextField *)textField {
+    
+}
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField{
+    [textField resignFirstResponder];
+    return YES;
+}
+
+- (void) textFieldDidChange:(UITextField *)textField {
+    if (textField == _tfMessage){
+        if([textField.text isEmpty]){
+            _btnSend.enabled = NO;
+            _btnSend.userInteractionEnabled = NO;
+        }
+        else{
+            _btnSend.enabled = YES;
+            _btnSend.userInteractionEnabled = YES;
+        }
+    }
+}
+
+# pragma mark -
+# pragma mark Keyboard show/hide
+- (void)keyboardWillShow:(NSNotification*)notification {
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    
+    CGRect newRect = self.view.frame;
+    mainViewHeight = newRect.size.height;
+    newRect.size.height = self.view.frame.size.height - kbSize.height;
+    self.view.frame = newRect;
+    [self.view layoutIfNeeded];
+    
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification {
+    CGRect newRect = self.view.frame;
+    newRect.size.height = mainViewHeight;
+    self.view.frame = newRect;
+    [self.view layoutIfNeeded];
 }
 
 @end

@@ -15,4 +15,10 @@
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view;
 + (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
 + (void) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
+
++ (void) stretch:(UIView*)view inContainer:(UIView*)container;
++ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container;
++ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container;
+
++ (void) alignBottom:(UIView*)view inContainer:(UIView*)container;
 @end

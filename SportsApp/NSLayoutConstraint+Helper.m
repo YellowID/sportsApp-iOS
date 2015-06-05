@@ -73,4 +73,84 @@
                                                            constant:0]];
 }
 
++ (void) stretch:(UIView*)view inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
++ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
++ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
++ (void) alignBottom:(UIView*)view inContainer:(UIView*)container {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
+}
+
 @end
