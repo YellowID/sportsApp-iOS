@@ -15,7 +15,12 @@
 
 #define SMALL_LABLE_HEIGHT 10
 
-@implementation GamesListTableViewCell
+@implementation GamesListTableViewCell {
+    UIColor* bgColorNormal;
+    UIColor* bgColorSelected;
+    UIColor* bgColorHighlighted;
+    UIColor* bgColorDisabled;
+}
 
 - (void)awakeFromNib {
     // Initialization code
@@ -24,8 +29,38 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];
+}
 
-    // Configure the view for the selected state
+- (void) setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
+    if(highlighted){
+        [UIView animateWithDuration:0.4 animations:^{
+            self.backgroundColor = bgColorHighlighted;
+        }];
+    }
+    else{
+        [UIView animateWithDuration:0.4 animations:^{
+            self.backgroundColor = bgColorNormal;
+        }];
+    }
+}
+
+- (void) setBackgroundColor:(UIColor *)color forState:(UIControlState)state{
+    switch (state) {
+        case UIControlStateNormal:
+            bgColorNormal = color;
+            break;
+        case UIControlStateSelected:
+            bgColorSelected = color;
+            break;
+        case UIControlStateHighlighted:
+            bgColorHighlighted = color;
+            break;
+        case UIControlStateDisabled:
+            bgColorDisabled = color;
+            break;
+        default:
+            break;
+    }
 }
 
 - (instancetype) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {

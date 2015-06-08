@@ -60,6 +60,8 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
+    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    
     // left
     UIButton *btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnAdd setFrame:CGRectMake(0, 8.0f, 120.0f, 36.0f)];
@@ -70,7 +72,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     btnAdd.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [btnAdd setImage:[UIImage imageNamed:@"ic_plus.png"] forState:UIControlStateNormal];
-    btnAdd.imageEdgeInsets = UIEdgeInsetsMake(0, -21, 0, 0);
+    btnAdd.imageEdgeInsets = UIEdgeInsetsMake(-1, -21, 0, 0);
     btnAdd.titleEdgeInsets = UIEdgeInsetsMake(0, -4, 0, 0);
     
     //[btnAdd sizeToFit];
@@ -201,18 +203,29 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         
         isLastRowInSection = (indexPath.row == _publicGames.count - 1);
     }
+
+    UIColor *highlightedColor = [UIColor colorWithRGBA:BG_SELECTED_ROW_COLOR];
+    [gameCell setBackgroundColor:highlightedColor forState:UIControlStateHighlighted];
     
     if((indexPath.row % 2) == 0) {
-        if(isLastRowInSection)
-            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white.png"]]];
-        else
-            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white_line.png"]]];
+        if(isLastRowInSection){
+            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white.png"]];
+            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
+        }
+        else{
+            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white_line.png"]];
+            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
+        }
     }
     else {
-        if(isLastRowInSection)
-            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray.png"]]];
-        else
-            [cell setBackgroundColor:[UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray_line.png"]]];
+        if(isLastRowInSection){
+            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray.png"]];
+            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
+        }
+        else{
+            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray_line.png"]];
+            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
+        }
     }
     
     gameCell.gameNameLabel.text = game.gameName;

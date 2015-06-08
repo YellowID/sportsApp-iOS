@@ -22,20 +22,25 @@
 #import <Quickblox/Quickblox.h>
 
 #define PHOTO_SIZE 40
-#define CURTAIN_HEIGT 174
+#define CURTAIN_HEIGHT 174
 #define PADDING_H 12
+
+#define FOOTER_NORMAL_HEIGHT 50
+#define MSG_INPUT_NORMAL_HEIGHT 30
+#define MAX_MSG_INPUT_HEIGHT 120
 
 #define TMP_MSG @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)"
 
 // curtain
-@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
+@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate>
 
 #pragma mark -
 #pragma mark Containers
 //@property (strong, nonatomic) UIScrollView* chatScrollView;
 @property (strong, nonatomic) UIView* chatContentView;
 @property (strong, nonatomic) UIView* chatFooterView;
-@property (strong, nonatomic) UITextField* tfMessage;
+//@property (strong, nonatomic) UITextField* tfMessage;
+@property (strong, nonatomic) UITextView* tfMessage;
 @property (strong, nonatomic) UIButton* btnSend;
 
 @property (strong, nonatomic) UIView* curtainView;
@@ -59,6 +64,8 @@
 @end
 
 @implementation ChatViewController{
+    NSLayoutConstraint* footerViewHeightConstraint;
+    NSLayoutConstraint* messageHeightConstraint;
     NSLayoutConstraint* curtainHeigtContraint;
     BOOL isCurtainOpen;
     
@@ -260,7 +267,7 @@
     [view addSubview:label];
     
     [NSLayoutConstraint setWidht:80 height:24 forView:label];
-    [NSLayoutConstraint alignBottom:label inContainer:view];
+    [NSLayoutConstraint alignBottom:label inContainer:view withPadding:0];
     [NSLayoutConstraint centerHorizontal:label withView:view inContainer:view];
     
     return view;
@@ -307,7 +314,7 @@
     chatCell.ivPhoto.layer.masksToBounds = YES;
     
     chatCell.userNameLabel.text = chatMessage.userName;
-    chatCell.userNameLabel.textColor = [UIColor blueColor];
+    chatCell.userNameLabel.textColor = [UIColor colorWithRGBA:CHAT_USERNAME_COLOR];
     
     chatCell.userMessage.text = chatMessage.message;
     chatCell.userMessage.textColor = [UIColor blackColor];
@@ -350,11 +357,6 @@
 - (void) setupChatContentView {
     [self layoutChatContainerView];
     
-    _chatFooterView = [UIView new];
-    _chatFooterView.translatesAutoresizingMaskIntoConstraints = NO;
-    _chatFooterView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    [_chatContentView addSubview:_chatFooterView];
-    
     _tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped];
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     [_tableView setDelegate:self];
@@ -364,9 +366,14 @@
     _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     [_chatContentView addSubview:_tableView];
     
+    _chatFooterView = [UIView new];
+    _chatFooterView.translatesAutoresizingMaskIntoConstraints = NO;
+    _chatFooterView.backgroundColor = [UIColor colorWithRGBA:BG_CHAT_INPUT_CONTAINER_COLOR];
+    [_chatContentView addSubview:_chatFooterView];
+    
     [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView];
     [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView];
-    [NSLayoutConstraint setHeight:50 forView:_chatFooterView];
+    footerViewHeightConstraint = [NSLayoutConstraint setHeight:FOOTER_NORMAL_HEIGHT forView:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tableView, _chatFooterView);
     
@@ -391,10 +398,12 @@
     
     //[NSLayoutConstraint setWidht:20 height:18.5 forView:_btnSend];
     [NSLayoutConstraint setWidht:30 height:30 forView:_btnSend];
-    [NSLayoutConstraint centerVertical:_btnSend withView:_chatFooterView inContainer:_chatFooterView];
+    //[NSLayoutConstraint centerVertical:_btnSend withView:_chatFooterView inContainer:_chatFooterView];
+    [NSLayoutConstraint alignBottom:_btnSend inContainer:_chatFooterView withPadding:10];
     
-    [NSLayoutConstraint setHeight:30 forView:_tfMessage];
-    [NSLayoutConstraint centerVertical:_tfMessage withView:_chatFooterView inContainer:_chatFooterView];
+    messageHeightConstraint = [NSLayoutConstraint setHeight:MSG_INPUT_NORMAL_HEIGHT forView:_tfMessage];
+    //[NSLayoutConstraint centerVertical:_tfMessage withView:_chatFooterView inContainer:_chatFooterView];
+    [NSLayoutConstraint alignBottom:_tfMessage inContainer:_chatFooterView withPadding:10];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tfMessage, _btnSend);
     
@@ -404,14 +413,19 @@
 }
 
 - (void) setupMessageField {
-    _tfMessage = [UITextField new];
+    _tfMessage = [UITextView new];
+    //_tfMessage = [UITextField new];
     _tfMessage.translatesAutoresizingMaskIntoConstraints = NO;
-    [_tfMessage setBorderStyle:UITextBorderStyleRoundedRect];
-    [_tfMessage addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
+    //[_tfMessage addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _tfMessage.delegate = self;
-    _tfMessage.placeholder = @"";//@"ваше сообщение";
     _tfMessage.backgroundColor = [UIColor whiteColor];
-    _tfMessage.font = [UIFont systemFontOfSize:12.0f];
+    _tfMessage.font = [UIFont systemFontOfSize:14.0f];
+    
+    _tfMessage.layer.borderWidth = 0.5;
+    _tfMessage.layer.cornerRadius = 6.0;
+    _tfMessage.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+    _tfMessage.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
+    
     [_chatFooterView addSubview:_tfMessage];
 }
 
@@ -475,10 +489,14 @@
 
 #pragma mark -
 #pragma mark Arrow View
-- (void) setupCurtainArrowView { // 224 104
+- (void) setupCurtainArrowView { // 224x104 // 115x54
     _curtainArrowButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _curtainArrowButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_curtainArrowButton addTarget:self action:@selector(tapCurtainArrow) forControlEvents:UIControlEventTouchUpInside];
+    
+    //UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveCurtainView:)];
+    //panGesture.maximumNumberOfTouches = 1;
+    //[_curtainArrowButton addGestureRecognizer:panGesture];
     
     _curtainArrowButton.adjustsImageWhenHighlighted = NO;
     
@@ -501,7 +519,7 @@
                                                           attribute:NSLayoutAttributeCenterX
                                                          multiplier:1
                                                            constant:0]];
-    [NSLayoutConstraint setWidht:60 height:30 forView:_curtainArrowButton];
+    [NSLayoutConstraint setWidht:57.5 height:27 forView:_curtainArrowButton];
 }
 
 #pragma mark -
@@ -568,11 +586,11 @@
     
     NSDictionary* views = NSDictionaryOfVariableBindings(locTitle, locIcon, timeTitle, timeIcon, separator);
     
-    NSString* hc1_str = @"H:|-12-[locIcon]-6.5-[locTitle]";
+    NSString* hc1_str = @"H:|-12-[locIcon]-8-[locTitle]";
     NSArray* hz1Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc1_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz1Constraints];
     
-    NSString* hc2_str = @"H:|-12-[timeIcon]-4-[timeTitle]";
+    NSString* hc2_str = @"H:|-12-[timeIcon]-5.5-[timeTitle]";
     NSArray* hz2Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc2_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz2Constraints];
     
@@ -915,7 +933,10 @@
 }
 
 - (void) btnSendClick {
-    
+    _tfMessage.text = @"";
+    [_tfMessage resignFirstResponder];
+    messageHeightConstraint.constant = MSG_INPUT_NORMAL_HEIGHT;
+    footerViewHeightConstraint.constant = FOOTER_NORMAL_HEIGHT;
 }
 
 - (void) showGamers {
@@ -953,9 +974,50 @@
 
 - (void) openCurtainView {
     [UIView animateWithDuration:0.4 animations:^{
-        curtainHeigtContraint.constant = CURTAIN_HEIGT;
+        curtainHeigtContraint.constant = CURTAIN_HEIGHT;
         [self.view layoutIfNeeded];
     }];
+}
+
+- (void) moveCurtainView:(UIPanGestureRecognizer*)recognizer {
+    if(recognizer.state == UIGestureRecognizerStateChanged){
+        
+        CGPoint delta = [recognizer translationInView:self.view];
+        //CGFloat newHeight = curtainHeigtContraint.constant + translate.y;
+        CGFloat newHeight = curtainHeigtContraint.constant;
+        
+        CGFloat maxStep = 6;
+        CGFloat value = (delta.y < 0) ? delta.y * -1 : delta.y;
+        
+        if(value > 2){
+            if(delta.y > 0){
+                if(delta.y > maxStep)
+                    newHeight = curtainHeigtContraint.constant + maxStep;
+                else
+                    newHeight = curtainHeigtContraint.constant + delta.y;
+            }
+            else if(delta.y < 0){
+                if(delta.y < maxStep)
+                    newHeight = curtainHeigtContraint.constant - maxStep;
+                else
+                    newHeight = curtainHeigtContraint.constant + delta.y;
+            }
+            
+            if(newHeight < CURTAIN_HEIGHT && newHeight > 0){
+                curtainHeigtContraint.constant = newHeight;
+            }
+        }
+    }
+    else if(recognizer.state == UIGestureRecognizerStateEnded){
+        if(curtainHeigtContraint.constant < CURTAIN_HEIGHT/2)
+            curtainHeigtContraint.constant = 0;
+        else
+            curtainHeigtContraint.constant = CURTAIN_HEIGHT;
+        
+        //NSLog(@"UIGestureRecognizerStateEnded: %f", curtainHeigtContraint.constant);
+    }
+    
+    //[self.view layoutIfNeeded];
 }
 
 #pragma mark -
@@ -969,7 +1031,13 @@
     return YES;
 }
 
-- (void) textFieldDidChange:(UITextField *)textField {
+#pragma mark -
+#pragma mark UITextView delegate
+- (void)textViewDidBeginEditing:(UITextView *)textView {
+    //[self scrollToCursorForTextView:textView];
+}
+
+- (void) textViewDidChange:(UITextView *)textField {
     if (textField == _tfMessage){
         if([textField.text isEmpty]){
             _btnSend.enabled = NO;
@@ -979,7 +1047,42 @@
             _btnSend.enabled = YES;
             _btnSend.userInteractionEnabled = YES;
         }
+        
+        CGFloat fixedWidth = textField.frame.size.width;
+        CGSize newSize = [textField sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
+        //CGRect newFrame = textField.frame;
+        //newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
+        //textField.frame = newFrame;
+        
+        if(newSize.height < MAX_MSG_INPUT_HEIGHT){
+            int diffH = FOOTER_NORMAL_HEIGHT - MSG_INPUT_NORMAL_HEIGHT;
+            messageHeightConstraint.constant = newSize.height;
+            footerViewHeightConstraint.constant = newSize.height + diffH;
+        }
+        
+        
+        //[self scrollToCursorForTextView:textField];
     }
+}
+
+- (void)scrollToCursorForTextView: (UITextView*)textView {
+    CGRect cursorRect = [textView caretRectForPosition:textView.selectedTextRange.start];
+    cursorRect = [self.tableView convertRect:cursorRect fromView:textView];
+    
+    if (![self rectVisible:cursorRect]) {
+        cursorRect.size.height += 8; // To add some space underneath the cursor
+        [self.tableView scrollRectToVisible:cursorRect animated:YES];
+    }
+}
+
+- (BOOL)rectVisible: (CGRect)rect {
+    CGRect visibleRect;
+    visibleRect.origin = self.tableView.contentOffset;
+    visibleRect.origin.y += self.tableView.contentInset.top;
+    visibleRect.size = self.tableView.bounds.size;
+    visibleRect.size.height -= self.tableView.contentInset.top + self.tableView.contentInset.bottom;
+    
+    return CGRectContainsRect(visibleRect, rect);
 }
 
 # pragma mark -

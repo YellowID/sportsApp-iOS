@@ -21,4 +21,6 @@
 @property (strong, nonatomic) UIImageView* ivTime;
 @property (strong, nonatomic) UIImageView* ivDate;
 
+- (void) setBackgroundColor:(UIColor *)backgroundColor forState:(UIControlState)state;
+
 @end

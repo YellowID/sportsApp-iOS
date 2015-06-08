@@ -32,7 +32,7 @@
     self.navigationController.navigationBar.translucent = NO;
     
     UIView *navBorder = [[UIView alloc] initWithFrame:CGRectMake(0,self.navigationController.navigationBar.frame.size.height-0.5,self.navigationController.navigationBar.frame.size.width, 0.5)];
-    [navBorder setBackgroundColor:[UIColor colorWithRGBA:CELL_SEPARATOR_COLOR]];
+    [navBorder setBackgroundColor:[UIColor colorWithRGBA:ROW_SEPARATOR_COLOR]];
     [navBorder setOpaque:YES];
     [self.navigationController.navigationBar addSubview:navBorder];
     

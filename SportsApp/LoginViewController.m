@@ -121,7 +121,7 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) goToNextScreen {
-    [[self navigationController] setNavigationBarHidden:NO animated:YES];
+    //[[self navigationController] setNavigationBarHidden:NO animated:YES];
     GamesListViewController *controller = [[GamesListViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
 }

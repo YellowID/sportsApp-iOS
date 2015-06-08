@@ -143,14 +143,14 @@
                                                            constant:0]];
 }
 
-+ (void) alignBottom:(UIView*)view inContainer:(UIView*)container {
++ (void) alignBottom:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding {
     [container addConstraint:[NSLayoutConstraint constraintWithItem:view
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:0
                                                              toItem:container
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:0]];
+                                                           constant:-padding]];
 }
 
 @end

@@ -20,5 +20,5 @@
 + (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container;
 + (void) stretchVertical:(UIView*)view inContainer:(UIView*)container;
 
-+ (void) alignBottom:(UIView*)view inContainer:(UIView*)container;
++ (void) alignBottom:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding;
 @end

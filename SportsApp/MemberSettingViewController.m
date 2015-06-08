@@ -8,7 +8,8 @@
 
 #import "MemberSettingViewController.h"
 #import "UIViewController+Navigation.h"
-#import "CustomDotPageControl.h"
+//#import "CustomDotPageControl.h"
+#import "DDPageControl.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -42,7 +43,8 @@
 #pragma mark Sports group views
 @property (strong, nonatomic) UIScrollView* sportsScrollView;
 //@property (strong, nonatomic) UIPageControl* sportsPageControl;
-@property (strong, nonatomic) CustomDotPageControl* sportsPageControl;
+//@property (strong, nonatomic) CustomDotPageControl* sportsPageControl;
+@property (strong, nonatomic) DDPageControl* sportsPageControl;
 @property (strong, nonatomic) NSMutableArray* sportInfoItems;
 @property (strong, nonatomic) NSMutableArray* sportUIItems;
 
@@ -323,7 +325,7 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:164]];
+                                                                  constant:155]];
     
     // subviews
     _lbTitleSportsGrpup = [UILabel new];
@@ -335,7 +337,7 @@
 }
 
 - (void) setupSportsPageControl {
-    //_sportsPageControl = [UIPageControl new];
+    /*
     _sportsPageControl = [CustomDotPageControl new];
     [_sportsPageControl setDotImageActive:[UIImage imageNamed:@"ic_page_active.png"]];
     [_sportsPageControl setDotImageInactive:[UIImage imageNamed:@"ic_page.png"]];
@@ -347,8 +349,20 @@
     _sportsPageControl.currentPage = 0;
     [_sportsGroupView addSubview:_sportsPageControl];
     //_sportsPageControl.backgroundColor = [UIColor greenColor];
+    */
     
-    //[_sportsPageControl setp];
+    _sportsPageControl = [DDPageControl new];
+    [_sportsPageControl setType: DDPageControlTypeOnFullOffEmpty];
+    [_sportsPageControl setOnColor: [UIColor colorWithRGBA:PAGE_INDICATOR_ACTIVE_COLOR]];
+    [_sportsPageControl setOffColor: [UIColor colorWithRGBA:PAGE_INDICATOR_INACTIVE_COLOR]];
+    [_sportsPageControl setIndicatorDiameter: 4.0f];
+    [_sportsPageControl setIndicatorSpace: 5.0f];
+    _sportsPageControl.translatesAutoresizingMaskIntoConstraints = NO;
+    _sportsPageControl.userInteractionEnabled = NO;
+    _sportsPageControl.numberOfPages = _sportInfoItems.count / 3;
+    _sportsPageControl.currentPage = 0;
+    [_sportsGroupView addSubview:_sportsPageControl];
+    
     
     [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
                                                           attribute:NSLayoutAttributeBottom
@@ -514,7 +528,7 @@
                                                              toItem:container
                                                           attribute:NSLayoutAttributeLeft
                                                          multiplier:1
-                                                           constant:20]];
+                                                           constant:28.5]];
 }
 
 - (void) layoutSportCenterIcon:(UIImageView*)icon intoContainer:(UIView*)container {
@@ -556,7 +570,7 @@
                                                              toItem:container
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1
-                                                           constant:-20]];
+                                                           constant:-28.5]];
 }
 
 #pragma mark -
@@ -753,7 +767,7 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:136.5]];//122
+                                                                  constant:126]];
 
     // subviews
     _lbTitleAgeGrpup = [UILabel new];
@@ -897,7 +911,7 @@
                                                              toItem:view
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:12]];
+                                                           constant:4]];
     
     [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
                                                           attribute:NSLayoutAttributeCenterX
