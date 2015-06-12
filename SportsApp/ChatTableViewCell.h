@@ -18,7 +18,9 @@
 @property (strong, nonatomic) UIView *messageView;
 @property (strong, nonatomic) UIImageView *backgroundCallout;
 
+@property (nonatomic) BOOL showUserName;
+
 - (void) setBackgroundImageForMessageView:(UIImage *)backgroundImage;
-+ (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)width;
++ (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)width showUserName:(BOOL)show;
 
 @end

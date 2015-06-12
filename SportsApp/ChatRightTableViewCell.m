@@ -8,37 +8,49 @@
 
 #import "ChatRightTableViewCell.h"
 
-#define PADDING_TOP 14
-#define PADDING_BOTTOM 14
+#define PADDING_TOP 8
+#define PADDING_BOTTOM 8
 #define PADDING_LEFT 60
 #define PADDING_RIGHT 6
 
-#define CONTENT_PADDING_TOP 5
-#define CONTENT_PADDING_BOTTOM 8
-#define CONTENT_PADDING_LEFT 12
+#define CONTENT_PADDING_TOP 3
+#define CONTENT_PADDING_BOTTOM 6
+#define CONTENT_PADDING_LEFT 9
 #define CONTENT_PADDING_RIGHT 14
 
-#define NAME_FONT_SIZE 14.0f
-#define MSG_FONT_SIZE 18.0f
-#define TIME_FONT_SIZE 12.0f
+#define NAME_FONT_SIZE 12.0f
+#define MSG_FONT_SIZE 14.0f
+#define TIME_FONT_SIZE 10.0f
 
 #define USERNAME_LABLE_HEIGHT 0
-#define TIME_LABLE_HEIGHT 15
+#define TIME_LABLE_HEIGHT 10
 
 #define PHOTO_SIZE 40
 
 @implementation ChatRightTableViewCell
 
-+ (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)cellWidth {
++ (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)cellWidth showUserName:(BOOL)showUserName {
     UITextView *tv = [UITextView new];
     tv.textAlignment = NSTextAlignmentLeft;
     [tv setFont:[UIFont systemFontOfSize:MSG_FONT_SIZE + 1]];
+    tv.textContainerInset = UIEdgeInsetsZero;
+    tv.textContainer.lineFragmentPadding = 0;
     tv.text = message;
     
     CGFloat contentWidth = cellWidth - PADDING_LEFT - PHOTO_SIZE - PADDING_RIGHT;
     CGSize newSize = [tv sizeThatFits:CGSizeMake(contentWidth, MAXFLOAT)];
     
     CGFloat cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT;
+    
+    /*
+    CGFloat cellHeight = 0;
+    if(showUserName){
+        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + USERNAME_LABLE_HEIGHT + TIME_LABLE_HEIGHT + USERNAME_MESSAGE_PADDING;
+    }
+    else{
+        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT;
+    }
+    */
     
     return cellHeight;
 }
@@ -101,7 +113,7 @@
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:self.messageView
                                                      attribute:NSLayoutAttributeLeft
-                                                     relatedBy:0
+                                                     relatedBy:NSLayoutRelationGreaterThanOrEqual
                                                         toItem:self
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
@@ -200,7 +212,7 @@
     
     [self.messageView addConstraint:[NSLayoutConstraint constraintWithItem:self.userMessage
                                                              attribute:NSLayoutAttributeRight
-                                                             relatedBy:0
+                                                             relatedBy:0 //NSLayoutRelationLessThanOrEqual
                                                                 toItem:self.messageView
                                                              attribute:NSLayoutAttributeRight
                                                             multiplier:1

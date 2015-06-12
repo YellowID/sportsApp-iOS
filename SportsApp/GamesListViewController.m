@@ -15,6 +15,9 @@
 #import "GameInfo.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "AppNetHelper.h"
+#import "MBProgressHUD.h"
+#import "AppDelegate.h"
 
 #define SECTION_MY_GAMES 0
 #define SECTION_PUBLIC_GAMES 1
@@ -27,7 +30,9 @@
 
 @end
 
-@implementation GamesListViewController
+@implementation GamesListViewController{
+    NSUInteger currentUserId;
+}
 
 static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 
@@ -54,7 +59,31 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     //[self.tableView registerNib:nib forCellReuseIdentifier:GamesListCellTableIdentifier];
     [self.view addSubview:self.tableView];
     
-    [self loadData];
+    //[self prepareData:nil];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    currentUserId = [AppDelegate instance].currentUserId;
+    [AppNetHelper gamesForUser:currentUserId completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                [alert show];
+            }
+            else{
+                [self showData:arrayData];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -239,12 +268,23 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     gameCell.timeLabel.text = game.time;
     gameCell.timeLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
     
-    gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
-    gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
-    
     gameCell.ivLocation.image = [UIImage imageNamed:@"icon_location.png"];
     gameCell.ivTime.image = [UIImage imageNamed:@"icon_time.png"];
     gameCell.ivDate.image = [UIImage imageNamed:@"icon_date.png"];
+    
+    //
+    
+    if(game.adminId == currentUserId)
+        gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
+    else
+        gameCell.ivAdmin.image = nil;
+    
+    if(game.participateStatus == PARTICIPATE_STATUS_NO)
+        gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_no.png"];
+    else if(game.participateStatus == PARTICIPATE_STATUS_YES)
+        gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
+    else
+        gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_q.png"];
     
     return cell;
 }
@@ -258,30 +298,18 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 
 #pragma mark -
 #pragma mark Other
-- (void) loadData {
+- (void) showData:(NSMutableArray *)games {
     _myGames = [NSMutableArray new];
-    for(int i = 0; i < 4; ++i){
-        GameInfo* game = [GameInfo new];
-        game.gameName = [NSString stringWithFormat:@"My Game %lu", (unsigned long)i];
-        game.address = @"просп. Независимости 192б";
-        game.addressName = @"Всем спорт";
-        game.date = @"через 3 дня";
-        game.time = @"20:00";
-        
-        [_myGames addObject:game];
+    _publicGames = [NSMutableArray new];
+    
+    for(GameInfo* game in games){
+        if(game.adminId == currentUserId)
+            [_myGames addObject:game];
+        else
+            [_publicGames addObject:game];
     }
     
-    _publicGames = [NSMutableArray new];
-    for(int i = 0; i < 4; ++i){
-        GameInfo* game = [GameInfo new];
-        game.gameName = [NSString stringWithFormat:@"Public Game %lu", (unsigned long)i];
-        game.address = @"просп. Независимости 999 Ш/2";
-        game.addressName = @"Ооочень длинный бассейн";
-        game.date = @"через 13 дней";
-        game.time = @"20:00";
-        
-        [_publicGames addObject:game];
-    }
+    [_tableView reloadData];
 }
 
 @end

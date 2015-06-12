@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>F85BB9B4-5D22-4F36-98B7-F754D5A463A0</string>
 	<key>IDESourceControlProjectName</key>
-	<string>SportsApp</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>F5F14CCB1EA22ED78027A9F77C2BFE4F208337CF</key>
 		<string>https://github.com/YellowID/sportsApp-iOS.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>SportsApp.xcodeproj</string>
+	<string>SportsApp.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>F5F14CCB1EA22ED78027A9F77C2BFE4F208337CF</key>

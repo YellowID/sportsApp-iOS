@@ -9,13 +9,20 @@
 #import "NewEvenViewController.h"
 #import "UIViewController+Navigation.h"
 #import "PlaceSearchViewController.h"
+#import "InviteUserViewController.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "NewGame.h"
+#import "AppNetHelper.h"
+#import "MBProgressHUD.h"
 
 #define PADDING_H 12
-#define MAIN_SCROLL_CONTENT_HEIGHT 230
-#define SCROLL_ITEM_HEIGHT 99
+#define MAIN_SCROLL_CONTENT_HEIGHT 340
+
+#define PEOPLE_NUM_PICKER 0
+#define AGE_PICKER 1
+#define SPORT_PICKER 2
 
 @interface NewEvenViewController () <UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
 
@@ -27,14 +34,20 @@
 #pragma mark -
 #pragma mark Groups view
 @property (strong, nonatomic) UIView* fieldsGroupView;
+@property (strong, nonatomic) UIView* ageGroupView;
 @property (strong, nonatomic) UIView* timeGroupView;
 @property (strong, nonatomic) UIView* levelGroupView;
 
 @property (strong, nonatomic) UITextField* tfKindOfSport;
+@property (strong, nonatomic) UIPickerView* sportPicker;
+
 @property (strong, nonatomic) UITextField* tfLocation;
 
 @property (strong, nonatomic) UITextField* tfTime;
 @property (strong, nonatomic) UIDatePicker* dateTimePicker;
+
+@property (strong, nonatomic) UITextField* tfAge;
+@property (strong, nonatomic) UIPickerView* agePicker;
 
 @property (strong, nonatomic) UITextField* tfPeopleNumber;
 @property (strong, nonatomic) UIPickerView* peopleNumberPicker;
@@ -42,6 +55,8 @@
 @property (strong, nonatomic) UIImageView* ivOneStar;
 @property (strong, nonatomic) UIImageView* ivTwoStar;
 @property (strong, nonatomic) UIImageView* ivThreeStar;
+
+@property (strong, nonatomic) UIButton* btnCreate;
 
 @end
 
@@ -51,7 +66,16 @@
     
     BOOL oneStarStatus, twoStarStatus, threeStarStatus;
     
+    NSMutableArray* sportItems;
+    NSMutableArray* ageItems;
     NSMutableArray* peopleNumberItems;
+    
+    NSUInteger selectedSport;
+    NSUInteger selectedAge;
+    NSUInteger selectedPeopleNumber;
+    NSUInteger selectedLevel;
+    
+    NewGame *newGame;
 }
 
 - (void)viewDidLoad {
@@ -66,15 +90,42 @@
     grayStarImage = [UIImage imageNamed:@"icon_star_small.png"];
     activeStarImage = [UIImage imageNamed:@"icon_star_small_active.png"];
     
+    // pickers
     peopleNumberItems = [NSMutableArray new];
-    for(int i = 0; i < 50; ++i){
+    for(int i = 0; i < 100; ++i){
         NSString* numberStr = [NSString stringWithFormat:@"%lu", (unsigned long) i+1];
         [peopleNumberItems addObject:numberStr];
     }
     _peopleNumberPicker = [[UIPickerView alloc] init];
     _peopleNumberPicker.dataSource = self;
     _peopleNumberPicker.delegate = self;
+    _peopleNumberPicker.tag = PEOPLE_NUM_PICKER;
     _peopleNumberPicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    ageItems = [NSMutableArray new];
+    [ageItems addObject:@"до 20"];
+    [ageItems addObject:@"20-28"];
+    [ageItems addObject:@"28-35"];
+    [ageItems addObject:@"после 35"];
+    _agePicker = [[UIPickerView alloc] init];
+    _agePicker.dataSource = self;
+    _agePicker.delegate = self;
+    _agePicker.tag = AGE_PICKER;
+    _agePicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    
+    sportItems = [NSMutableArray new];
+    [sportItems addObject:@"Футбол"];
+    [sportItems addObject:@"Баскетбол"];
+    [sportItems addObject:@"Волейбол"];
+    [sportItems addObject:@"Гандбол"];
+    [sportItems addObject:@"Хоккей"];
+    [sportItems addObject:@"Теннис"];
+    [sportItems addObject:@"Сквош"];
+    _sportPicker = [[UIPickerView alloc] init];
+    _sportPicker.dataSource = self;
+    _sportPicker.delegate = self;
+    _sportPicker.tag = SPORT_PICKER;
+    _sportPicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     // UIDatePicker
     NSDate* todayDate = [NSDate date];
@@ -92,9 +143,12 @@
     [self setupContainers];
     [self setupFieldsGroup];
     [self setupTimeGroup];
+    [self setupAgeGroup];
     [self setupLevelGroup];
     
     self.automaticallyAdjustsScrollViewInsets = NO;
+    
+    newGame = [NewGame new];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -125,17 +179,17 @@
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
     
-    UIButton *btnCreate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnCreate setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
-    btnCreate.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    [btnCreate setUserInteractionEnabled:NO];
-    [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    [btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
-    [btnCreate sizeToFit];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCreate];
-    [btnCreate setEnabled:NO]; // !! 
+    _btnCreate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnCreate setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+    [_btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
+    _btnCreate.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    [_btnCreate setUserInteractionEnabled:NO];
+    [_btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [_btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+    [_btnCreate sizeToFit];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_btnCreate];
+    [_btnCreate setEnabled:NO]; // !!
 }
 
 # pragma mark -
@@ -203,6 +257,7 @@
 - (void) setupKindOfSportField {
     _tfKindOfSport = [UITextField new];
     _tfKindOfSport.translatesAutoresizingMaskIntoConstraints = NO;
+    _tfKindOfSport.delegate = self;
     _tfKindOfSport.placeholder = @"Вид спорта";
     _tfKindOfSport.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfKindOfSport];
@@ -279,6 +334,109 @@
                                                              attribute:0
                                                             multiplier:1
                                                               constant:30]];
+}
+
+#pragma mark -
+#pragma mark AGEs group
+- (void) setupAgeGroup {
+    _ageGroupView = [UIView new];
+    _ageGroupView.translatesAutoresizingMaskIntoConstraints = NO;
+    _ageGroupView.backgroundColor = [UIColor whiteColor];
+    _ageGroupView.layer.borderWidth = 0.5;
+    _ageGroupView.layer.cornerRadius = 6.0;
+    _ageGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+    [_containerView addSubview:_ageGroupView];
+    
+    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:0
+                                                                  toItem:_timeGroupView
+                                                               attribute:NSLayoutAttributeBottom
+                                                              multiplier:1
+                                                                constant:8]];
+    
+    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeLeft
+                                                               relatedBy:0
+                                                                  toItem:_containerView
+                                                               attribute:NSLayoutAttributeLeft
+                                                              multiplier:1
+                                                                constant:PADDING_H]];
+    
+    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeRight
+                                                               relatedBy:0
+                                                                  toItem:_containerView
+                                                               attribute:NSLayoutAttributeRight
+                                                              multiplier:1
+                                                                constant:-PADDING_H]];
+    
+    [_ageGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_ageGroupView
+                                                                attribute:NSLayoutAttributeHeight
+                                                                relatedBy:0
+                                                                   toItem:nil
+                                                                attribute:0
+                                                               multiplier:1
+                                                                 constant:38]];
+    
+    [self setupTitleForAgeGroup];
+    [self setupLableAge];
+}
+
+- (void) setupTitleForAgeGroup {
+    UILabel* title = [UILabel new];
+    title.translatesAutoresizingMaskIntoConstraints = NO;
+    title.text = @"Возраст";
+    title.textAlignment = NSTextAlignmentLeft;
+    title.font = [UIFont systemFontOfSize:12.0f];
+    [_ageGroupView addSubview:title];
+    
+    [NSLayoutConstraint setWidht:60 height:21 forView:title];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
+                                                               attribute:NSLayoutAttributeCenterY
+                                                               relatedBy:0
+                                                                  toItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                              multiplier:1
+                                                                constant:0]];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
+                                                               attribute:NSLayoutAttributeLeft
+                                                               relatedBy:0
+                                                                  toItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeLeft
+                                                              multiplier:1
+                                                                constant:PADDING_H]];
+}
+
+- (void) setupLableAge {
+    _tfAge = [UITextField new];
+    _tfAge.translatesAutoresizingMaskIntoConstraints = NO;
+    _tfAge.delegate = self;
+    _tfAge.text = @"20-28";
+    _tfAge.textAlignment = NSTextAlignmentRight;
+    _tfAge.font = [UIFont systemFontOfSize:12.0f];
+    
+    [_ageGroupView addSubview:_tfAge];
+    
+    [NSLayoutConstraint setWidht:160 height:30 forView:_tfAge];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfAge
+                                                               attribute:NSLayoutAttributeCenterY
+                                                               relatedBy:0
+                                                                  toItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeCenterY
+                                                              multiplier:1
+                                                                constant:0]];
+    
+    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfAge
+                                                               attribute:NSLayoutAttributeRight
+                                                               relatedBy:0
+                                                                  toItem:_ageGroupView
+                                                               attribute:NSLayoutAttributeRight
+                                                              multiplier:1
+                                                                constant:-PADDING_H]];
 }
 
 #pragma mark -
@@ -412,7 +570,7 @@
     [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
                                                                attribute:NSLayoutAttributeTop
                                                                relatedBy:0
-                                                                  toItem:_timeGroupView
+                                                                  toItem:_ageGroupView
                                                                attribute:NSLayoutAttributeBottom
                                                               multiplier:1
                                                                 constant:8]];
@@ -675,7 +833,38 @@
 }
 
 - (void) btnCreateClick {
-    NSLog(@"btnCreateClick");
+    [_tfKindOfSport resignFirstResponder];
+    [_tfLocation resignFirstResponder];
+    [_tfTime resignFirstResponder];
+    [_tfAge resignFirstResponder];
+    [_tfPeopleNumber resignFirstResponder];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [AppNetHelper createNewGame:nil completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                
+                [alert show];
+            }
+            else{
+                
+                InviteUserViewController* controller = [[InviteUserViewController alloc] init];
+                controller.gameId = gameId;
+                [self.navigationController pushViewController:controller animated:YES];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -688,11 +877,17 @@
     if(oneStarStatus){
         oneStarStatus = NO;
         _ivOneStar.image = grayStarImage;
+        
+        newGame.level = LEVEL_UNKNOWN;
     }
     else{
         oneStarStatus = YES;
         _ivOneStar.image = activeStarImage;
+        
+        newGame.level = LEVEL_1;
     }
+    
+    [self changeCreateButtonIfNeeded];
 }
 
 - (void) twoStarClick {
@@ -701,6 +896,9 @@
     _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = grayStarImage;
+    
+    newGame.level = LEVEL_2;
+    [self changeCreateButtonIfNeeded];
 }
 
 - (void) threeStarClick {
@@ -709,6 +907,9 @@
     _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = activeStarImage;
+    
+    newGame.level = LEVEL_3;
+    [self changeCreateButtonIfNeeded];
 }
 
 #pragma mark -
@@ -724,15 +925,48 @@
 }
 
 -(NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    return [peopleNumberItems count];
+    if(pickerView.tag == PEOPLE_NUM_PICKER)
+        return [peopleNumberItems count];
+    else if(pickerView.tag == AGE_PICKER)
+        return [ageItems count];
+    else if(pickerView.tag == SPORT_PICKER)
+        return [sportItems count];
+    
+    return 0;
 }
 
 - (NSString *) pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    return peopleNumberItems[row];
+    //return peopleNumberItems[row];
+    
+    if(pickerView.tag == PEOPLE_NUM_PICKER)
+        return peopleNumberItems[row];
+    else if(pickerView.tag == AGE_PICKER)
+        return ageItems[row];
+    else if(pickerView.tag == SPORT_PICKER)
+        return sportItems[row];
+    
+    return nil;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    _tfPeopleNumber.text = peopleNumberItems[row];
+    if(pickerView.tag == PEOPLE_NUM_PICKER){
+        _tfPeopleNumber.text = peopleNumberItems[row];
+        selectedPeopleNumber = row;
+        newGame.players = row + 1;
+        [self changeCreateButtonIfNeeded];
+    }
+    else if(pickerView.tag == AGE_PICKER){
+        _tfAge.text = ageItems[row];
+        selectedAge = row;
+        newGame.age = row + 1;
+        [self changeCreateButtonIfNeeded];
+    }
+    else if(pickerView.tag == SPORT_PICKER){
+        _tfKindOfSport.text = sportItems[row];
+        selectedSport = row;
+        newGame.sport = row;
+        [self changeCreateButtonIfNeeded];
+    }
 }
 
 #pragma mark -
@@ -742,14 +976,25 @@
         NSDateFormatter *df = [[NSDateFormatter alloc] init];
         [df setDateFormat:@"d MMMM yyyy HH:mm"];
         _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:datePicker.date]];
+        
+        newGame.time = [datePicker.date timeIntervalSince1970];
+        [self changeCreateButtonIfNeeded];
     }
 }
 
 #pragma mark -
 #pragma mark UITextField delegate
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
-    if (textField == _tfPeopleNumber){
+    if (textField == _tfKindOfSport){
+        textField.inputView = _sportPicker;
+        //textField.inputAccessoryView = toolBar;
+    }
+    else if (textField == _tfPeopleNumber){
         textField.inputView = _peopleNumberPicker;
+        //textField.inputAccessoryView = toolBar;
+    }
+    else if (textField == _tfAge){
+        textField.inputView = _agePicker;
         //textField.inputAccessoryView = toolBar;
     }
     else if(textField == _tfTime){
@@ -782,7 +1027,27 @@
     _scrollView.scrollIndicatorInsets = UIEdgeInsetsZero;
 }
 
-
+#pragma mark -
+#pragma mark Other methods
+- (void) changeCreateButtonIfNeeded {
+    if(newGame.sport < 0)
+        return;
+    
+    if(newGame.time == 0)
+        return;
+    
+    if(newGame.age == 0)
+        return;
+    
+    if(newGame.level == 0)
+        return;
+    
+    if(newGame.players == 0)
+        return;
+    
+    [_btnCreate setEnabled:YES];
+    [_btnCreate setUserInteractionEnabled:YES];
+}
 
 @end
 

@@ -145,30 +145,34 @@
     NSMutableArray *day1 = [NSMutableArray new];
     ChatMessage *msg1 = [ChatMessage new];
     msg1.userName = @"Антон Якушев";
+    //msg1.avatarLink = @"photo.png";
     msg1.userId = 1;
     msg1.time = @"10:00";
     msg1.message = @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)";
     [day1 addObject:msg1];
     
     ChatMessage *msg2 = [ChatMessage new];
-    msg2.userName = @"Павел Ларчик";
-    msg2.userId = 2;
+    msg2.userName = @"Саша Лукашенко";
+    //msg2.avatarLink = @"photo.png";
+    msg2.userId = 3;
     msg2.time = @"10:05";
     msg2.message = @"Да?";
     [day1 addObject:msg2];
     
     ChatMessage *msg3 = [ChatMessage new];
     msg3.userName = @"Саша Лукашенко";
+    msg3.avatarLink = @"photo.png";
     msg3.userId = 3;
     msg3.time = @"10:12";
     msg3.message = @"Я тоже у хакей!";
     [day1 addObject:msg3];
     
     ChatMessage *msg4 = [ChatMessage new];
-    msg4.userName = @"Я";
-    msg4.userId = 0;
+    msg4.userName = @"Саша Лукашенко";
+    msg3.avatarLink = @"photo.png";
+    msg4.userId = 3;
     msg4.time = @"13:00";
-    msg4.message = @"У хакей играют самыя настоящие мужчыны.";
+    msg4.message = @"Возьмите меня";
     [day1 addObject:msg4];
     
     [_messages addObject:day1];
@@ -177,16 +181,18 @@
     NSMutableArray *day2 = [NSMutableArray new];
     ChatMessage *msg21 = [ChatMessage new];
     msg21.userName = @"Антон Якушев";
+    msg21.avatarLink = @"photo.png";
     msg21.userId = 1;
     msg21.time = @"11:02";
-    msg21.message = @"Саня, будешь шайбу подавать";
+    msg21.message = @"У хакей играют самыя настоящие мужчыны.";
     [day2 addObject:msg21];
     
     ChatMessage *msg22 = [ChatMessage new];
     msg22.userName = @"Саша Лукашенко";
+    msg22.avatarLink = @"photo.png";
     msg22.userId = 3;
     msg22.time = @"11:03";
-    msg22.message = @"Я на усё сагаласен";
+    msg22.message = @"Я на усё сагласен";
     [day2 addObject:msg22];
     
     ChatMessage *msg23 = [ChatMessage new];
@@ -198,10 +204,19 @@
     
     ChatMessage *msg24 = [ChatMessage new];
     msg24.userName = @"Я";
+    msg24.avatarLink = @"photo.png";
     msg24.userId = 0;
     msg24.time = @"11:25";
     msg24.message = @"В зале";
     [day2 addObject:msg24];
+    
+    ChatMessage *msg25 = [ChatMessage new];
+    msg25.userName = @"Я";
+    msg24.avatarLink = @"photo.png";
+    msg25.userId = 0;
+    msg25.time = @"11:25";
+    msg25.message = @"В большом зале";
+    [day2 addObject:msg25];
     
     [_messages addObject:day2];
     
@@ -226,10 +241,20 @@
     CGFloat height = 0;
     
     ChatMessage *chatMessage = rows[indexPath.row];
-    if(chatMessage.userId == currentUserId)
-        height = [ChatRightTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width];
-    else
-        height = [ChatTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width];
+    
+    BOOL theSameUser = NO;
+    if(indexPath.row > 0){
+        ChatMessage *prevMessage = rows[indexPath.row - 1];
+        if(prevMessage.userId == chatMessage.userId)
+            theSameUser = YES;
+    }
+    
+    if(chatMessage.userId == currentUserId){
+        height = [ChatRightTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+    }
+    else{
+        height = [ChatTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+    }
     
     return height;
 }
@@ -238,7 +263,7 @@
     if(section == 0)
         return 70.0f;
     else
-        return 44.0f;
+        return 30.0f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
@@ -267,7 +292,7 @@
     [view addSubview:label];
     
     [NSLayoutConstraint setWidht:80 height:24 forView:label];
-    [NSLayoutConstraint alignBottom:label inContainer:view withPadding:0];
+    [NSLayoutConstraint alignBottom:label inContainer:view withPadding:3];
     [NSLayoutConstraint centerHorizontal:label withView:view inContainer:view];
     
     return view;
@@ -301,17 +326,40 @@
     
     ChatRightTableViewCell *chatCell = (ChatRightTableViewCell *)cell;
     
-    UIImage* im = [UIImage imageNamed:@"photo.png"];
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
-    [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
-    UIImage* im2 = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    chatCell.ivPhoto.image = im2;
-    chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
+    BOOL theSameUser = NO;
+    if(indexPath.row > 0){
+        ChatMessage *prevMessage = rows[indexPath.row - 1];
+        if(prevMessage.userId == chatMessage.userId)
+            theSameUser = YES;
+    }
     
-    chatCell.ivPhoto.layer.borderWidth = 0.0;
-    chatCell.ivPhoto.layer.cornerRadius = PHOTO_SIZE / 2;
-    chatCell.ivPhoto.layer.masksToBounds = YES;
+    if(!theSameUser){
+        chatCell.showUserName = NO;
+        
+        UIImage *avatar = nil;
+        if(chatMessage.avatarLink){
+            avatar = [self imageForAvatar:[UIImage imageNamed:chatMessage.avatarLink]];
+        }
+        else{
+            //avatar = [UIImage imageNamed:@"ic_avatar.png"];
+            /*
+            avatar = [self imageForAvatar:[UIImage imageNamed:@"ic_avatar.png"]];
+            CALayer *textLayer = [self layerForEmptyAvatar:avatar text:chatMessage.userName];
+            [chatCell.ivPhoto.layer addSublayer:textLayer];
+            */
+            avatar = [self imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
+        }
+        
+        chatCell.ivPhoto.image = avatar;
+        chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
+        
+        chatCell.ivPhoto.layer.borderWidth = 0.0;
+        chatCell.ivPhoto.layer.cornerRadius = PHOTO_SIZE / 2;
+        chatCell.ivPhoto.layer.masksToBounds = YES;
+    }
+    else{
+        chatCell.showUserName = YES;
+    }
     
     chatCell.userNameLabel.text = chatMessage.userName;
     chatCell.userNameLabel.textColor = [UIColor colorWithRGBA:CHAT_USERNAME_COLOR];
@@ -322,16 +370,120 @@
     chatCell.timeLabel.text = chatMessage.time;
     chatCell.timeLabel.textColor = [UIColor grayColor];
     
-    if(isMessageOfCurrentUser)
-        [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_right_message.png"]];
-    else
-        [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
+    
+    if(isMessageOfCurrentUser){
+        if(theSameUser)
+            [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_right_message_ellipse.png"]];
+        else
+            [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_right_message.png"]];
+    }
+    else{
+        if(theSameUser)
+            [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message_ellipse.png"]];
+        else
+            [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
+    }
     
     return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (UIImage *) imageForAvatar:(UIImage *)image {
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
+    [image drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
+    
+    UIImage *avatar = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return avatar;
+}
+
+- (UIImage *) imageForAvatarDefault:(UIImage *)image text:(NSString *)text {
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
+    [image drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
+    
+    
+    NSString *avatarText = @"?";
+    NSString *temp = [text stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+    NSArray *parts = [temp componentsSeparatedByString: @" "];
+    
+    if([parts count] > 0){
+        NSString *firstNameChar = [parts[0] substringToIndex:1];
+        
+        if([parts count] > 1){
+            NSString *lastNameChar = [parts[1] substringToIndex:1];
+            avatarText = [NSString stringWithFormat:@"%@%@", firstNameChar, lastNameChar];
+        }
+        else{
+            avatarText = firstNameChar;
+        }
+    }
+    
+    CGSize size = [avatarText sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:20.0f]}];
+    CGFloat x = (PHOTO_SIZE - size.width) / 2;
+    CGFloat y = (PHOTO_SIZE - size.height) / 2;
+    CGRect textRect = CGRectMake(x, y, size.width, size.height);
+    
+    if([avatarText respondsToSelector:@selector(drawInRect:withAttributes:)]){
+        //[[UIColor clearColor] setFill];
+        //[[UIBezierPath bezierPathWithRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)] fill];
+        
+        NSDictionary *att = @{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        [avatarText drawInRect:textRect withAttributes:att];
+    }
+    
+    UIImage *avatar = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    return avatar;
+}
+
+- (CALayer *) layerForEmptyAvatar:(UIImage *)image2 text:(NSString *)text {
+    NSString *avatarText = @"?";
+    NSString *temp = [text stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+    NSArray *parts = [temp componentsSeparatedByString: @" "];
+    
+    if([parts count] > 0){
+        NSString *firstNameChar = [parts[0] substringToIndex:1];
+        
+        if([parts count] > 1){
+            NSString *lastNameChar = [parts[1] substringToIndex:1];
+            avatarText = [NSString stringWithFormat:@"%@%@", firstNameChar, lastNameChar];
+        }
+        else{
+            avatarText = firstNameChar;
+        }
+    }
+    
+    CGSize size = [avatarText sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:20.0f]}];
+    CGFloat x = (PHOTO_SIZE - size.width) / 2;
+    CGFloat y = (PHOTO_SIZE - size.height) / 2;
+    CGRect textRect = CGRectMake(x, y, size.width, size.height);
+    
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
+    
+    if([avatarText respondsToSelector:@selector(drawInRect:withAttributes:)]){
+        //[[UIColor clearColor] setFill];
+        //[[UIBezierPath bezierPathWithRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)] fill];
+        
+        NSDictionary *att = @{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor whiteColor]};
+        [avatarText drawInRect:textRect withAttributes:att];
+    }
+    
+    UIImage *textImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    CALayer* textLayer = [CALayer new];
+    CGRect lRect = textLayer.frame;
+    lRect.origin = CGPointMake(0, 0);
+    lRect.size = CGSizeMake(PHOTO_SIZE, PHOTO_SIZE);
+    textLayer.frame = lRect;
+    textLayer.contents = (id)textImage.CGImage;
+    
+    return textLayer;
 }
 
 #pragma mark -
@@ -478,8 +630,9 @@
                                                                     toItem:nil
                                                                  attribute:0
                                                                 multiplier:1
-                                                                  constant:0];
+                                                                  constant:CURTAIN_HEIGHT];
     [_curtainView addConstraint: curtainHeigtContraint];
+    isCurtainOpen = YES;
     
     [self setupCurtainArrowView];
     [self layoutFirstRowCurtain];
@@ -500,8 +653,15 @@
     
     _curtainArrowButton.adjustsImageWhenHighlighted = NO;
     
-    [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down.png"] forState:UIControlStateNormal];
-    [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down_active.png"] forState:UIControlStateHighlighted];
+    if(isCurtainOpen){
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_up.png"] forState:UIControlStateNormal];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_up_active.png"] forState:UIControlStateHighlighted];
+    }
+    else{
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down.png"] forState:UIControlStateNormal];
+        [_curtainArrowButton setBackgroundImage:[UIImage imageNamed:@"bg_btn_slide_down_active.png"] forState:UIControlStateHighlighted];
+    }
+    
     [self.view addSubview:_curtainArrowButton];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton

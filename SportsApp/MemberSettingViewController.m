@@ -15,6 +15,9 @@
 #import "AppColors.h"
 #import "SportInfo.h"
 #import "SportItemUI.h"
+#import "MemberSettings.h"
+#import "AppNetHelper.h"
+#import "MBProgressHUD.h"
 
 #define PADDING_H 12.5
 #define MAIN_SCROLL_CONTENT_HEIGHT 415
@@ -73,6 +76,9 @@
 @end
 
 @implementation MemberSettingViewController{
+    MemberSettings *memberSettings;
+    BOOL settingWasChanged;
+    
     // level
     UIImage* grayStarImage;
     UIImage* activeStarImage;
@@ -89,50 +95,55 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"Мои настройки";
     [self setNavTitle:@"Мои настройки"];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     [self setNavigationItems];
     
     kScrollItemWidht = self.view.bounds.size.width - PADDING_H * 2;
     
-    _sportInfoItems = [[NSMutableArray alloc] initWithCapacity:6];
+    _sportInfoItems = [[NSMutableArray alloc] initWithCapacity:7];
     
-    SportInfo* sport1 = [SportInfo new];
-    sport1.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
-    sport1.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
-    sport1.title = @"Футбол";
-    [_sportInfoItems addObject:sport1];
+    SportInfo* football = [SportInfo new];
+    football.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
+    football.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
+    football.title = @"Футбол";
+    [_sportInfoItems addObject:football];
     
-    SportInfo* sport2 = [SportInfo new];
-    sport2.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
-    sport2.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
-    sport2.title = @"Баскетбол";
-    [_sportInfoItems addObject:sport2];
+    SportInfo* basketball = [SportInfo new];
+    basketball.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
+    basketball.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
+    basketball.title = @"Баскетбол";
+    [_sportInfoItems addObject:basketball];
     
-    SportInfo* sport3 = [SportInfo new];
-    sport3.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
-    sport3.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
-    sport3.title = @"Волейбол";
-    [_sportInfoItems addObject:sport3];
+    SportInfo* volleyball = [SportInfo new];
+    volleyball.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
+    volleyball.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    volleyball.title = @"Волейбол";
+    [_sportInfoItems addObject:volleyball];
     
-    SportInfo* sport4 = [SportInfo new];
-    sport4.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
-    sport4.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
-    sport4.title = @"Футбол 1";
-    [_sportInfoItems addObject:sport4];
+    SportInfo* handball = [SportInfo new];
+    handball.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
+    handball.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
+    handball.title = @"Гандбол";
+    [_sportInfoItems addObject:handball];
     
-    SportInfo* sport5 = [SportInfo new];
-    sport5.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
-    sport5.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
-    sport5.title = @"Баскетбол 1";
-    [_sportInfoItems addObject:sport5];
+    SportInfo* tennis = [SportInfo new];
+    tennis.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
+    tennis.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
+    tennis.title = @"Тенис";
+    [_sportInfoItems addObject:tennis];
     
-    SportInfo* sport6 = [SportInfo new];
-    sport6.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
-    sport6.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
-    sport6.title = @"Волейбол 1";
-    [_sportInfoItems addObject:sport6];
+    SportInfo* hockey = [SportInfo new];
+    hockey.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
+    hockey.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    hockey.title = @"Хоккей";
+    [_sportInfoItems addObject:hockey];
+    
+    SportInfo* squash = [SportInfo new];
+    squash.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
+    squash.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    squash.title = @"Сквош";
+    [_sportInfoItems addObject:squash];
     
     
     grayStarImage = [UIImage imageNamed:@"icon_star.png"];
@@ -144,6 +155,10 @@
 - (void) viewWillAppear:(BOOL)animated{
     [super viewWillAppear:animated];
     
+    [self loadSettings];
+}
+
+- (void) makeUI {
     //[self setupButtonInParentView:self.view];
     [self setupContainerScroll];
     [self setupContainerView];
@@ -151,6 +166,33 @@
     [self setupSportsGroupInParentView:_containerView];
     [self setupLevelsGroupInParentView:_containerView];
     [self setupAgesGroupInParentView:_containerView];
+}
+
+- (void) loadSettings {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [AppNetHelper settingsForUser:1 completionHandler:^(MemberSettings *settings, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                
+                [alert show];
+            }
+            else{
+                memberSettings = settings;
+                [self makeUI];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -167,17 +209,18 @@
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
     
-    UIButton* btnAdd = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnAdd setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnAdd addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnAdd setTitle:@"Сохранить" forState:UIControlStateNormal];
-    btnAdd.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    [btnAdd setUserInteractionEnabled:NO];
-    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    [btnAdd setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
-    [btnAdd sizeToFit];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnAdd];
-    [btnAdd setEnabled:NO]; // !!
+    _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [_btnSave setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+    [_btnSave addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
+    [_btnSave setTitle:@"Сохранить" forState:UIControlStateNormal];
+    _btnSave.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    [_btnSave setUserInteractionEnabled:NO];
+    [_btnSave setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    [_btnSave setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+    [_btnSave sizeToFit];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:_btnSave];
+    [_btnSave setEnabled:NO]; // !!
+    settingWasChanged = NO;
 }
 
 #pragma mark -
@@ -468,7 +511,35 @@
         uiItem.lable.textAlignment = NSTextAlignmentCenter;
         uiItem.lable.font = [UIFont systemFontOfSize:9.0f];
         
-        if(i == 0){
+        BOOL active = NO;
+        switch(i){
+            case IND_FOOTBALL:
+                active = memberSettings.football;
+                break;
+            case IND_BASKETBALL:
+                active = memberSettings.basketball;
+                break;
+            case IND_VOLLEYBALL:
+                active = memberSettings.volleyball;
+                break;
+            case IND_HANDBALL:
+                active = memberSettings.handball;
+                break;
+            case IND_TENNIS:
+                active = memberSettings.tennis;
+                break;
+            case IND_HOCKEY:
+                active = memberSettings.hockey;
+                break;
+            case IND_SQUASH:
+                active = memberSettings.squash;
+                break;
+                
+            default:
+                break;
+        }
+        
+        if(active){
             uiItem.active = YES;
             uiItem.icon.image = sport.activeImage;
             uiItem.lable.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
@@ -644,19 +715,36 @@
     _lbTitleLevelGrpup = [UILabel new];
     [self setupTitle:_lbTitleLevelGrpup forGroup:_levelGroupView withText:@"Мой уровень:" andWidht:106];
     
+    BOOL isLevelOne, isLevelTwo, isLevelThree;
+    if(memberSettings.level == LEVEL_1){
+        isLevelOne = YES;
+        isLevelTwo = NO;
+        isLevelThree = NO;
+    }
+    else if(memberSettings.level == LEVEL_2){
+        isLevelOne = YES;
+        isLevelTwo = YES;
+        isLevelThree = NO;
+    }
+    else if(memberSettings.level == LEVEL_3){
+        isLevelOne = YES;
+        isLevelTwo = YES;
+        isLevelThree = YES;
+    }
+    
     // icons !! order is important
-    [self setupIconTwoStar];
-    [self setupIconOneStar];
-    [self setupIconThreeStar];
+    [self setupIconTwoStar:isLevelOne];
+    [self setupIconOneStar:isLevelTwo];
+    [self setupIconThreeStar:isLevelThree];
     [self setLevelImagesGestureRecognizers];
 }
 
 #pragma mark -
 #pragma mark Layout LEVEL icons
-- (void) setupIconTwoStar {
+- (void) setupIconTwoStar:(BOOL)active {
     _ivTwoStarLevel = [UIImageView new];
     _ivTwoStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivTwoStarLevel.image = grayStarImage;
+    _ivTwoStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivTwoStarLevel];
     [NSLayoutConstraint setWidht:27 height:25 forView:_ivTwoStarLevel];
     
@@ -676,10 +764,10 @@
                                                                  constant:0]];
 }
 
-- (void) setupIconOneStar {
+- (void) setupIconOneStar:(BOOL)active {
     _ivOneStarLevel = [UIImageView new];
     _ivOneStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivOneStarLevel.image = grayStarImage;
+    _ivOneStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivOneStarLevel];
     [NSLayoutConstraint setWidht:27 height:25 forView:_ivOneStarLevel];
     
@@ -701,10 +789,10 @@
     
 }
 
-- (void) setupIconThreeStar {
+- (void) setupIconThreeStar:(BOOL)active {
     _ivThreeStarLevel = [UIImageView new];
     _ivThreeStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivThreeStarLevel.image = grayStarImage;
+    _ivThreeStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivThreeStarLevel];
     [NSLayoutConstraint setWidht:27 height:25 forView:_ivThreeStarLevel];
     
@@ -773,25 +861,34 @@
     _lbTitleAgeGrpup = [UILabel new];
     [self setupTitle:_lbTitleAgeGrpup forGroup:_ageGroupView withText:@"Мой возраст:" andWidht:106];
     
+    BOOL isAgeOne = (memberSettings.age == AGE_20) ? YES : NO;
+    BOOL isAgeTwo = (memberSettings.age == AGE_20_28) ? YES : NO;
+    BOOL isAgeThree = (memberSettings.age == AGE_28_35) ? YES : NO;
+    BOOL isAgeFour = (memberSettings.age == AGE_35) ? YES : NO;
+    
     // icons !! order is important
-    [self setupIconAgeTwo];
-    [self setupIconAgeOne];
-    [self setupIconAgeThree];
-    [self setupIconAgeFour];
+    [self setupIconAgeTwo:isAgeTwo];
+    [self setupIconAgeOne:isAgeOne];
+    [self setupIconAgeThree:isAgeThree];
+    [self setupIconAgeFour:isAgeFour];
     [self setAgeImagesGestureRecognizers];
     
     // lables
     _lbTitleOneAge = [UILabel new];
-    [self setupAgeLable:_lbTitleOneAge forView:_ivOneAge withText:@"до 20" andColor:[UIColor colorWithRGBA:TXT_ACTIVE_COLOR]];
+    UIColor *oneAgeColor = (isAgeOne) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    [self setupAgeLable:_lbTitleOneAge forView:_ivOneAge withText:@"до 20" andColor:oneAgeColor];
     
     _lbTitleTwoAge = [UILabel new];
-    [self setupAgeLable:_lbTitleTwoAge forView:_ivTwoAge withText:@"20-28" andColor:[UIColor colorWithRGBA:TXT_INACTIVE_COLOR]];
+    UIColor *twoAgeColor = (isAgeTwo) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    [self setupAgeLable:_lbTitleTwoAge forView:_ivTwoAge withText:@"20-28" andColor:twoAgeColor];
     
     _lbTitleThreeAge = [UILabel new];
-    [self setupAgeLable:_lbTitleThreeAge forView:_ivThreeAge withText:@"28-35" andColor:[UIColor colorWithRGBA:TXT_INACTIVE_COLOR]];
+    UIColor *threeAgeColor = (isAgeThree) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    [self setupAgeLable:_lbTitleThreeAge forView:_ivThreeAge withText:@"28-35" andColor:threeAgeColor];
     
     _lbTitleFourAge = [UILabel new];
-    [self setupAgeLable:_lbTitleFourAge forView:_ivFourAge withText:@"после 35" andColor:[UIColor colorWithRGBA:TXT_INACTIVE_COLOR]];
+    UIColor *fourAgeColor = (isAgeFour) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    [self setupAgeLable:_lbTitleFourAge forView:_ivFourAge withText:@"после 35" andColor:fourAgeColor];
 }
 
 - (void) setupTitleAge {
@@ -801,10 +898,10 @@
 
 #pragma mark -
 #pragma mark Layout AGE icons
-- (void) setupIconAgeOne {
+- (void) setupIconAgeOne:(BOOL)active {
     _ivOneAge = [UIImageView new];
     _ivOneAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivOneAge.image = activeAgeImage;
+    _ivOneAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivOneAge];
     [NSLayoutConstraint setWidht:36 height:35 forView:_ivOneAge];
     
@@ -824,10 +921,10 @@
                                                                constant:-33.5]];
 }
 
-- (void) setupIconAgeTwo {
+- (void) setupIconAgeTwo:(BOOL)active {
     _ivTwoAge = [UIImageView new];
     _ivTwoAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivTwoAge.image = grayAgeImage;
+    _ivTwoAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivTwoAge];
     [NSLayoutConstraint setWidht:36 height:35 forView:_ivTwoAge];
     
@@ -847,10 +944,10 @@
                                                                  constant:-16.75f]];
 }
 
-- (void) setupIconAgeThree {
+- (void) setupIconAgeThree:(BOOL)active {
     _ivThreeAge = [UIImageView new];
     _ivThreeAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivThreeAge.image = grayAgeImage;
+    _ivThreeAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivThreeAge];
     [NSLayoutConstraint setWidht:36 height:35 forView:_ivThreeAge];
     
@@ -870,10 +967,10 @@
                                                                constant:16.75f]];
 }
 
-- (void) setupIconAgeFour {
+- (void) setupIconAgeFour:(BOOL)active {
     _ivFourAge = [UIImageView new];
     _ivFourAge.translatesAutoresizingMaskIntoConstraints = NO;
-    _ivFourAge.image = grayAgeImage;
+    _ivFourAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivFourAge];
     [NSLayoutConstraint setWidht:36 height:35 forView:_ivFourAge];
     
@@ -1008,6 +1105,8 @@
 #pragma mark -
 #pragma mark Sport
 - (void) sportIconClick:(UIGestureRecognizer*)gestureRecognizer {
+    [self enableSaveButton];
+    
     UIImageView* icon = (UIImageView*)gestureRecognizer.view;
     
     NSUInteger sportIndex = icon.tag;
@@ -1015,7 +1114,42 @@
         SportItemUI* sportUI = _sportUIItems[sportIndex];
         SportInfo* sportInfo = _sportInfoItems[sportIndex];
         
-        if(sportUI.active){
+        BOOL active = NO;
+        switch(sportIndex){
+            case IND_FOOTBALL:
+                memberSettings.football = !memberSettings.football;
+                active = memberSettings.football;
+                break;
+            case IND_BASKETBALL:
+                memberSettings.basketball = !memberSettings.basketball;
+                active = memberSettings.basketball;
+                break;
+            case IND_VOLLEYBALL:
+                memberSettings.volleyball = !memberSettings.volleyball;
+                active = memberSettings.volleyball;
+                break;
+            case IND_HANDBALL:
+                memberSettings.handball = !memberSettings.handball;
+                active = memberSettings.handball;
+                break;
+            case IND_TENNIS:
+                memberSettings.tennis = !memberSettings.tennis;
+                active = memberSettings.tennis;
+                break;
+            case IND_HOCKEY:
+                memberSettings.hockey = !memberSettings.hockey;
+                active = memberSettings.hockey;
+                break;
+            case IND_SQUASH:
+                memberSettings.squash = !memberSettings.squash;
+                active = memberSettings.squash;
+                break;
+                
+            default:
+                break;
+        }
+        
+        if(!active){
             sportUI.icon.image = sportInfo.inactiveImage;
             sportUI.lable.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
             sportUI.active = NO;
@@ -1031,6 +1165,8 @@
 #pragma mark -
 #pragma mark Level
 - (void) oneStarClick {
+    [self enableSaveButton];
+    
     twoStarStatus = threeStarStatus = NO;
     _ivTwoStarLevel.image = grayStarImage;
     _ivThreeStarLevel.image = grayStarImage;
@@ -1038,32 +1174,46 @@
     if(oneStarStatus){
         oneStarStatus = NO;
         _ivOneStarLevel.image = grayStarImage;
+        
+        memberSettings.level = LEVEL_UNKNOWN;
     }
     else{
         oneStarStatus = YES;
         _ivOneStarLevel.image = activeStarImage;
+        
+        memberSettings.level = LEVEL_1;
     }
 }
 
 - (void) twoStarClick {
+    [self enableSaveButton];
+    
     oneStarStatus = twoStarStatus = YES;
     threeStarStatus = NO;
     _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = grayStarImage;
+    
+    memberSettings.level = LEVEL_2;
 }
 
 - (void) threeStarClick {
+    [self enableSaveButton];
+    
     oneStarStatus = twoStarStatus = threeStarStatus = YES;
     
     _ivOneStarLevel.image = activeStarImage;
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = activeStarImage;
+    
+    memberSettings.level = LEVEL_3;
 }
 
 #pragma mark -
 #pragma mark Age
 - (void) oneAgeClick {
+    [self enableSaveButton];
+    
     _ivOneAge.image = activeAgeImage;
     _ivTwoAge.image = grayAgeImage;
     _ivThreeAge.image = grayAgeImage;
@@ -1073,9 +1223,13 @@
     _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    
+    memberSettings.age = AGE_20;
 }
 
 - (void) twoAgeClick {
+    [self enableSaveButton];
+    
     _ivOneAge.image = grayAgeImage;
     _ivTwoAge.image = activeAgeImage;
     _ivThreeAge.image = grayAgeImage;
@@ -1085,9 +1239,13 @@
     _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    
+    memberSettings.age = AGE_20_28;
 }
 
 - (void) threeAgeClick {
+    [self enableSaveButton];
+    
     _ivOneAge.image = grayAgeImage;
     _ivTwoAge.image = grayAgeImage;
     _ivThreeAge.image = activeAgeImage;
@@ -1097,9 +1255,13 @@
     _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
+    
+    memberSettings.age = AGE_28_35;
 }
 
 - (void) fourAgeClick {
+    [self enableSaveButton];
+    
     _ivOneAge.image = grayAgeImage;
     _ivTwoAge.image = grayAgeImage;
     _ivThreeAge.image = grayAgeImage;
@@ -1109,6 +1271,8 @@
     _lbTitleTwoAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
+    
+    memberSettings.age = AGE_35;
 }
 
 #pragma mark -
@@ -1124,6 +1288,12 @@
 
 #pragma mark -
 #pragma mark Other methods
+- (void) enableSaveButton {
+    settingWasChanged = YES;
+    [_btnSave setEnabled:YES];
+    [_btnSave setUserInteractionEnabled:YES];
+}
+
 # pragma mark -
 # pragma mark Navigation button click
 - (void) btnCancelClick {
@@ -1131,6 +1301,36 @@
 }
 
 - (void) btnAddClick {
-    NSLog(@"btnAddClick");
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [AppNetHelper saveSettings:memberSettings forUser:1 completionHandler:^(NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                
+                [alert show];
+            }
+            else{
+                [self.navigationController popViewControllerAnimated:YES];
+            }
+        });
+    }];
 }
+
 @end
+
+
+
+
+
+
+

@@ -12,7 +12,7 @@
 #define BAR_TINT_COLOR 0x32c24dFF
 #define BAR_TEXT_COLOR 0x919191ff
 
-#define BG_GRAY_COLOR 0xf8f8f8ff
+#define BG_GRAY_COLOR 0xf2f2f4ff
 #define CELL_SEPARATOR_COLOR 0xdbd7d7ff
 #define ROW_SEPARATOR_COLOR 0xb2b2b2ff
 
@@ -26,7 +26,7 @@
 
 #define TXT_LITTLE_COLOR 0x201f1fff
 
-#define BORDER_COLOR 0xe7e5e5ff
+#define BORDER_COLOR 0xc7c7c7ff
 #define VIEW_SEPARATOR_COLOR 0xd1d1d1ff
 
 #define BTN_TITLE_ACTIVE_COLOR 0x929292ff

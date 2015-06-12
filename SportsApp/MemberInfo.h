@@ -10,9 +10,10 @@
 
 @interface MemberInfo : NSObject
 
+@property (nonatomic) NSUInteger userId;
 @property (copy, nonatomic) NSString* icon;
 @property (copy, nonatomic) NSString* name;
 
-@property (nonatomic) BOOL selected;
+@property (nonatomic) BOOL invited;
 
 @end

@@ -13,5 +13,9 @@
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) UINavigationController *navigationController;
 
+@property (nonatomic) NSUInteger currentUserId;
+
++ (AppDelegate*) instance;
+
 @end
 

@@ -10,6 +10,8 @@
 #import "GamesListViewController.h"
 #import "MemberViewController.h"
 #import "NSLayoutConstraint+Helper.h"
+#import "ZSNetManager.h"
+#import "AppDelegate.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -121,6 +123,8 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) goToNextScreen {
+    [AppDelegate instance].currentUserId = 1; // TEMP
+    
     //[[self navigationController] setNavigationBarHidden:NO animated:YES];
     GamesListViewController *controller = [[GamesListViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
@@ -129,6 +133,17 @@ static NSArray* SCOPE = nil;
 #pragma mark -
 #pragma mark LOGIN
 - (void) loginWithFacebook {
+    if(![ZSNetManager isInternetAvaliable]){
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"Нет подключения к интернету"
+                              message:nil
+                              delegate:self
+                              cancelButtonTitle:@"Отмена"
+                              otherButtonTitles: nil];
+        [alert show];
+        return;
+    }
+    
     FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
     if (fbToken) {
         // User is logged in, do work such as go to next view controller.
@@ -157,6 +172,17 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) loginWithVkontakte {
+    if(![ZSNetManager isInternetAvaliable]){
+        UIAlertView *alert = [[UIAlertView alloc]
+                              initWithTitle:@"Нет подключения к интернету"
+                              message:nil
+                              delegate:self
+                              cancelButtonTitle:@"Отмена"
+                              otherButtonTitles: nil];
+        [alert show];
+        return;
+    }
+    
     [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
     if ([VKSdk wakeUpSession]){
         NSLog(@"VK: %@", [VKSdk getAccessToken].accessToken);

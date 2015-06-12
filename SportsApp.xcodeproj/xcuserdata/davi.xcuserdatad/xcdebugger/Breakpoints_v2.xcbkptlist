@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/MemberViewController.m"
-            timestampString = "454786077.481715"
+            timestampString = "455811630.022999"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "88"
-            endingLineNumber = "88"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
             landmarkName = "-tableView:cellForRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/MemberViewController.m"
-            timestampString = "454786077.481715"
+            timestampString = "455811557.440996"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/LoginViewController.m"
-            timestampString = "454770728.41642"
+            timestampString = "455813164.957746"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "79"
+            endingLineNumber = "79"
             landmarkName = "-viewDidLoad"
             landmarkType = "5">
          </BreakpointContent>
@@ -116,13 +116,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/NewEvenViewController.m"
-            timestampString = "454845671.519374"
+            timestampString = "455809592.782677"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "156"
-            endingLineNumber = "156"
-            landmarkName = "-setupFieldsGroup"
-            landmarkType = "5">
+            startingLineNumber = "206"
+            endingLineNumber = "206"
+            landmarkName = "@implementation NewEvenViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -132,12 +132,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/NewEvenViewController.m"
-            timestampString = "454845671.519374"
+            timestampString = "455809592.782677"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "742"
-            endingLineNumber = "742"
-            landmarkName = "-datePickerDateChanged:"
+            startingLineNumber = "926"
+            endingLineNumber = "926"
+            landmarkName = "-pickerView:numberOfRowsInComponent:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -148,11 +148,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/LoginViewController.m"
-            timestampString = "454318983.365168"
+            timestampString = "455813164.957746"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
             landmarkName = "@implementation LoginViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -164,11 +164,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/LoginViewController.m"
-            timestampString = "454770728.41642"
+            timestampString = "455813164.957746"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
             landmarkName = "-loginWithVkontakte"
             landmarkType = "5">
          </BreakpointContent>
@@ -180,11 +180,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/InviteUserViewController.m"
-            timestampString = "454785398.370781"
+            timestampString = "455810670.58385"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
+            startingLineNumber = "156"
+            endingLineNumber = "156"
             landmarkName = "-layoutSearchBarInContainer:"
             landmarkType = "5">
          </BreakpointContent>
@@ -212,11 +212,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/InviteUserViewController.m"
-            timestampString = "454785398.370781"
+            timestampString = "455811630.022999"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "511"
-            endingLineNumber = "511"
+            startingLineNumber = "586"
+            endingLineNumber = "586"
             landmarkName = "-keyboardWillShow:"
             landmarkType = "5">
          </BreakpointContent>
@@ -276,11 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455466904.279527"
+            timestampString = "455827038.526357"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "746"
-            endingLineNumber = "746"
+            startingLineNumber = "908"
+            endingLineNumber = "908"
             landmarkName = "-createPeopleInGameLable"
             landmarkType = "5">
          </BreakpointContent>
@@ -292,11 +292,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455466904.279527"
+            timestampString = "455827038.526357"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "943"
-            endingLineNumber = "943"
+            startingLineNumber = "1105"
+            endingLineNumber = "1105"
             landmarkName = "-showGamers"
             landmarkType = "5">
          </BreakpointContent>
@@ -308,11 +308,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455459409.493678"
+            timestampString = "455642059.016719"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "234"
-            endingLineNumber = "234"
+            startingLineNumber = "259"
+            endingLineNumber = "259"
             landmarkName = "-tableView:heightForRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
@@ -324,11 +324,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455459409.493678"
+            timestampString = "455642059.016719"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "279"
-            endingLineNumber = "279"
+            startingLineNumber = "304"
+            endingLineNumber = "304"
             landmarkName = "-tableView:cellForRowAtIndexPath:"
             landmarkType = "5">
          </BreakpointContent>
@@ -340,12 +340,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatTableViewCell.m"
-            timestampString = "455190260.559675"
+            timestampString = "455823256.018515"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "102"
-            endingLineNumber = "102"
-            landmarkName = "+heightRowForMessage:andWidth:"
+            startingLineNumber = "106"
+            endingLineNumber = "106"
+            landmarkName = "+heightRowForMessage:andWidth:showUserName:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -355,13 +355,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SportsApp/ChatTableViewCell.m"
-            timestampString = "455190260.559675"
+            filePath = "SportsApp/GamesListViewController.m"
+            timestampString = "455815146.469544"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "99"
-            endingLineNumber = "99"
-            landmarkName = "+heightRowForMessage:andWidth:"
+            startingLineNumber = "302"
+            endingLineNumber = "302"
+            landmarkName = "-showData:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

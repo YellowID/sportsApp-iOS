@@ -14,10 +14,16 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 #import "MemberInfo.h"
+#import "AppNetHelper.h"
+#import "MBProgressHUD.h"
 
 #define PHOTO_SIZE 40
 #define PADDING_H 12
 #define SEARCH_HEIGHT 38
+
+#define ALERT_ERROR 1
+#define ALERT_INVITE_USER 2
+#define ALERT_INVITE_SENT 3
 
 @interface InviteUserViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
@@ -37,6 +43,8 @@
 @implementation InviteUserViewController{
     NSMutableArray* members;
     NSMutableArray* filteredMembers;
+    NSUInteger selectedUserId;
+    NSString *emailForInvite;
     
     NSLayoutConstraint* tableHeigtContraint;
 }
@@ -237,6 +245,7 @@
     [_tfEmail addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     
     _tfEmail.delegate = self;
+    _tfEmail.keyboardType = UIKeyboardTypeEmailAddress;
     [_tfEmail setBorderStyle:UITextBorderStyleRoundedRect];
     _tfEmail.placeholder = @"Введите email";
     _tfEmail.textColor = [UIColor colorWithRGBA:TXT_SEARCH_FIELD_COLOR];
@@ -382,7 +391,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    //NSString* selectedCity = members[indexPath.row];
+    MemberInfo *member = members[indexPath.row];
+    selectedUserId = member.userId;
     
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle:@"Пригласить этого участника?"
@@ -390,6 +400,7 @@
                           delegate:self
                           cancelButtonTitle:@"Отмена"
                           otherButtonTitles:@"Да", nil];
+    alert.tag = ALERT_INVITE_USER;
     [alert show];
     
     //[_tableView reloadData];
@@ -425,7 +436,36 @@
 }
 
 - (void) btnInviteClick {
-    NSLog(@"btnInviteClick");
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [AppNetHelper inviteUserWithEmail:nil forGame:_gameId completionHandler:^(NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                alert.tag = ALERT_ERROR;
+                [alert show];
+            }
+            else{
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:@"Приглашение отправлено"
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                alert.tag = ALERT_INVITE_SENT;
+                [alert show];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -441,7 +481,9 @@
 
 - (void) textFieldDidChange:(UITextField *)textField {
     if (textField == _tfEmail){
-        if([textField.text isEmpty]){
+        if(![textField.text isValidEmail]){
+            emailForInvite = nil;
+            
             _btnInvite.enabled = NO;
             _btnInvite.userInteractionEnabled = NO;
             _btnInvite.layer.backgroundColor = [[UIColor clearColor] CGColor];
@@ -452,6 +494,8 @@
             
         }
         else{
+            emailForInvite = textField.text;
+            
             _btnInvite.enabled = YES;
             _btnInvite.userInteractionEnabled = YES;
             _btnInvite.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
@@ -465,11 +509,18 @@
 #pragma mark -
 #pragma mark UISearchBar delegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    //NSLog(@"%@", searchText);
+    [AppNetHelper findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(!errorMessage){
+                members = arrayData;
+                [_tableView reloadData];
+            }
+        });
+    }];
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    [self loadData];
+    //[self loadData];
     
     _inviteFromEmailViewGroup.hidden = YES;
     _tableView.hidden = NO;
@@ -481,9 +532,33 @@
 # pragma mark -
 # pragma mark Alerts buttons
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if(buttonIndex == 1){
-        // send data
-        NSLog(@"alertView");
+    if(alertView.tag == ALERT_INVITE_USER){
+        if(buttonIndex == 1){
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            
+            [AppNetHelper inviteUserWithId:selectedUserId forGame:_gameId completionHandler:^(NSString *errorMessage) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    
+                    if(errorMessage){
+                        UIAlertView *alert = [[UIAlertView alloc]
+                                              initWithTitle:nil
+                                              message:errorMessage
+                                              delegate:nil
+                                              cancelButtonTitle:@"Ок"
+                                              otherButtonTitles:nil];
+                        alert.tag = ALERT_ERROR;
+                        [alert show];
+                    }
+                    else{
+                        // update table
+                        
+                    }
+                });
+            }];
+        }
     }
 }
 
@@ -495,7 +570,7 @@
         MemberInfo* member = [MemberInfo new];
         member.name = [NSString stringWithFormat:@"User Name %lu", (unsigned long)i];
         member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-        member.selected = YES;
+        member.invited = YES;
         
         [members addObject:member];
     }

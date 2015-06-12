@@ -10,6 +10,9 @@
 #import "UIViewController+Navigation.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "MemberInfo.h"
+#import "AppNetHelper.h"
+#import "MBProgressHUD.h"
 
 #define PHOTO_SIZE 40
 
@@ -48,6 +51,21 @@
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     self.tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    [AppNetHelper membersForGame:1 completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(!errorMessage){
+                _members = arrayData;
+                [_tableView reloadData];
+            }
+        });
+    }];
 }
 
 - (void) btnCloseClick {
@@ -93,6 +111,8 @@
     
     [cell setBackgroundColor:[UIColor clearColor]];
     
+    MemberInfo* member = _members[indexPath.row];
+    
     UIImage* im = [UIImage imageNamed:@"photo.png"];
     UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
     [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
@@ -105,7 +125,7 @@
     cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
     cell.imageView.layer.masksToBounds = YES;
     
-    cell.textLabel.text = @"Павел Бурленко";
+    cell.textLabel.text = member.name;
     cell.textLabel.textColor = [UIColor blackColor];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     

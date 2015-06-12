@@ -10,4 +10,6 @@
 
 @interface InviteUserViewController : UIViewController
 
+@property (nonatomic) NSUInteger gameId;
+
 @end

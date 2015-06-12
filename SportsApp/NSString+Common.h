@@ -22,4 +22,6 @@
 - (NSString*) removeSuffixFromFirstOccurrencesOfString:(NSString*)str;
 - (NSString*) removeSuffixFromFirstOccurrencesOfCaseInsensitiveString:(NSString*)str;
 
+- (BOOL) isValidEmail;
+
 @end
