@@ -114,7 +114,7 @@
     MemberInfo* member = _members[indexPath.row];
     
     UIImage* im = [UIImage imageNamed:@"photo.png"];
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), YES, 0);
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
     [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
     UIImage* im2 = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();

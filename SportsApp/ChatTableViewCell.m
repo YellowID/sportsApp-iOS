@@ -55,13 +55,12 @@
         _backgroundCallout = [UIImageView new];
         _backgroundCallout.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_backgroundCallout];
-         //backgroundCallout.backgroundColor = [UIColor blueColor];
         
         _userNameLabel = [UILabel new];
         _userNameLabel.font = [UIFont boldSystemFontOfSize:NAME_FONT_SIZE];
         _userNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_userNameLabel];
-        _userNameLabel.backgroundColor = [UIColor greenColor];
+        //_userNameLabel.backgroundColor = [UIColor greenColor];
         
         _userMessage = [UITextView new];
         _userMessage.translatesAutoresizingMaskIntoConstraints = NO;
@@ -75,14 +74,14 @@
         [_userMessage setFont:[UIFont systemFontOfSize:MSG_FONT_SIZE]];
         [_messageView addSubview:_userMessage];
         //[_messageView sizeToFit];
-        _userMessage.backgroundColor = [UIColor greenColor];
+        //_userMessage.backgroundColor = [UIColor greenColor];
         
         _timeLabel = [UILabel new];
         _timeLabel.font = [UIFont systemFontOfSize:TIME_FONT_SIZE];
         [_timeLabel sizeToFit];
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_timeLabel];
-        _timeLabel.backgroundColor = [UIColor greenColor];
+        //_timeLabel.backgroundColor = [UIColor greenColor];
     }
     
     return self;
@@ -245,6 +244,15 @@
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
                                                       constant:CONTENT_PADDING_LEFT]];
+    
+    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userNameLabel
+                                                             attribute:NSLayoutAttributeRight
+                                                             relatedBy:NSLayoutRelationLessThanOrEqual
+                                                                toItem:_messageView
+                                                             attribute:NSLayoutAttributeRight
+                                                            multiplier:1
+                                                              constant:-CONTENT_PADDING_RIGHT]];
+    
     CGFloat userNameHeight = 0;
     if(!self.showUserName)
         userNameHeight = USERNAME_LABLE_HEIGHT;

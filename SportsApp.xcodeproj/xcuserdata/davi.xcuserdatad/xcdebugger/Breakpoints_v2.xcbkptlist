@@ -276,11 +276,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455827038.526357"
+            timestampString = "455827383.999786"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "908"
-            endingLineNumber = "908"
+            startingLineNumber = "906"
+            endingLineNumber = "906"
             landmarkName = "-createPeopleInGameLable"
             landmarkType = "5">
          </BreakpointContent>
@@ -292,11 +292,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SportsApp/ChatViewController.m"
-            timestampString = "455827038.526357"
+            timestampString = "455827383.999786"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1105"
-            endingLineNumber = "1105"
+            startingLineNumber = "1103"
+            endingLineNumber = "1103"
             landmarkName = "-showGamers"
             landmarkType = "5">
          </BreakpointContent>

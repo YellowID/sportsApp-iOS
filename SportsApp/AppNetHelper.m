@@ -116,7 +116,7 @@
 + (void) gamesForUser:(NSUInteger)userId completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
     // GET
     // IN: userId
-    // OUT: JSON data - [{gameName, address, addressName, date, time, (bool)admin, participateStatus}, {...}, ...]
+    // OUT: JSON data - [{gameName, address, addressName, date, time, adminId, participateStatus}, {...}, ...]
     
     NSMutableArray *games = [NSMutableArray new];
     for(int i = 0; i < 10; ++i){
