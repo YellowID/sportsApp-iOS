@@ -2,7 +2,7 @@
 //  NSLayoutConstraint+Helper.m
 //  SportsApp
 //
-//  Created by sergeyZ on 24.05.15.
+//  Created by sergeyZ on 27.05.15.
 //
 //
 
@@ -53,104 +53,97 @@
                                                        constant:h]];
 }
 
-+ (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:anchorView
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
+#pragma mark -
+#pragma mark align
++ (NSLayoutConstraint *) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeCenterX
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeCenterX
+                                                                 multiplier:1
+                                                                   constant:0];
+    [container addConstraint: constraint];
+    return constraint;
 }
 
-+ (void) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeCenterY
-                                                          relatedBy:0
-                                                             toItem:anchorView
-                                                          attribute:NSLayoutAttributeCenterY
-                                                         multiplier:1
-                                                           constant:0]];
++ (NSLayoutConstraint *) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint *constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeCenterY
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeCenterY
+                                                                 multiplier:1
+                                                                   constant:0];
+    [container addConstraint: constraint];
+    return constraint;
 }
 
-+ (void) stretch:(UIView*)view inContainer:(UIView*)container {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
+#pragma mark -
+#pragma mark stretch
++ (void) stretch:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding {
+    [NSLayoutConstraint stretchHorizontal:view inContainer:container withPadding:padding];
+    [NSLayoutConstraint stretchVertical:view inContainer:container withPadding:padding];
 }
 
-+ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
++ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding {
+    [NSLayoutConstraint setLeftPadding:padding forView:view inContainer:container];
+    [NSLayoutConstraint setRightPadding:padding forView:view inContainer:container];
 }
 
-+ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
++ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding {
+    [NSLayoutConstraint setTopPadding:padding forView:view inContainer:container];
+    [NSLayoutConstraint setBottomPadding:padding forView:view inContainer:container];
 }
 
-+ (void) alignBottom:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding {
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:-padding]];
+#pragma mark -
+#pragma mark Padding
++ (NSLayoutConstraint *) setTopPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:0
+                                                                     toItem:container
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1
+                                                                   constant:padding];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setBottomPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:0
+                                                                     toItem:container
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1
+                                                                   constant:-padding];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setLeftPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:0
+                                                                     toItem:container
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1
+                                                                   constant:padding];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setRightPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:0
+                                                                     toItem:container
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1
+                                                                   constant:-padding];
+    [container addConstraint: constraint];
+    return constraint;
 }
 
 @end

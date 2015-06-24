@@ -2,7 +2,7 @@
 //  NSLayoutConstraint+Helper.h
 //  SportsApp
 //
-//  Created by sergeyZ on 24.05.15.
+//  Created by sergeyZ on 27.05.15.
 //
 //
 
@@ -13,12 +13,16 @@
 + (NSLayoutConstraint*) setWidht:(CGFloat)w forView:(UIView*)view;
 + (NSLayoutConstraint*) setHeight:(CGFloat)w forView:(UIView*)view;
 + (void) setWidht:(CGFloat)w height:(CGFloat)h forView:(UIView*)view;
-+ (void) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
-+ (void) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
++ (NSLayoutConstraint *) centerHorizontal:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
++ (NSLayoutConstraint *) centerVertical:(UIView*)view withView:(UIView*)anchorView inContainer:(UIView*)container;
 
-+ (void) stretch:(UIView*)view inContainer:(UIView*)container;
-+ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container;
-+ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container;
++ (void) stretch:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding;
++ (void) stretchHorizontal:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding;
++ (void) stretchVertical:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding;
 
-+ (void) alignBottom:(UIView*)view inContainer:(UIView*)container withPadding:(CGFloat)padding;
++ (NSLayoutConstraint *) setTopPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setBottomPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setLeftPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setRightPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
+
 @end

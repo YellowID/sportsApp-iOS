@@ -30,10 +30,13 @@
         
         //NSLog(@"query: %@?%@", urlString, paramsString);
         //url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", urlString, paramsString]];
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"%@&%@", urlString, paramsString]];
+        
+        NSString *str_url = [NSString stringWithFormat:@"%@&%@", urlString, paramsString];
+        url = [NSURL URLWithString:[str_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     else {
-        url = [NSURL URLWithString:urlString];
+        //url = [NSURL URLWithString:urlString];
+        url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     
     NSURLSession* session = [NSURLSession sharedSession];

@@ -112,17 +112,19 @@
 		53DCC19D1B0DB266002EE36E /* icon_status_q@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1821B0DB266002EE36E /* icon_status_q@2x.png */; };
 		53DCC19E1B0DB266002EE36E /* icon_time@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1831B0DB266002EE36E /* icon_time@2x.png */; };
 		53DCC19F1B0DB266002EE36E /* logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1841B0DB266002EE36E /* logo@2x.png */; };
-		53DCC1A21B0DD88D002EE36E /* UINavigationBar+VCenter.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DCC1A11B0DD88D002EE36E /* UINavigationBar+VCenter.m */; };
 		53DCC1BC1B0E0A2D002EE36E /* MemberViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DCC1BB1B0E0A2D002EE36E /* MemberViewController.m */; };
 		53DCC1BE1B0E0DA0002EE36E /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */; };
 		53DD7FF11B1B77060019B5BE /* UIViewController+Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */; };
+		53E4AC381B395517001AE01C /* AddressSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC371B395517001AE01C /* AddressSearchViewController.m */; };
+		53E4AC401B39CC50001AE01C /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */; };
+		53E4AC431B3AA0D1001AE01C /* YandexGeoResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC421B3AA0D1001AE01C /* YandexGeoResponse.m */; };
+		53E4AC4A1B3AC911001AE01C /* FoursquareResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC491B3AC911001AE01C /* FoursquareResponse.m */; };
 		53E519721B10B92600B85DDD /* MemberSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519711B10B92600B85DDD /* MemberSettingViewController.m */; };
 		53E519761B10D60A00B85DDD /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519741B10D60A00B85DDD /* Fabric.framework */; };
 		53E519771B10D60A00B85DDD /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E519751B10D60A00B85DDD /* Crashlytics.framework */; };
 		53E5197F1B122BE400B85DDD /* SportInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E5197E1B122BE400B85DDD /* SportInfo.m */; };
 		53E519821B122C7400B85DDD /* SportItemUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519811B122C7400B85DDD /* SportItemUI.m */; };
 		53E519851B12472700B85DDD /* NewEvenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519841B12472700B85DDD /* NewEvenViewController.m */; };
-		53E519881B1260CE00B85DDD /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */; };
 		53E5198B1B131EED00B85DDD /* bg_btn_fb@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E519891B131EED00B85DDD /* bg_btn_fb@2x.png */; };
 		53E5198C1B131EED00B85DDD /* bg_btn_vk@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */; };
 		53E5198F1B131EFF00B85DDD /* bg_btn_fb@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */; };
@@ -283,13 +285,19 @@
 		53DCC1821B0DB266002EE36E /* icon_status_q@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_status_q@2x.png"; sourceTree = "<group>"; };
 		53DCC1831B0DB266002EE36E /* icon_time@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_time@2x.png"; sourceTree = "<group>"; };
 		53DCC1841B0DB266002EE36E /* logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "logo@2x.png"; sourceTree = "<group>"; };
-		53DCC1A01B0DD88D002EE36E /* UINavigationBar+VCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UINavigationBar+VCenter.h"; sourceTree = "<group>"; };
-		53DCC1A11B0DD88D002EE36E /* UINavigationBar+VCenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UINavigationBar+VCenter.m"; sourceTree = "<group>"; };
 		53DCC1BA1B0E0A2D002EE36E /* MemberViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberViewController.h; sourceTree = "<group>"; };
 		53DCC1BB1B0E0A2D002EE36E /* MemberViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberViewController.m; sourceTree = "<group>"; };
 		53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "photo@2x.png"; sourceTree = "<group>"; };
 		53DD7FEF1B1B77060019B5BE /* UIViewController+Navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Navigation.h"; sourceTree = "<group>"; };
 		53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Navigation.m"; sourceTree = "<group>"; };
+		53E4AC361B395517001AE01C /* AddressSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressSearchViewController.h; sourceTree = "<group>"; };
+		53E4AC371B395517001AE01C /* AddressSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressSearchViewController.m; sourceTree = "<group>"; };
+		53E4AC3E1B39CC50001AE01C /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
+		53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
+		53E4AC411B3AA0D1001AE01C /* YandexGeoResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YandexGeoResponse.h; sourceTree = "<group>"; };
+		53E4AC421B3AA0D1001AE01C /* YandexGeoResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YandexGeoResponse.m; sourceTree = "<group>"; };
+		53E4AC481B3AC911001AE01C /* FoursquareResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoursquareResponse.h; sourceTree = "<group>"; };
+		53E4AC491B3AC911001AE01C /* FoursquareResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FoursquareResponse.m; sourceTree = "<group>"; };
 		53E519701B10B92600B85DDD /* MemberSettingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberSettingViewController.h; sourceTree = "<group>"; };
 		53E519711B10B92600B85DDD /* MemberSettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberSettingViewController.m; sourceTree = "<group>"; };
 		53E519741B10D60A00B85DDD /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
@@ -300,8 +308,6 @@
 		53E519811B122C7400B85DDD /* SportItemUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SportItemUI.m; sourceTree = "<group>"; };
 		53E519831B12472700B85DDD /* NewEvenViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewEvenViewController.h; sourceTree = "<group>"; };
 		53E519841B12472700B85DDD /* NewEvenViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewEvenViewController.m; sourceTree = "<group>"; };
-		53E519861B1260CE00B85DDD /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
-		53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
 		53E519891B131EED00B85DDD /* bg_btn_fb@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_fb@2x.png"; sourceTree = "<group>"; };
 		53E5198A1B131EED00B85DDD /* bg_btn_vk@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_vk@2x.png"; sourceTree = "<group>"; };
 		53E5198D1B131EFF00B85DDD /* bg_btn_fb@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_btn_fb@3x.png"; sourceTree = "<group>"; };
@@ -461,6 +467,8 @@
 				53E519BE1B15B0FD00B85DDD /* InviteUserViewController.m */,
 				536FF2BD1B18E44400D3561A /* PlaceSearchViewController.h */,
 				536FF2BE1B18E44400D3561A /* PlaceSearchViewController.m */,
+				53E4AC361B395517001AE01C /* AddressSearchViewController.h */,
+				53E4AC371B395517001AE01C /* AddressSearchViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -468,14 +476,12 @@
 		53B994DA1B0D083200558169 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				53E4AC3E1B39CC50001AE01C /* NSLayoutConstraint+Helper.h */,
+				53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */,
 				53E519C31B15B74000B85DDD /* NSString+Common.h */,
 				53E519C41B15B74000B85DDD /* NSString+Common.m */,
 				53B994DC1B0D086600558169 /* UIColor+Helper.h */,
 				53B994DD1B0D086600558169 /* UIColor+Helper.m */,
-				53DCC1A01B0DD88D002EE36E /* UINavigationBar+VCenter.h */,
-				53DCC1A11B0DD88D002EE36E /* UINavigationBar+VCenter.m */,
-				53E519861B1260CE00B85DDD /* NSLayoutConstraint+Helper.h */,
-				53E519871B1260CE00B85DDD /* NSLayoutConstraint+Helper.m */,
 				53DD7FEF1B1B77060019B5BE /* UIViewController+Navigation.h */,
 				53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */,
 			);
@@ -522,6 +528,10 @@
 				5390F1721B289C3E00B02775 /* NewGame.m */,
 				531180321B2AD3A00076A7D6 /* MemberSettings.h */,
 				531180331B2AD3A00076A7D6 /* MemberSettings.m */,
+				53E4AC411B3AA0D1001AE01C /* YandexGeoResponse.h */,
+				53E4AC421B3AA0D1001AE01C /* YandexGeoResponse.m */,
+				53E4AC481B3AC911001AE01C /* FoursquareResponse.h */,
+				53E4AC491B3AC911001AE01C /* FoursquareResponse.m */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -839,7 +849,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				53B994D71B0D078900558169 /* LoginViewController.m in Sources */,
-				53DCC1A21B0DD88D002EE36E /* UINavigationBar+VCenter.m in Sources */,
 				53DD7FF11B1B77060019B5BE /* UIViewController+Navigation.m in Sources */,
 				53FAC0A61B21D85E00278C75 /* ChatMessage.m in Sources */,
 				53E519BF1B15B0FD00B85DDD /* InviteUserViewController.m in Sources */,
@@ -859,14 +868,17 @@
 				534B51441B203B40001FAD9A /* CustomDotPageControl.m in Sources */,
 				5384D5C11B0C9321009B6CD3 /* main.m in Sources */,
 				53E5197F1B122BE400B85DDD /* SportInfo.m in Sources */,
+				53E4AC381B395517001AE01C /* AddressSearchViewController.m in Sources */,
+				53E4AC431B3AA0D1001AE01C /* YandexGeoResponse.m in Sources */,
 				534B51571B20BCBA001FAD9A /* ChatTableViewCell.m in Sources */,
 				5390F1651B28968400B02775 /* ZSNetManager.m in Sources */,
 				53E519821B122C7400B85DDD /* SportItemUI.m in Sources */,
 				5390F1731B289C3E00B02775 /* NewGame.m in Sources */,
 				53E519851B12472700B85DDD /* NewEvenViewController.m in Sources */,
-				53E519881B1260CE00B85DDD /* NSLayoutConstraint+Helper.m in Sources */,
 				5390F1681B2896AA00B02775 /* Reachability.m in Sources */,
 				534B51641B219DCD001FAD9A /* ChatRightTableViewCell.m in Sources */,
+				53E4AC401B39CC50001AE01C /* NSLayoutConstraint+Helper.m in Sources */,
+				53E4AC4A1B3AC911001AE01C /* FoursquareResponse.m in Sources */,
 				53E519C51B15B74000B85DDD /* NSString+Common.m in Sources */,
 				531180341B2AD3A00076A7D6 /* MemberSettings.m in Sources */,
 				536FF2BF1B18E44400D3561A /* PlaceSearchViewController.m in Sources */,
@@ -971,7 +983,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				PROVISIONING_PROFILE = "e29d9a2c-85da-44b7-8844-a9834c775d80";
+				PROVISIONING_PROFILE = "4901bfc3-1eab-466f-bf6c-440640c4416b";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -993,6 +1005,7 @@
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = SportsApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-lxml2",
@@ -1020,6 +1033,7 @@
 					/usr/include/libxml2,
 				);
 				INFOPLIST_FILE = SportsApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-lxml2",
@@ -1027,7 +1041,7 @@
 					"-lstdc++",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "e29d9a2c-85da-44b7-8844-a9834c775d80";
+				PROVISIONING_PROFILE = "4901bfc3-1eab-466f-bf6c-440640c4416b";
 			};
 			name = Release;
 		};

@@ -24,7 +24,7 @@
 #define AGE_PICKER 1
 #define SPORT_PICKER 2
 
-@interface NewEvenViewController () <UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate>
+@interface NewEvenViewController () <UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, PlaceSearchViewControllerDelegate>
 
 #pragma mark -
 #pragma mark Containers
@@ -153,6 +153,8 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    [[self navigationController] setNavigationBarHidden:NO animated:NO];
+    
     // register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -868,6 +870,14 @@
 }
 
 #pragma mark -
+#pragma mark PlaceSearchViewControllerDelegate
+- (void)gamePlaceDidChanged:(PlaceSearchViewController *)controller place:(FoursquareResponse *)placeLocation {
+    if(placeLocation){
+        _tfLocation.text = placeLocation.name;
+    }
+}
+
+#pragma mark -
 #pragma mark Star icon click
 - (void) oneStarClick {
     twoStarStatus = threeStarStatus = NO;
@@ -1002,6 +1012,7 @@
     }
     else if(textField == _tfLocation){
         PlaceSearchViewController *controller = [[PlaceSearchViewController alloc] init];
+        controller.delegate = self;
         [self.navigationController pushViewController:controller animated:YES];
     }
 }

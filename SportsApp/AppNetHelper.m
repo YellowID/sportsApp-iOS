@@ -8,11 +8,15 @@
 
 #import "AppNetHelper.h"
 #import "ZSNetManager.h"
-#import "GameInfo.h"
 
 #define API_URL_CREATE_GAME @"http://sportsapp.com"
 #define API_URL_GAMES_FOR_USER @"http://sportsapp.com"
 #define API_URL_SETTINGS_FOR_USER @"http://sportsapp.com"
+
+#define URL_YANDEX_GEOCODE_REVERS @"https://geocode-maps.yandex.ru/1.x/?sco=longlat&format=json&kind=locality&geocode=%f,%f"
+#define URL_YANDEX_GEOCODE @"https://geocode-maps.yandex.ru/1.x/?format=json&kind=locality&geocode=%@"
+
+#define URL_FOURSQUARE_PLACES @"https://api.foursquare.com/v2/venues/search?client_id=4VEAUGDRCSFZ2BD4ULIDIBJGGMJS3OSS5ZQGRV52RQ5MPF3H&client_secret=1PHGLVGY3ZTJH4EFN5AL0UX11NYOHGHAHG5GDBXEEA51CBD2&v=20130815&intent=browse&radius=10000&near=%@&query=%@"
 
 #define ERR_TOKEN 1
 #define ERR_ACTION_NOT_FOUND 2
@@ -177,6 +181,171 @@
     blockHandler(1, nil);
 }
 
+#pragma mark -
+#pragma mark Yandex
++ (void) findYandexAddressForLatitude:(CGFloat)lat longitude:(CGFloat)lng completionHandler:(void(^)(YandexGeoResponse *resp, NSString *errorMessage))blockHandler {
+    NSString *url = [NSString stringWithFormat:URL_YANDEX_GEOCODE_REVERS, lng, lat];
+    
+    [ZSNetManager sendGet:url withParams:nil completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(blockHandler != nil){
+            if(error){
+                blockHandler(nil, error.localizedDescription);
+            }
+            else{
+                YandexGeoResponse *yandexResp = [AppNetHelper parceYandexAddressResponse:data];
+                if(!yandexResp)
+                    blockHandler(nil, @"Ничего не найдено");
+                else
+                    blockHandler(yandexResp, nil);
+            }
+        }
+    }];
+}
+
++ (YandexGeoResponse *) parceYandexAddressResponse:(NSData *)data {
+    NSError *error = nil;
+    NSMutableDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    if(!error){
+        NSMutableDictionary *response = json[@"response"];
+        NSMutableDictionary *GeoObjectCollection = response[@"GeoObjectCollection"];
+        NSMutableArray *featureMember = GeoObjectCollection[@"featureMember"];
+        
+        if(featureMember.count == 0)
+            return nil;
+        
+        NSMutableDictionary *GeoObject = featureMember[0][@"GeoObject"];
+        
+        YandexGeoResponse *resp = [YandexGeoResponse new];
+        resp.name = GeoObject[@"name"];
+        resp.descr = GeoObject[@"description"];
+        
+        NSMutableDictionary *point = GeoObject[@"point"];
+        NSString *pos = point[@"pos"];
+        NSArray *location = [pos componentsSeparatedByString: @" "];
+        if([location count] > 1){
+            resp.lng = [location[0] floatValue];
+            resp.lat = [location[1] floatValue];
+        }
+        
+        return resp;
+    }
+    
+    return nil;
+}
+
++ (void) findYandexAddress:(NSString *)query completionHandler:(void(^)(NSMutableArray *items, NSString *errorMessage))blockHandler {
+    NSString *url = [NSString stringWithFormat:URL_YANDEX_GEOCODE, query];
+    
+    [ZSNetManager sendGet:url withParams:nil completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(blockHandler != nil){
+            if(error){
+                blockHandler(nil, error.localizedDescription);
+            }
+            else{
+                NSMutableArray *yandexResp = [AppNetHelper parceYandexAddressListResponse:data];
+                if(!yandexResp)
+                    blockHandler(nil, @"Ничего не найдено");
+                else
+                    blockHandler(yandexResp, nil);
+            }
+        }
+    }];
+}
+
++ (NSMutableArray *) parceYandexAddressListResponse:(NSData *)data {
+    NSMutableArray *results = nil;
+    
+    NSError *error = nil;
+    NSMutableDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    if(!error){
+        results = [NSMutableArray new];
+        
+        NSMutableDictionary *response = json[@"response"];
+        NSMutableDictionary *GeoObjectCollection = response[@"GeoObjectCollection"];
+        NSMutableArray *featureMember = GeoObjectCollection[@"featureMember"];
+        
+        for(NSMutableDictionary *item in featureMember){
+            NSMutableDictionary *GeoObject = item[@"GeoObject"];
+            NSString *name = GeoObject[@"name"];
+            
+            if(!name)
+                continue;
+            
+            YandexGeoResponse *resp = [YandexGeoResponse new];
+            resp.name = name;
+            
+            NSString *descr = GeoObject[@"description"];
+            resp.descr = descr;
+            
+            NSMutableDictionary *point = GeoObject[@"point"];
+            NSString *pos = point[@"pos"];
+            NSArray *location = [pos componentsSeparatedByString: @" "];
+            if([location count] > 1){
+                resp.lng = [location[0] floatValue];
+                resp.lat = [location[1] floatValue];
+            }
+            
+            [results addObject:resp];
+        }
+    }
+    
+    return results;
+}
+
+#pragma mark -
+#pragma mark Foursquare
++ (void) findFoursquarePlacesInRegion:(NSString *)regionName search:(NSString *)query completionHandler:(void(^)(NSMutableArray *resp, NSString *errorMessage))blockHandler {
+    NSString *url = [NSString stringWithFormat:URL_FOURSQUARE_PLACES, regionName, query];
+    
+    [ZSNetManager sendGet:url withParams:nil completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if(blockHandler != nil){
+            if(error){
+                blockHandler(nil, error.localizedDescription);
+                NSLog(@"%@", error.debugDescription);
+            }
+            else{
+                NSMutableArray *foursquareResp = [AppNetHelper parceFoursquareResponse:data];
+                if(!foursquareResp)
+                    blockHandler(nil, @"Ничего не найдено");
+                else
+                    blockHandler(foursquareResp, nil);
+            }
+        }
+    }];
+}
+
++ (NSMutableArray *) parceFoursquareResponse:(NSData *)data {
+    NSMutableArray *results = nil;
+    
+    NSError *error = nil;
+    NSMutableDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+    if(!error){
+        results = [NSMutableArray new];
+        
+        NSMutableDictionary *response = json[@"response"];
+        NSMutableArray *venues = response[@"venues"];
+        
+        for(NSMutableDictionary *item in venues){
+            FoursquareResponse *place = [FoursquareResponse new];
+            place.name = item[@"name"];
+            
+            NSMutableDictionary *location = item[@"location"];
+            
+            place.country = location[@"country"];
+            place.city = location[@"city"];
+            place.address = location[@"address"];
+            
+            place.lat = [location[@"lat"] floatValue];
+            place.lng = [location[@"lng"] floatValue];
+            
+            [results addObject:place];
+        }
+    }
+    
+    return results;
+}
+
+#pragma mark -
 + (BOOL) isInternetAvaliable {
     return [ZSNetManager isInternetAvaliable];
 }

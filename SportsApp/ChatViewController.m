@@ -292,7 +292,7 @@
     [view addSubview:label];
     
     [NSLayoutConstraint setWidht:80 height:24 forView:label];
-    [NSLayoutConstraint alignBottom:label inContainer:view withPadding:3];
+    [NSLayoutConstraint setBottomPadding:3 forView:label inContainer:view];
     [NSLayoutConstraint centerHorizontal:label withView:view inContainer:view];
     
     return view;
@@ -523,8 +523,8 @@
     _chatFooterView.backgroundColor = [UIColor colorWithRGBA:BG_CHAT_INPUT_CONTAINER_COLOR];
     [_chatContentView addSubview:_chatFooterView];
     
-    [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView];
-    [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView];
+    [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView withPadding:0];
+    [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView withPadding:0];
     footerViewHeightConstraint = [NSLayoutConstraint setHeight:FOOTER_NORMAL_HEIGHT forView:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tableView, _chatFooterView);
@@ -541,7 +541,7 @@
     _chatContentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_chatContentView];
     
-    [NSLayoutConstraint stretch:_chatContentView inContainer:self.view];
+    [NSLayoutConstraint stretch:_chatContentView inContainer:self.view withPadding:0];
 }
 
 - (void) layoutFooterContent {
@@ -551,11 +551,11 @@
     //[NSLayoutConstraint setWidht:20 height:18.5 forView:_btnSend];
     [NSLayoutConstraint setWidht:30 height:30 forView:_btnSend];
     //[NSLayoutConstraint centerVertical:_btnSend withView:_chatFooterView inContainer:_chatFooterView];
-    [NSLayoutConstraint alignBottom:_btnSend inContainer:_chatFooterView withPadding:10];
+    [NSLayoutConstraint setBottomPadding:10 forView:_btnSend inContainer:_chatFooterView];
     
     messageHeightConstraint = [NSLayoutConstraint setHeight:MSG_INPUT_NORMAL_HEIGHT forView:_tfMessage];
     //[NSLayoutConstraint centerVertical:_tfMessage withView:_chatFooterView inContainer:_chatFooterView];
-    [NSLayoutConstraint alignBottom:_tfMessage inContainer:_chatFooterView withPadding:10];
+    [NSLayoutConstraint setBottomPadding:10 forView:_tfMessage inContainer:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tfMessage, _btnSend);
     
