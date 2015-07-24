@@ -10,7 +10,7 @@
 #import "GamesListViewController.h"
 #import "MemberViewController.h"
 #import "NSLayoutConstraint+Helper.h"
-#import "ZSNetManager.h"
+#import "AppNetHelper.h"
 #import "AppDelegate.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -36,7 +36,13 @@ static NSArray* SCOPE = nil;
     [super viewDidLoad];
     [self setNeedsStatusBarAppearanceUpdate];
     
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background.png"]];
+    //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background.png"]];
+    
+    UIGraphicsBeginImageContext(self.view.frame.size);
+    [[UIImage imageNamed:@"background.png"] drawInRect:self.view.bounds];
+    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    self.view.backgroundColor = [UIColor colorWithPatternImage:image];
     
     SCOPE = @[VK_PER_EMAIL];
     
@@ -47,7 +53,7 @@ static NSArray* SCOPE = nil;
     lbAppName = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, 100, 30)];
     lbAppName.translatesAutoresizingMaskIntoConstraints = NO;
     lbAppName.textAlignment = NSTextAlignmentCenter;
-    [lbAppName setText: @"Sports app"];
+    [lbAppName setText: @"Start Sport"];
     [lbAppName setTextColor:[UIColor whiteColor]];
     [lbAppName setFont:[UIFont fontWithName: @"HelveticaNeue-Light" size: 24.0f]];
     [lbAppName sizeToFit];
@@ -133,26 +139,26 @@ static NSArray* SCOPE = nil;
 #pragma mark -
 #pragma mark LOGIN
 - (void) loginWithFacebook {
-    if(![ZSNetManager isInternetAvaliable]){
+    if(![AppNetHelper isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Нет подключения к интернету"
                               message:nil
-                              delegate:self
-                              cancelButtonTitle:@"Отмена"
+                              delegate:nil
+                              cancelButtonTitle:@"Ок"
                               otherButtonTitles: nil];
         [alert show];
         return;
     }
     
     FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
-    if (fbToken) {
-        // User is logged in, do work such as go to next view controller.
-        NSLog(@"FB: %@",  fbToken.tokenString);
-        [self goToNextScreen];
+    if (fbToken) { // User is logged in, do work such as go to next view controller.
+        //NSLog(@"FB: %@",  fbToken.tokenString);
+        
+        [self appLoginWithProvider:@"facebook" oauthToken:fbToken.tokenString email:nil name:nil];
     }
     else{
         FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
-        [login logInWithReadPermissions:@[@"email"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
+        [login logInWithReadPermissions:@[@"email", @"public_profile"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
             if (error) {
                 NSLog(@"FB Error: %@", error.debugDescription);
             }
@@ -160,8 +166,16 @@ static NSArray* SCOPE = nil;
                 NSLog(@"FB Cancelled");
             }
             else {
-                if ([result.grantedPermissions containsObject:@"email"]) {
+                if ([result.grantedPermissions containsObject:@"email"] && [result.grantedPermissions containsObject:@"public_profile"]) {
                     NSLog(@"FB email Permissions granted!");
+                    
+                    FBSDKGraphRequest *fbGraphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:nil];
+                    [fbGraphRequest startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
+                         if (!error) {
+                             NSString *token = [[FBSDKAccessToken currentAccessToken] tokenString];
+                             [self appLoginWithProvider:@"facebook" oauthToken:token email:result[@"email"] name:result[@"name"]];
+                         }
+                     }];
                 }
                 else{
                     NSLog(@"FB email Permissions deny!");
@@ -172,7 +186,7 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) loginWithVkontakte {
-    if(![ZSNetManager isInternetAvaliable]){
+    if(![AppNetHelper isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Нет подключения к интернету"
                               message:nil
@@ -186,7 +200,7 @@ static NSArray* SCOPE = nil;
     [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
     if ([VKSdk wakeUpSession]){
         NSLog(@"VK: %@", [VKSdk getAccessToken].accessToken);
-        [self goToNextScreen];
+        [self appLoginWithProvider:@"vk" oauthToken:[VKSdk getAccessToken].accessToken email:nil name:nil];
     }
     else{
         [VKSdk authorize:SCOPE revokeAccess:YES];
@@ -197,7 +211,52 @@ static NSArray* SCOPE = nil;
 #pragma mark VK delegate
 - (void) vkSdkReceivedNewToken:(VKAccessToken*) newToken {
     NSLog(@"VK: %@", newToken.accessToken);
-    [self goToNextScreen];
+    
+    NSString *userId = [VKSdk getAccessToken].userId;
+    NSString *email = [VKSdk getAccessToken].email;
+    
+    VKRequest *vkRequest = [[VKApi users] get:@{VK_API_FIELDS:@"photo_200", VK_API_USER_IDS:userId}];
+    
+    [vkRequest executeWithResultBlock:^(VKResponse *response) {
+        NSLog(@"Json result: %@", response.json);
+        
+        NSString *name = nil;
+        if([response.json isKindOfClass:[NSArray class]]){
+            NSString *firstName = [[response.json firstObject] objectForKey:@"first_name"];
+            NSString *lastName = [[response.json firstObject] objectForKey:@"last_name"];
+            
+            name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+        }
+        else if([response.json isKindOfClass:[NSDictionary class]]){
+            NSString *firstName = [response.json objectForKey:@"first_name"];
+            NSString *lastName = [response.json objectForKey:@"last_name"];
+            
+            name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+        }
+        else{
+            name = @"BagUser";
+        }
+        
+        [self appLoginWithProvider:@"vk" oauthToken:newToken.accessToken email:email name:name];
+        
+        //NSError *error;
+        //NSData *data = [response.json dataUsingEncoding:NSUTF8StringEncoding];
+        //NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+        
+        //if(!error){
+            //NSString *name = [NSString stringWithFormat:@"%@ %@", response.json[@"first_name"], response.json[@"last_name"]];
+            //[self appLoginWithProvider:@"vk" oauthToken:newToken.accessToken email:email name:name];
+        //}
+        
+        
+        }
+        errorBlock:^(NSError *error) {
+           if (error.code != VK_API_ERROR) {
+               [error.vkError.request repeat];
+           } else {
+               NSLog(@"VK error: %@", error);
+           } 
+    }];
 }
 
 - (void)vkSdkShouldPresentViewController:(UIViewController *)controller {
@@ -216,5 +275,34 @@ static NSArray* SCOPE = nil;
     NSLog(@"VK captchaError: %@",  captchaError.debugDescription);
 }
 
+#pragma mark -
+#pragma mark LOGIN
+- (void) appLoginWithProvider:(NSString *)provider oauthToken:(NSString *)oauthToken email:(NSString *)email name:(NSString *)name {
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:provider forKey:@"provider"];
+    [params setValue:oauthToken forKey:@"oauth_token"];
+    
+    if(email)
+        [params setValue:email forKey:@"email"];
+    
+    if(name)
+        [params setValue:name forKey:@"name"];
+    
+    [AppNetHelper loginUser:params completionHandler:^(AppUser *user, NSString *errorMessage) {
+        if(user){
+            [[AppDelegate instance] setUser:user];
+            [self goToNextScreen];
+        }
+        else{
+            UIAlertView *alert = [[UIAlertView alloc]
+                                  initWithTitle:nil
+                                  message:errorMessage
+                                  delegate:nil
+                                  cancelButtonTitle:@"Ок"
+                                  otherButtonTitles: nil];
+            [alert show];
+        }
+    }];
+}
 
 @end

@@ -30,6 +30,64 @@
 // {error:3, data:null }
 
 #pragma mark -
+#pragma mark Login
++ (void) loginUser:(NSDictionary *)params completionHandler:(void(^)(AppUser *user, NSString *errorMessage))blockHandler {
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/authentication.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"http://notassdfsdkjsdf.com";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/authentication.json";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v44/users/authentication.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    
+    [ZSNetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        NSMutableDictionary *dic = nil;
+        AppUser *user = nil;
+        
+        if(!error){
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
+            NSInteger statusCode = [httpResponse statusCode];
+            NSLog(@"statusCode: %d", statusCode);
+            
+            if(statusCode >= 200 && statusCode < 300){
+                dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+                
+                user = [AppUser new];
+                user.uid = [dic[@"id"] integerValue];
+                //user.age = [dic[@"age"] integerValue];
+                
+                if(![dic[@"email"] isKindOfClass:[NSNull class]])
+                    user.email = dic[@"email"];
+                
+                if(![dic[@"name"] isKindOfClass:[NSNull class]])
+                    user.email = dic[@"name"];
+                
+                user.provider = dic[@"provider"];
+                user.oauthToken = dic[@"oauth_token"];
+                user.appToken = dic[@"token"];
+                user.chatPassword = dic[@"chat_password"];
+                
+                hasError = NO;
+            }
+            else{
+                NSLog(@"Something wrong!");
+                errorMessage = dic[@"error"];
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(nil, errorMessage);
+        else
+            blockHandler(user, nil);
+    }];
+}
+
+#pragma mark -
 #pragma mark Players
 + (void) findUser:(NSString *)username completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
     // GET

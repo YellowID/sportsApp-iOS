@@ -18,9 +18,10 @@
 #import "MemberSettings.h"
 #import "AppNetHelper.h"
 #import "MBProgressHUD.h"
+#import "CustomButton.h"
 
 #define PADDING_H 12.5
-#define MAIN_SCROLL_CONTENT_HEIGHT 415
+#define MAIN_SCROLL_CONTENT_HEIGHT 464 //462.5 //415
 #define SCROLL_ITEM_HEIGHT 99
 
 @interface MemberSettingViewController () <UIScrollViewDelegate>
@@ -72,6 +73,7 @@
 @property (strong, nonatomic) UILabel* lbTitleFourAge;
 
 @property (strong, nonatomic) UIButton* btnSave;
+@property (strong, nonatomic) CustomButton* btnExit;
 
 @end
 
@@ -104,44 +106,44 @@
     _sportInfoItems = [[NSMutableArray alloc] initWithCapacity:7];
     
     SportInfo* football = [SportInfo new];
-    football.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
-    football.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
+    football.activeImage = [UIImage imageNamed:@"ic_football_active.png"];
+    football.inactiveImage = [UIImage imageNamed:@"ic_football.png"];
     football.title = @"Футбол";
     [_sportInfoItems addObject:football];
     
     SportInfo* basketball = [SportInfo new];
-    basketball.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
-    basketball.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
+    basketball.activeImage = [UIImage imageNamed:@"ic_basketball_active.png"];
+    basketball.inactiveImage = [UIImage imageNamed:@"ic_basketball.png"];
     basketball.title = @"Баскетбол";
     [_sportInfoItems addObject:basketball];
     
     SportInfo* volleyball = [SportInfo new];
-    volleyball.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
-    volleyball.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    volleyball.activeImage = [UIImage imageNamed:@"ic_volleyball_active.png"];
+    volleyball.inactiveImage = [UIImage imageNamed:@"ic_volleyball.png"];
     volleyball.title = @"Волейбол";
     [_sportInfoItems addObject:volleyball];
     
     SportInfo* handball = [SportInfo new];
-    handball.activeImage = [UIImage imageNamed:@"icon_sport_01_active.png"];
-    handball.inactiveImage = [UIImage imageNamed:@"icon_sport_01.png"];
+    handball.activeImage = [UIImage imageNamed:@"ic_handball_active.png"];
+    handball.inactiveImage = [UIImage imageNamed:@"ic_handball.png"];
     handball.title = @"Гандбол";
     [_sportInfoItems addObject:handball];
     
     SportInfo* tennis = [SportInfo new];
-    tennis.activeImage = [UIImage imageNamed:@"icon_sport_02_active.png"];
-    tennis.inactiveImage = [UIImage imageNamed:@"icon_sport_02.png"];
+    tennis.activeImage = [UIImage imageNamed:@"ic_tennis_active.png"];
+    tennis.inactiveImage = [UIImage imageNamed:@"ic_tennis.png"];
     tennis.title = @"Тенис";
     [_sportInfoItems addObject:tennis];
     
     SportInfo* hockey = [SportInfo new];
-    hockey.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
-    hockey.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    hockey.activeImage = [UIImage imageNamed:@"ic_hockey_active.png"];
+    hockey.inactiveImage = [UIImage imageNamed:@"ic_hockey.png"];
     hockey.title = @"Хоккей";
     [_sportInfoItems addObject:hockey];
     
     SportInfo* squash = [SportInfo new];
-    squash.activeImage = [UIImage imageNamed:@"icon_sport_03_active.png"];
-    squash.inactiveImage = [UIImage imageNamed:@"icon_sport_03.png"];
+    squash.activeImage = [UIImage imageNamed:@"ic_squash_active.png"];
+    squash.inactiveImage = [UIImage imageNamed:@"ic_squash.png"];
     squash.title = @"Сквош";
     [_sportInfoItems addObject:squash];
     
@@ -156,16 +158,6 @@
     [super viewWillAppear:animated];
     
     [self loadSettings];
-}
-
-- (void) makeUI {
-    //[self setupButtonInParentView:self.view];
-    [self setupContainerScroll];
-    [self setupContainerView];
-    
-    [self setupSportsGroupInParentView:_containerView];
-    [self setupLevelsGroupInParentView:_containerView];
-    [self setupAgesGroupInParentView:_containerView];
 }
 
 - (void) loadSettings {
@@ -193,6 +185,18 @@
             }
         });
     }];
+}
+
+- (void) makeUI {
+    //[self setupButtonInParentView:self.view];
+    [self setupContainerScroll];
+    [self setupContainerView];
+    
+    [self setupSportsGroupInParentView:_containerView];
+    [self setupLevelsGroupInParentView:_containerView];
+    [self setupAgesGroupInParentView:_containerView];
+    
+    [self setupButtonInParentView:_containerView];
 }
 
 #pragma mark -
@@ -227,19 +231,24 @@
 #pragma mark Containers
 #pragma mark -
 - (void) setupButtonInParentView:(UIView*)container {
-    _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    _btnExit = [self createExitButton];
+    
+    /*
+    _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect]
     _btnSave.translatesAutoresizingMaskIntoConstraints = NO;
     //[_btnSave addTarget:self action:@selector(btnSaveClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnSave setTitle:@"Сохранить" forState:UIControlStateNormal];
+    [_btnSave setTitle:@"Выход" forState:UIControlStateNormal];
     [_btnSave setTintColor:[UIColor whiteColor]];
     _btnSave.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     _btnSave.layer.borderWidth = 0.0;
     _btnSave.layer.cornerRadius = 6.0;
     _btnSave.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
+    */
     
-    [container addSubview:_btnSave];
+    _btnExit.translatesAutoresizingMaskIntoConstraints = NO;
+    [container addSubview:_btnExit];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnSave
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:0
                                                              toItem:container
@@ -247,7 +256,7 @@
                                                          multiplier:1
                                                            constant:-8]];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnSave
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:0
                                                              toItem:container
@@ -255,7 +264,7 @@
                                                          multiplier:1
                                                            constant:PADDING_H]];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnSave
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:0
                                                              toItem:container
@@ -263,7 +272,7 @@
                                                          multiplier:1
                                                            constant:-PADDING_H]];
     
-    [_btnSave addConstraint: [NSLayoutConstraint constraintWithItem:_btnSave
+    [_btnExit addConstraint: [NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeHeight
                                                           relatedBy:0
                                                              toItem:nil
@@ -402,7 +411,7 @@
     [_sportsPageControl setIndicatorSpace: 5.0f];
     _sportsPageControl.translatesAutoresizingMaskIntoConstraints = NO;
     _sportsPageControl.userInteractionEnabled = NO;
-    _sportsPageControl.numberOfPages = _sportInfoItems.count / 3;
+    _sportsPageControl.numberOfPages = [self sportGroupsNumber];
     _sportsPageControl.currentPage = 0;
     [_sportsGroupView addSubview:_sportsPageControl];
     
@@ -441,14 +450,15 @@
 }
 
 - (void) setupSportsScroll {
-    int itemsCount = 2;
+    int childrenCount = [self sportGroupsNumber];
+    
     _sportsScrollView = [UIScrollView new];
     _sportsScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     //[_sportsScrollView setBackgroundColor:[UIColor blueColor]];
     _sportsScrollView.delegate = self;
     _sportsScrollView.showsHorizontalScrollIndicator = NO;
     _sportsScrollView.pagingEnabled = YES;
-    _sportsScrollView.contentSize = CGSizeMake(kScrollItemWidht * itemsCount, SCROLL_ITEM_HEIGHT);
+    _sportsScrollView.contentSize = CGSizeMake(kScrollItemWidht * childrenCount, SCROLL_ITEM_HEIGHT);
     
     [_sportsGroupView addSubview:_sportsScrollView];
     
@@ -560,8 +570,14 @@
             [self layoutSportLable:uiItem.lable forIcon:uiItem.icon intoContainer:trinesView];
         }
         else{
-            [self layoutSportLeftIcon:uiItem.icon intoContainer:trinesView];
-            [self layoutSportLable:uiItem.lable forIcon:uiItem.icon intoContainer:trinesView];
+            if(i == count-1){
+                [self layoutSportCenterIcon:uiItem.icon intoContainer:trinesView];
+                [self layoutSportLable:uiItem.lable forIcon:uiItem.icon intoContainer:trinesView];
+            }
+            else{
+                [self layoutSportLeftIcon:uiItem.icon intoContainer:trinesView];
+                [self layoutSportLable:uiItem.lable forIcon:uiItem.icon intoContainer:trinesView];
+            }
         }
         
         [_sportsScrollView addSubview:trinesView];
@@ -573,6 +589,14 @@
             subIndex = 0;
         }
     }
+}
+
+- (int) sportGroupsNumber {
+    int pageCount = (int) _sportInfoItems.count / 3;
+    int modulo = _sportInfoItems.count % 3;
+    int groupNum = (modulo == 0) ? pageCount : pageCount+1;
+    
+    return groupNum;
 }
 
 - (UIView*) createSportItemView:(CGFloat)offset {
@@ -1294,6 +1318,30 @@
     [_btnSave setUserInteractionEnabled:YES];
 }
 
+- (CustomButton *) createExitButton {
+    CustomButton *btn = [CustomButton buttonWithType:UIButtonTypeCustom];
+    [btn addTarget:self action:@selector(btnExitClick) forControlEvents:UIControlEventTouchUpInside];
+    [btn setTitle:@"Выход" forState:UIControlStateNormal];
+    btn.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    
+    [btn setTitleColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateNormal];
+    [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateSelected];
+    [btn setTitleColor:[UIColor whiteColor] forState:UIControlStateHighlighted];
+    
+    [btn setBackgrounColor:[UIColor clearColor] forState:UIControlStateNormal];
+    [btn setBackgrounColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateSelected];
+    [btn setBackgrounColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateHighlighted];
+    
+    [btn setBorderColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateNormal];
+    [btn setBorderColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateSelected];
+    [btn setBorderColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateHighlighted];
+    
+    btn.layer.borderWidth = 0.5;
+    btn.layer.cornerRadius = 6.0;
+    
+    return btn;
+}
+
 # pragma mark -
 # pragma mark Navigation button click
 - (void) btnCancelClick {
@@ -1324,6 +1372,16 @@
             }
         });
     }];
+}
+
+- (void) btnExitClick {
+    UINavigationController *root = self.navigationController;
+    NSMutableArray *navigationArray = [[NSMutableArray alloc] initWithArray: root.viewControllers];
+    
+    while(navigationArray.count > 1)
+        [navigationArray removeObjectAtIndex:1];
+    
+    root.viewControllers = navigationArray;
 }
 
 @end

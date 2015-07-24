@@ -83,7 +83,7 @@
         [self.delegate addressDidChanged:self place:placemark];
     }
     
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 #pragma mark -
@@ -137,7 +137,13 @@
 }
 
 - (void) btnChooseClick {
-    [self.navigationController popViewControllerAnimated:YES];
+    if([self.delegate respondsToSelector:@selector(addressDidChanged:place:)]){
+        YandexGeoResponse *placemark = [YandexGeoResponse new];
+        placemark.name = _searchField.text;
+        [self.delegate addressDidChanged:self place:placemark];
+    }
+    
+    [self.navigationController popViewControllerAnimated:NO];
 }
 
 # pragma mark -

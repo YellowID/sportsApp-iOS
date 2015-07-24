@@ -23,4 +23,7 @@
 
 - (void) setBackgroundColor:(UIColor *)backgroundColor forState:(UIControlState)state;
 
+- (void) setTopPadding:(CGFloat)padding;
+- (void) setBottomPadding:(CGFloat)padding;
+
 @end

@@ -14,10 +14,13 @@
 #import "GameInfo.h"
 #import "YandexGeoResponse.h"
 #import "FoursquareResponse.h"
+#import "AppUser.h"
 
 @interface AppNetHelper : NSObject
 
-+ (BOOL) isInternetAvaliable; 
++ (BOOL) isInternetAvaliable;
+
++ (void) loginUser:(NSDictionary *)params completionHandler:(void(^)(AppUser *user, NSString *errorMessage))blockHandler;
 
 + (void) findUser:(NSString *)username completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler;
 + (void) inviteUserWithId:(NSUInteger)userId forGame:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler;

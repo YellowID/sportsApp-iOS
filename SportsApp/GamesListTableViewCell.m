@@ -7,11 +7,17 @@
 //
 
 #import "GamesListTableViewCell.h"
+#import "AppColors.h"
+#import "UIColor+Helper.h"
 
-#define PADDING_TOP 17
-#define PADDING_BOTTOM 17
-#define PADDING_LEFT 13.5
-#define PADDING_RIGHT 13.5
+#define PADDING_TOP 7
+#define PADDING_BOTTOM 13
+#define PADDING_LEFT 7
+#define PADDING_RIGHT 7
+
+#define STATUS_ICON_SIZE 19.5
+
+#define PADDING_SECOND_ROW_TOP 13
 
 #define SMALL_LABLE_HEIGHT 10
 
@@ -20,6 +26,13 @@
     UIColor* bgColorSelected;
     UIColor* bgColorHighlighted;
     UIColor* bgColorDisabled;
+    
+    UIView *container;
+    NSLayoutConstraint *topPadding;
+    NSLayoutConstraint *bottomPadding;
+    
+    CGFloat topPaddingValue;
+    CGFloat bottomPaddingValue;
 }
 
 - (void)awakeFromNib {
@@ -63,58 +76,78 @@
     }
 }
 
+- (void) setTopPadding:(CGFloat)padding {
+    //topPadding.constant = padding;
+    topPaddingValue = padding;
+}
+
+- (void) setBottomPadding:(CGFloat)padding {
+    //bottomPadding.constant = padding;
+    bottomPaddingValue = padding;
+}
+
 - (instancetype) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
-        //Changes here after init'ing self
+        topPaddingValue = 2.75f;
+        bottomPaddingValue = -2.75f;
+        
+        container = [UIView new];
+        container.backgroundColor = [UIColor whiteColor];
+        container.layer.borderWidth = 0.5;
+        container.layer.cornerRadius = 6.0;
+        container.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+        container.translatesAutoresizingMaskIntoConstraints = NO;
+        [self addSubview:container];
+        
         _gameNameLabel = [UILabel new];
         _gameNameLabel.font = [UIFont boldSystemFontOfSize:15.0f];
         _gameNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_gameNameLabel];
+        [container addSubview:_gameNameLabel];
         //_gameNameLabel.backgroundColor = [UIColor greenColor];
         
         _addressLabel = [UILabel new];
         _addressLabel.font = [UIFont systemFontOfSize:9.0f];
         [_addressLabel sizeToFit];
         _addressLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_addressLabel];
+        [container addSubview:_addressLabel];
         //_addressLabel.backgroundColor = [UIColor greenColor];
         
         _timeLabel = [UILabel new];
         _timeLabel.font = [UIFont systemFontOfSize:9.0f];
         [_timeLabel sizeToFit];
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_timeLabel];
+        [container addSubview:_timeLabel];
         //_timeLabel.backgroundColor = [UIColor greenColor];
         
         _dateLabel = [UILabel new];
         _dateLabel.font = [UIFont systemFontOfSize:9.0f];
         [_dateLabel sizeToFit];
         _dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_dateLabel];
+        [container addSubview:_dateLabel];
         //_dateLabel.backgroundColor = [UIColor greenColor];
         
         _ivAdmin = [UIImageView new];
         _ivAdmin.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_ivAdmin];
+        [container addSubview:_ivAdmin];
         
         _ivStatus = [UIImageView new];
         _ivStatus.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_ivStatus];
+        [container addSubview:_ivStatus];
         
         _ivLocation = [UIImageView new];
         _ivLocation.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_ivLocation];
+        [container addSubview:_ivLocation];
         //_ivLocation.backgroundColor = [UIColor greenColor];
         
         _ivTime = [UIImageView new];
         _ivTime.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_ivTime];
+        [container addSubview:_ivTime];
         //_ivTime.backgroundColor = [UIColor greenColor];
         
         _ivDate = [UIImageView new];
         _ivDate.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:_ivDate];
+        [container addSubview:_ivDate];
         //_ivDate.backgroundColor = [UIColor greenColor];
     }
     
@@ -124,36 +157,92 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     
+    [self layoutContainerView];
+    
     [self layoutGameNameLabel];
     [self layoutStatusIcon];
     [self layoutAdminIcon];
-    [self layoutLocationIcon];
-    [self layoutAddressLabel];
-    [self layoutDateLabel];
+    
     [self layoutDateIcon];
+    [self layoutDateLabel];
+    
     [self layoutTimeLabel];
     [self layoutTimeIcon];
     
-    NSDictionary* views = NSDictionaryOfVariableBindings(_addressLabel, _ivTime);
+    [self layoutSeparatorView];
     
-    NSString* hc_str = @"H:[_addressLabel]-(>=11)-[_ivTime]";
+    [self layoutLocationIcon];
+    [self layoutAddressLabel];
+    
+    
+    /*
+    NSDictionary* views = NSDictionaryOfVariableBindings(_dateLabel, _ivTime);
+    
+    NSString* hc_str = @"H:[_dateLabel]-(>=11)-[_ivTime]";
     NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
     [self addConstraints:hzConstraints];
+    */
+}
+
+- (void) layoutContainerView {
+    if(!topPadding){
+        topPadding = [NSLayoutConstraint constraintWithItem:container
+                                                  attribute:NSLayoutAttributeTop
+                                                  relatedBy:0
+                                                     toItem:self
+                                                  attribute:NSLayoutAttributeTop
+                                                 multiplier:1
+                                                   constant:topPaddingValue];
+        [self addConstraint:topPadding];
+    }
+    else{
+        topPadding.constant = topPaddingValue;
+    }
+    
+    if(!bottomPadding){
+        bottomPadding = [NSLayoutConstraint constraintWithItem:container
+                                                  attribute:NSLayoutAttributeBottom
+                                                  relatedBy:0
+                                                     toItem:self
+                                                  attribute:NSLayoutAttributeBottom
+                                                 multiplier:1
+                                                   constant:bottomPaddingValue];
+        [self addConstraint:bottomPadding];
+    }
+    else{
+        bottomPadding.constant = bottomPaddingValue;
+    }
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:container
+                                                     attribute:NSLayoutAttributeLeft
+                                                     relatedBy:0
+                                                        toItem:self
+                                                     attribute:NSLayoutAttributeLeft
+                                                    multiplier:1
+                                                      constant:5.5]];
+    
+    [self addConstraint:[NSLayoutConstraint constraintWithItem:container
+                                                     attribute:NSLayoutAttributeRight
+                                                     relatedBy:0
+                                                        toItem:self
+                                                     attribute:NSLayoutAttributeRight
+                                                    multiplier:1
+                                                      constant:-5.5]];
 }
 
 - (void) layoutGameNameLabel {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_gameNameLabel
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_gameNameLabel
                                                      attribute:NSLayoutAttributeTop
                                                      relatedBy:0
-                                                        toItem:self
+                                                        toItem:container
                                                      attribute:NSLayoutAttributeTop
                                                     multiplier:1
                                                       constant:PADDING_TOP]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_gameNameLabel
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_gameNameLabel
                                                      attribute:NSLayoutAttributeLeft
                                                      relatedBy:0
-                                                        toItem:self
+                                                        toItem:container
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
                                                       constant:PADDING_LEFT]];
@@ -168,18 +257,18 @@
 }
 
 - (void) layoutStatusIcon {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivStatus
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivStatus
                                                                attribute:NSLayoutAttributeTop
                                                                relatedBy:0
-                                                                  toItem:self
+                                                                  toItem:container
                                                                attribute:NSLayoutAttributeTop
                                                               multiplier:1
                                                                 constant:PADDING_TOP]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivStatus
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivStatus
                                                                attribute:NSLayoutAttributeRight
                                                                relatedBy:0
-                                                                  toItem:self
+                                                                  toItem:container
                                                                attribute:NSLayoutAttributeRight
                                                               multiplier:1
                                                                 constant:-PADDING_RIGHT]];
@@ -190,7 +279,7 @@
                                                               toItem:nil
                                                            attribute:0
                                                           multiplier:1
-                                                            constant:22]];
+                                                            constant:STATUS_ICON_SIZE]];
     
     [_ivStatus addConstraint: [NSLayoutConstraint constraintWithItem:_ivStatus
                                                            attribute:NSLayoutAttributeHeight
@@ -198,25 +287,25 @@
                                                               toItem:nil
                                                            attribute:0
                                                           multiplier:1
-                                                            constant:22]];
+                                                            constant:STATUS_ICON_SIZE]];
 }
 
 - (void) layoutAdminIcon {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivAdmin
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivAdmin
                                                      attribute:NSLayoutAttributeTop
                                                      relatedBy:0
-                                                        toItem:self
+                                                        toItem:container
                                                      attribute:NSLayoutAttributeTop
                                                     multiplier:1
                                                       constant:PADDING_TOP]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivAdmin
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivAdmin
                                                      attribute:NSLayoutAttributeRight
                                                      relatedBy:0
                                                         toItem:_ivStatus
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
-                                                      constant:-13]];
+                                                      constant:-PADDING_RIGHT]];
     
     [_ivAdmin addConstraint: [NSLayoutConstraint constraintWithItem:_ivAdmin
                                                            attribute:NSLayoutAttributeWidth
@@ -224,7 +313,7 @@
                                                               toItem:nil
                                                            attribute:0
                                                           multiplier:1
-                                                            constant:22]];
+                                                            constant:STATUS_ICON_SIZE]];
     
     [_ivAdmin addConstraint: [NSLayoutConstraint constraintWithItem:_ivAdmin
                                                            attribute:NSLayoutAttributeHeight
@@ -232,22 +321,22 @@
                                                               toItem:nil
                                                            attribute:0
                                                           multiplier:1
-                                                            constant:22]];
+                                                            constant:STATUS_ICON_SIZE]];
 }
 
 - (void) layoutLocationIcon {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivLocation
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivLocation
                                                      attribute:NSLayoutAttributeBottom
                                                      relatedBy:0
-                                                        toItem:self
+                                                        toItem:container
                                                      attribute:NSLayoutAttributeBottom
                                                     multiplier:1
                                                       constant:-PADDING_BOTTOM]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivLocation
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivLocation
                                                      attribute:NSLayoutAttributeLeft
                                                      relatedBy:0
-                                                        toItem:self
+                                                        toItem:container
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
                                                       constant:PADDING_LEFT]];
@@ -258,7 +347,7 @@
                                                              toItem:nil
                                                           attribute:0
                                                          multiplier:1
-                                                           constant:8]];
+                                                           constant:13.5]];//27
     
     [_ivLocation addConstraint: [NSLayoutConstraint constraintWithItem:_ivLocation
                                                           attribute:NSLayoutAttributeHeight
@@ -266,19 +355,19 @@
                                                              toItem:nil
                                                           attribute:0
                                                          multiplier:1
-                                                           constant:10.5]];
+                                                           constant:14]];
 }
 
 - (void) layoutAddressLabel {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressLabel
-                                                     attribute:NSLayoutAttributeBottom
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_addressLabel
+                                                     attribute:NSLayoutAttributeCenterY
                                                      relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
+                                                        toItem:_ivLocation
+                                                     attribute:NSLayoutAttributeCenterY
                                                     multiplier:1
-                                                      constant:-PADDING_BOTTOM]];
+                                                      constant:0]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_addressLabel
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_addressLabel
                                                      attribute:NSLayoutAttributeLeft
                                                      relatedBy:0
                                                         toItem:_ivLocation
@@ -295,48 +384,22 @@
                                                               constant:SMALL_LABLE_HEIGHT]];
 }
 
-- (void) layoutDateLabel {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateLabel
-                                                     attribute:NSLayoutAttributeBottom
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
-                                                    multiplier:1
-                                                      constant:-PADDING_BOTTOM]];
-    
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_dateLabel
-                                                     attribute:NSLayoutAttributeRight
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeRight
-                                                    multiplier:1
-                                                      constant:-PADDING_RIGHT]];
-    
-    [_dateLabel addConstraint: [NSLayoutConstraint constraintWithItem:_dateLabel
-                                                               attribute:NSLayoutAttributeHeight
-                                                               relatedBy:0
-                                                                  toItem:nil
-                                                               attribute:0
-                                                              multiplier:1
-                                                                constant:SMALL_LABLE_HEIGHT]];
-}
-
 - (void) layoutDateIcon {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivDate
-                                                     attribute:NSLayoutAttributeBottom
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
-                                                    multiplier:1
-                                                      constant:-(PADDING_BOTTOM + 0.5)]];
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivDate
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:_gameNameLabel
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:PADDING_SECOND_ROW_TOP]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivDate
-                                                     attribute:NSLayoutAttributeRight
-                                                     relatedBy:0
-                                                        toItem:_dateLabel
-                                                     attribute:NSLayoutAttributeLeft
-                                                    multiplier:1
-                                                      constant:-4]];
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivDate
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1
+                                                           constant:PADDING_LEFT]];
     
     [_ivDate addConstraint: [NSLayoutConstraint constraintWithItem:_ivDate
                                                              attribute:NSLayoutAttributeWidth
@@ -344,7 +407,7 @@
                                                                 toItem:nil
                                                              attribute:0
                                                             multiplier:1
-                                                              constant:10.5]];
+                                                              constant:13.5]];//27
     
     [_ivDate addConstraint: [NSLayoutConstraint constraintWithItem:_ivDate
                                                              attribute:NSLayoutAttributeHeight
@@ -352,25 +415,90 @@
                                                                 toItem:nil
                                                              attribute:0
                                                             multiplier:1
-                                                              constant:10.5]];
+                                                              constant:14]];
+}
+
+- (void) layoutDateLabel {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_dateLabel
+                                                          attribute:NSLayoutAttributeCenterY
+                                                          relatedBy:0
+                                                             toItem:_ivDate
+                                                          attribute:NSLayoutAttributeCenterY
+                                                         multiplier:1
+                                                           constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_dateLabel
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:0
+                                                             toItem:_ivDate
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1
+                                                           constant:8]];
+    
+    [_dateLabel addConstraint: [NSLayoutConstraint constraintWithItem:_dateLabel
+                                                            attribute:NSLayoutAttributeHeight
+                                                            relatedBy:0
+                                                               toItem:nil
+                                                            attribute:0
+                                                           multiplier:1
+                                                             constant:SMALL_LABLE_HEIGHT]];
+}
+
+- (void) layoutSeparatorView {
+    UIView *separator = [UIView new];
+    separator.translatesAutoresizingMaskIntoConstraints = NO;
+    separator.backgroundColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
+    [container addSubview:separator];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:separator
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:0
+                                                             toItem:_ivDate
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:7.5f]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:separator
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1
+                                                           constant:PADDING_LEFT]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:separator
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:0
+                                                             toItem:container
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1
+                                                           constant:-PADDING_RIGHT]];
+    
+    [separator addConstraint: [NSLayoutConstraint constraintWithItem:separator
+                                                           attribute:NSLayoutAttributeHeight
+                                                           relatedBy:0
+                                                              toItem:nil
+                                                           attribute:0
+                                                          multiplier:1
+                                                            constant:0.5f]];
 }
 
 - (void) layoutTimeLabel {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
-                                                     attribute:NSLayoutAttributeBottom
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
-                                                    multiplier:1
-                                                      constant:-PADDING_BOTTOM]];
-    
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
-                                                     attribute:NSLayoutAttributeRight
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
+                                                     attribute:NSLayoutAttributeCenterY
                                                      relatedBy:0
                                                         toItem:_ivDate
-                                                     attribute:NSLayoutAttributeLeft
+                                                     attribute:NSLayoutAttributeCenterY
                                                     multiplier:1
-                                                      constant:-11]];
+                                                      constant:0]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
+                                                     attribute:NSLayoutAttributeRight
+                                                     relatedBy:0
+                                                        toItem:container
+                                                     attribute:NSLayoutAttributeRight
+                                                    multiplier:1
+                                                      constant:-PADDING_LEFT]];
     
     [_timeLabel addConstraint: [NSLayoutConstraint constraintWithItem:_timeLabel
                                                             attribute:NSLayoutAttributeHeight
@@ -382,21 +510,21 @@
 }
 
 - (void) layoutTimeIcon {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivTime
-                                                     attribute:NSLayoutAttributeBottom
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivTime
+                                                     attribute:NSLayoutAttributeCenterY
                                                      relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
+                                                        toItem:_ivDate
+                                                     attribute:NSLayoutAttributeCenterY
                                                     multiplier:1
-                                                      constant:-PADDING_BOTTOM]];
+                                                      constant:0]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivTime
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ivTime
                                                      attribute:NSLayoutAttributeRight
                                                      relatedBy:0
                                                         toItem:_timeLabel
                                                      attribute:NSLayoutAttributeLeft
                                                     multiplier:1
-                                                      constant:-4]];
+                                                      constant:-8]];
     
     [_ivTime addConstraint: [NSLayoutConstraint constraintWithItem:_ivTime
                                                          attribute:NSLayoutAttributeWidth
@@ -404,7 +532,7 @@
                                                             toItem:nil
                                                          attribute:0
                                                         multiplier:1
-                                                          constant:10.5]];
+                                                          constant:13.5]];
     
     [_ivTime addConstraint: [NSLayoutConstraint constraintWithItem:_ivTime
                                                          attribute:NSLayoutAttributeHeight
@@ -412,7 +540,7 @@
                                                             toItem:nil
                                                          attribute:0
                                                         multiplier:1
-                                                          constant:11]];
+                                                          constant:14]];
 }
 
 @end
