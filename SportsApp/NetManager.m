@@ -1,15 +1,14 @@
 //
-//  ZSNetHelper.m
-//  navaselle.net
+//  NetHelper.m
 //
 //  Created by sergeyZ on 23.12.14.
 //  Copyright (c) 2014 srgzah. All rights reserved.
 //
 
-#import "ZSNetManager.h"
+#import "NetManager.h"
 #import "Reachability.h"
 
-@implementation ZSNetManager
+@implementation NetManager
 
 + (void) sendGet:(NSString *)urlString withParams:(NSDictionary *)params completionHandler:(void(^)(NSData *data, NSURLResponse *response, NSError *error))blockHandler {
     NSURL* url = nil;
@@ -27,9 +26,6 @@
                 [paramsString appendFormat:@"&%@=%@", key, value];
             }
         }
-        
-        //NSLog(@"query: %@?%@", urlString, paramsString);
-        //url = [NSURL URLWithString:[NSString stringWithFormat:@"%@?%@", urlString, paramsString]];
         
         NSString *str_url = [NSString stringWithFormat:@"%@&%@", urlString, paramsString];
         url = [NSURL URLWithString:[str_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
@@ -86,7 +82,7 @@
     [urlRequest setValue:contentType forHTTPHeaderField: @"Content-Type"];
     
     if(params){
-        NSMutableData *body = [ZSNetManager dictionaryToPostBody:params withBoundary:boundary];
+        NSMutableData *body = [NetManager dictionaryToPostBody:params withBoundary:boundary];
         [urlRequest setHTTPBody:body];
         
         NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];

@@ -14,7 +14,7 @@
 #import "NSString+Common.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
-#import "AppNetHelper.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
 #import "FoursquareResponse.h"
 #import "CustomButton.h"
@@ -314,7 +314,7 @@
 }
 
 - (void) startSearchFoursquare {
-    [AppNetHelper findFoursquarePlacesInRegion:_searchAddressField.text search:_searchPlacesField.text completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
+    [AppNetworking findFoursquarePlacesInRegion:_searchAddressField.text search:_searchPlacesField.text completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!resp){
@@ -330,7 +330,7 @@
 }
 
 - (void) startSearchYandex {
-    [AppNetHelper findYandexAddress:_searchAddressField.text completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
+    [AppNetworking findYandexAddress:_searchAddressField.text completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!items){
                 addresses = [NSArray new];
@@ -353,6 +353,11 @@
         if([self.delegate respondsToSelector:@selector(gamePlaceDidChanged:place:)]){
             FoursquareResponse *place = [FoursquareResponse new];
             place.name = address.name;
+            
+            place.country = address.country;
+            place.city = address.city;
+            place.address = address.address;
+            
             place.lat = address.lat;
             place.lng = address.lng;
             
@@ -452,7 +457,7 @@
         [_locationManager stopUpdatingLocation];
         locationFound = YES;
         
-        [AppNetHelper findYandexAddressForLatitude:_currentLocation.latitude longitude:_currentLocation.longitude completionHandler:^(YandexGeoResponse *resp, NSString *errorMessage) {
+        [AppNetworking findYandexAddressForLatitude:_currentLocation.latitude longitude:_currentLocation.longitude completionHandler:^(YandexGeoResponse *resp, NSString *errorMessage) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 

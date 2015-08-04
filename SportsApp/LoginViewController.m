@@ -10,8 +10,11 @@
 #import "GamesListViewController.h"
 #import "MemberViewController.h"
 #import "NSLayoutConstraint+Helper.h"
-#import "AppNetHelper.h"
+#import "AppNetworking.h"
 #import "AppDelegate.h"
+#import "AppColors.h"
+#import "UIColor+Helper.h"
+#import "MBProgressHUD.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -54,7 +57,8 @@ static NSArray* SCOPE = nil;
     lbAppName.translatesAutoresizingMaskIntoConstraints = NO;
     lbAppName.textAlignment = NSTextAlignmentCenter;
     [lbAppName setText: @"Start Sport"];
-    [lbAppName setTextColor:[UIColor whiteColor]];
+    //[lbAppName setTextColor:[UIColor whiteColor]];
+    [lbAppName setTextColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     [lbAppName setFont:[UIFont fontWithName: @"HelveticaNeue-Light" size: 24.0f]];
     [lbAppName sizeToFit];
     [self.view addSubview:lbAppName];
@@ -104,7 +108,8 @@ static NSArray* SCOPE = nil;
     [btnVK setTitle:@"Войти через Вконтакте" forState:UIControlStateNormal];
     btnVK.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnVK setBackgroundImage:[UIImage imageNamed:@"bg_btn_vk.png"] forState:UIControlStateNormal];
-    [btnVK setTintColor:[UIColor whiteColor]];
+    //[btnVK setTintColor:[UIColor whiteColor]];
+    [btnVK setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     btnVK.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     
     return btnVK;
@@ -116,7 +121,8 @@ static NSArray* SCOPE = nil;
     [btnFB setTitle:@"Войти через Facebook" forState:UIControlStateNormal];
     btnFB.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnFB setBackgroundImage:[UIImage imageNamed:@"bg_btn_fb.png"] forState:UIControlStateNormal];
-    [btnFB setTintColor:[UIColor whiteColor]];
+    //[btnFB setTintColor:[UIColor whiteColor]];
+    [btnFB setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     btnFB.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     
     return btnFB;
@@ -139,7 +145,7 @@ static NSArray* SCOPE = nil;
 #pragma mark -
 #pragma mark LOGIN
 - (void) loginWithFacebook {
-    if(![AppNetHelper isInternetAvaliable]){
+    if(![AppNetworking isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Нет подключения к интернету"
                               message:nil
@@ -157,13 +163,22 @@ static NSArray* SCOPE = nil;
         [self appLoginWithProvider:@"facebook" oauthToken:fbToken.tokenString email:nil name:nil];
     }
     else{
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        
         FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
         [login logInWithReadPermissions:@[@"email", @"public_profile"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
             if (error) {
                 NSLog(@"FB Error: %@", error.debugDescription);
+                
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
             else if (result.isCancelled) {
                 NSLog(@"FB Cancelled");
+                
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
             }
             else {
                 if ([result.grantedPermissions containsObject:@"email"] && [result.grantedPermissions containsObject:@"public_profile"]) {
@@ -179,6 +194,9 @@ static NSArray* SCOPE = nil;
                 }
                 else{
                     NSLog(@"FB email Permissions deny!");
+                    
+                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
                 }
             }
         }];
@@ -186,7 +204,7 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) loginWithVkontakte {
-    if(![AppNetHelper isInternetAvaliable]){
+    if(![AppNetworking isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
                               initWithTitle:@"Нет подключения к интернету"
                               message:nil
@@ -196,6 +214,9 @@ static NSArray* SCOPE = nil;
         [alert show];
         return;
     }
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
     if ([VKSdk wakeUpSession]){
@@ -255,6 +276,9 @@ static NSArray* SCOPE = nil;
                [error.vkError.request repeat];
            } else {
                NSLog(@"VK error: %@", error);
+               
+               [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+               [MBProgressHUD hideHUDForView:self.view animated:YES];
            } 
     }];
 }
@@ -265,14 +289,23 @@ static NSArray* SCOPE = nil;
 
 - (void) vkSdkUserDeniedAccess:(VKError*) authorizationError {
     NSLog(@"VK Error: %@", authorizationError.debugDescription);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 - (void) vkSdkTokenHasExpired:(VKAccessToken *)expiredToken {
     NSLog(@"VK expiredToken: %@",  expiredToken.accessToken);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 - (void) vkSdkNeedCaptchaEnter:(VKError *)captchaError {
     NSLog(@"VK captchaError: %@",  captchaError.debugDescription);
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+    [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
 #pragma mark -
@@ -288,9 +321,17 @@ static NSArray* SCOPE = nil;
     if(name)
         [params setValue:name forKey:@"name"];
     
-    [AppNetHelper loginUser:params completionHandler:^(AppUser *user, NSString *errorMessage) {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking loginUser:params completionHandler:^(AppUser *user, NSString *errorMessage) {
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        
         if(user){
             [[AppDelegate instance] setUser:user];
+            [appNetworking setUserToken:user.appToken];
             [self goToNextScreen];
         }
         else{

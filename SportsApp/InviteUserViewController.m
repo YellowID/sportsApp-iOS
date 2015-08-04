@@ -14,7 +14,8 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 #import "MemberInfo.h"
-#import "AppNetHelper.h"
+#import "AppDelegate.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
 
 #define PHOTO_SIZE 40
@@ -439,7 +440,8 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [AppNetHelper inviteUserWithEmail:nil forGame:_gameId completionHandler:^(NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking inviteUserWithEmail:nil forGame:_gameId completionHandler:^(NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -509,7 +511,8 @@
 #pragma mark -
 #pragma mark UISearchBar delegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    [AppNetHelper findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!errorMessage){
                 members = arrayData;
@@ -537,7 +540,8 @@
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             
-            [AppNetHelper inviteUserWithId:selectedUserId forGame:_gameId completionHandler:^(NSString *errorMessage) {
+            AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+            [appNetworking inviteUserWithId:selectedUserId forGame:_gameId completionHandler:^(NSString *errorMessage) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
                     [MBProgressHUD hideHUDForView:self.view animated:YES];

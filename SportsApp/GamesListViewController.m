@@ -15,7 +15,7 @@
 #import "GameInfo.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
-#import "AppNetHelper.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
 #import "AppDelegate.h"
 #import "UIViewController+Navigation.h"
@@ -66,8 +66,10 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    currentUserId = [AppDelegate instance].currentUserId;
-    [AppNetHelper gamesForUser:currentUserId completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+    currentUserId = [AppDelegate instance].user.uid;
+    
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking gamesForCurrentUserCompletionHandler:^(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -82,7 +84,19 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
                 [alert show];
             }
             else{
-                [self showData:arrayData];
+                if(!myGames)
+                    _myGames = [NSMutableArray new];
+                else
+                    _myGames = myGames;
+                
+                if(!publicGames)
+                    _publicGames = [NSMutableArray new];
+                else
+                    _publicGames = publicGames;
+                
+                [_tableView reloadData];
+                
+                //[self showData:arrayData];
             }
         });
     }];
@@ -317,7 +331,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     }
      */
     
-    gameCell.gameNameLabel.text = game.gameName;
+    gameCell.gameNameLabel.text = game.gameName; // [self gameNameForTypeId:game.gameId];
     
     gameCell.addressLabel.text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
     gameCell.addressLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
@@ -327,10 +341,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     
     gameCell.timeLabel.text = game.time;
     gameCell.timeLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
-    
-    
-    
-    //
     
     if(game.adminId == currentUserId)
         gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
@@ -348,7 +358,11 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    ChatViewController* controller = [[ChatViewController alloc] init];
+    NSMutableArray *games = (indexPath.section == 0) ? _myGames : _publicGames;
+    GameInfo *game = games[indexPath.row];
+        
+    ChatViewController *controller = [[ChatViewController alloc] init];
+    controller.gameId = game.gameId;
     [self.navigationController pushViewController:controller animated:YES];
     
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -356,6 +370,30 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 
 #pragma mark -
 #pragma mark Other
+/*
+- (NSString *) gameNameForTypeId:(NSUInteger)gameType {
+    NSString *name = @"";
+    
+    if(gameType == 1)
+        name = @"Футбол";
+    else if(gameType == 2)
+        name = @"Баскетбол";
+    else if(gameType == 3)
+        name = @"Волейбол";
+    else if(gameType == 4)
+        name = @"Гандбол";
+    else if(gameType == 5)
+        name = @"Тенис";
+    else if(gameType == 6)
+        name = @"Хоккей";
+    else if(gameType == 7)
+        name = @"Сквош";
+        
+    
+    return name;
+}
+ */
+
 - (void) showData:(NSMutableArray *)games {
     _myGames = [NSMutableArray new];
     _publicGames = [NSMutableArray new];

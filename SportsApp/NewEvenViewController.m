@@ -14,8 +14,11 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 #import "NewGame.h"
-#import "AppNetHelper.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
+#import "AppDelegate.h"
+
+#import "NSDate+Formater.h"
 
 #define PADDING_H 12
 #define MAIN_SCROLL_CONTENT_HEIGHT 340
@@ -844,7 +847,8 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [AppNetHelper createNewGame:nil completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking createNewGame:newGame completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -860,7 +864,6 @@
                 [alert show];
             }
             else{
-                
                 InviteUserViewController* controller = [[InviteUserViewController alloc] init];
                 controller.gameId = gameId;
                 [self.navigationController pushViewController:controller animated:YES];
@@ -873,7 +876,15 @@
 #pragma mark PlaceSearchViewControllerDelegate
 - (void)gamePlaceDidChanged:(PlaceSearchViewController *)controller place:(FoursquareResponse *)placeLocation {
     if(placeLocation){
-        _tfLocation.text = placeLocation.name;
+        //_tfLocation.text = placeLocation.name;
+        _tfLocation.text = [NSString stringWithFormat:@"%@, %@", placeLocation.city, placeLocation.address];
+        
+        newGame.placeName = placeLocation.name;
+        newGame.country = placeLocation.country;
+        newGame.city = placeLocation.city;
+        newGame.address = placeLocation.address;
+        newGame.latitude = placeLocation.lat;
+        newGame.longitude = placeLocation.lng;
     }
 }
 
@@ -974,7 +985,7 @@
     else if(pickerView.tag == SPORT_PICKER){
         _tfKindOfSport.text = sportItems[row];
         selectedSport = row;
-        newGame.sport = row;
+        newGame.sport = row + 1;
         [self changeCreateButtonIfNeeded];
     }
 }
@@ -983,11 +994,16 @@
 #pragma mark UIDatePicker delegate
 - (void) datePickerDateChanged:(UIDatePicker *)datePicker {
     if (datePicker == _dateTimePicker){
-        NSDateFormatter *df = [[NSDateFormatter alloc] init];
-        [df setDateFormat:@"d MMMM yyyy HH:mm"];
-        _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:datePicker.date]];
+        _tfTime.text = [datePicker.date toFormat:@"d MMMM yyyy HH:mm"];
         
-        newGame.time = [datePicker.date timeIntervalSince1970];
+        /*
+        NSDate *jsDate = [NSDate dateWithJsonString:@"2015-05-26T12:20:00+0000"];
+        NSLog(@"json: %@", [jsDate toJsonFormat]);
+        NSLog(@"custom: %@", [jsDate toFormat:@"d MMMM yyyy HH:mm"]);
+        */
+        
+        //newGame.time = [datePicker.date timeIntervalSince1970];
+        newGame.time = [datePicker.date toJsonFormat];
         [self changeCreateButtonIfNeeded];
     }
 }
@@ -1041,7 +1057,7 @@
 #pragma mark -
 #pragma mark Other methods
 - (void) changeCreateButtonIfNeeded {
-    if(newGame.sport < 0)
+    if(newGame.sport <= 0)
         return;
     
     if(newGame.time == 0)

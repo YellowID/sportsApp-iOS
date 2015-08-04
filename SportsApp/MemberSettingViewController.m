@@ -16,7 +16,8 @@
 #import "SportInfo.h"
 #import "SportItemUI.h"
 #import "MemberSettings.h"
-#import "AppNetHelper.h"
+#import "AppDelegate.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
 #import "CustomButton.h"
 
@@ -164,7 +165,8 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [AppNetHelper settingsForUser:1 completionHandler:^(MemberSettings *settings, NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking settingsForCurrentUserCompletionHandler:^(MemberSettings *settings, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -1352,7 +1354,8 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [AppNetHelper saveSettings:memberSettings forUser:1 completionHandler:^(NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking saveSettingsForCurrentUser:memberSettings completionHandler:^(NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];

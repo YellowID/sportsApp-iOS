@@ -21,7 +21,9 @@
 
 @end
 
-@implementation AppDelegate
+@implementation AppDelegate {
+    AppNetworking *appNetworking;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -105,6 +107,13 @@
 #pragma mark - Other
 + (AppDelegate*) instance {
     return (AppDelegate*) [[UIApplication sharedApplication] delegate];
+}
+
+- (AppNetworking *) appNetworkingInstance {
+    if(!appNetworking)
+        appNetworking = [AppNetworking sharedInstance];
+    
+    return appNetworking;
 }
 
 @end

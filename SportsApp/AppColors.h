@@ -12,6 +12,8 @@
 #define BAR_TINT_COLOR 0x32c24dFF
 #define BAR_TEXT_COLOR 0x919191ff
 
+#define APP_NAME_TEXT_COLOR 0xc8c6c6ff
+
 #define BG_GRAY_COLOR 0xf2f2f4ff
 #define CELL_SEPARATOR_COLOR 0xdbd7d7ff
 #define ROW_SEPARATOR_COLOR 0xb2b2b2ff
@@ -54,5 +56,7 @@
 #define BTN_YES_COLOR 0x259b24ff
 #define BTN_PERHAPS_COLOR 0x979696ff
 #define BTN_NO_COLOR 0xe84e40ff
+
+
 
 #endif

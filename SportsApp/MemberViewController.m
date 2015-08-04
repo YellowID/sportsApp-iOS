@@ -11,7 +11,8 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 #import "MemberInfo.h"
-#import "AppNetHelper.h"
+#import "AppDelegate.h"
+#import "AppNetworking.h"
 #import "MBProgressHUD.h"
 
 #define PHOTO_SIZE 40
@@ -55,7 +56,8 @@
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [AppNetHelper membersForGame:1 completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking membersForGame:3 completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -98,8 +100,8 @@
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    //return _members.count;
-    return 10;
+    return _members.count;
+    //return 10;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{

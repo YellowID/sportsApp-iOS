@@ -10,7 +10,7 @@
 #import "NSString+Common.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
-#import "AppNetHelper.h"
+#import "AppNetworking.h"
 
 @interface AddressSearchViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
@@ -101,7 +101,7 @@
 }
 
 - (void) startSearchYandex {
-    [AppNetHelper findYandexAddress:_searchField.text completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
+    [AppNetworking findYandexAddress:_searchField.text completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!resp){
                 items = [NSArray new];

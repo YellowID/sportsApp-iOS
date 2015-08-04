@@ -10,4 +10,6 @@
 
 @interface ChatViewController : UIViewController
 
+@property (nonatomic) NSUInteger gameId;
+
 @end

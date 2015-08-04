@@ -14,6 +14,10 @@
 @property (copy, nonatomic) NSString *name;
 @property (copy, nonatomic) NSString *descr;
 
+@property (copy, nonatomic) NSString *country;
+@property (copy, nonatomic) NSString *city;
+@property (copy, nonatomic) NSString *address;
+
 @property (nonatomic) CGFloat lat;
 @property (nonatomic) CGFloat lng;
 

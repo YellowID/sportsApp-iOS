@@ -17,6 +17,9 @@
 #import "NSString+Common.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
+#import "AppNetworking.h"
+#import "MBProgressHUD.h"
+#import "AppDelegate.h"
 #import "ChatMessage.h"
 
 #import <Quickblox/Quickblox.h>
@@ -72,21 +75,49 @@
     CGFloat mainViewHeight;
     
     NSUInteger currentUserId;
+    GameInfo *game;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setNavTitle:@"Волейбол"];
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_chat.png"]];
     [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     
-    [self setNavigationItems];
+    currentUserId = [AppDelegate instance].user.uid;
     
-    [self loadChatMessages];
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
-    [self setupChatContentView];
-    [self setupCurtainView];
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking gameById:_gameId completionHandler:^(GameInfo *gameInfo, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                [alert show];
+            }
+            else {
+                game = gameInfo;
+                
+                [self setNavTitle:game.gameName];
+                
+                [self setNavigationItems];
+                
+                [self loadChatMessages];
+                
+                [self setupChatContentView];
+                [self setupCurtainView];
+            }
+        });
+    }];
     
     /*
     [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
@@ -492,16 +523,18 @@
     UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnBackClick)];
     self.navigationItem.leftBarButtonItem = btnBack;
     
-    UIButton* btnChange = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnChange addTarget:self action:@selector(btnChangeClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnChange setTitle:@"Изменить" forState:UIControlStateNormal];
-    btnChange.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    [btnChange setUserInteractionEnabled:NO];
-    [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
-    [btnChange sizeToFit];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnChange];
+    if(currentUserId == game.adminId){
+        UIButton* btnChange = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+        [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+        [btnChange addTarget:self action:@selector(btnChangeClick) forControlEvents:UIControlEventTouchUpInside];
+        [btnChange setTitle:@"Изменить" forState:UIControlStateNormal];
+        btnChange.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+        [btnChange setUserInteractionEnabled:NO];
+        [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+        [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
+        [btnChange sizeToFit];
+        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnChange];
+    }
 }
 
 #pragma mark -
@@ -810,7 +843,7 @@
 
 - (UILabel*) makeTimeLable {
     UILabel* lable = [UILabel new];
-    lable.text = @"10:00 через 3 дня";
+    lable.text = [NSString stringWithFormat:@"%@ %@", game.time, game.date]; //@"10:00 через 3 дня";
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:9.0f];
     [lable sizeToFit];
@@ -818,8 +851,16 @@
 }
 
 - (UILabel*) makeLocationLable {
+    NSString *text = @"Место неизвестно";
+    if(game.addressName && game.address)
+        text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
+    else if(game.addressName)
+        text = [NSString stringWithFormat:@"%@", game.addressName];
+    else if(game.address)
+        text = [NSString stringWithFormat:@"%@", game.address];
+    
     UILabel* lable = [UILabel new];
-    lable.text = @"Суперзал, ул. Пушкина, 120Д/1";
+    lable.text = text; //@"Суперзал, ул. Пушкина, 120Д/1";
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:9.0f];
     [lable sizeToFit];
@@ -896,7 +937,7 @@
     _peopleInGame.attributedText = [attributeString copy];
     */
     
-    _peopleInGame.text = @"Идут 7 человек";
+    _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count]; //@"Идут 7 человек";
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
@@ -908,8 +949,14 @@
 }
 
 - (void) createPeopleNeedLable {
+    NSInteger diff = game.numbers - game.members.count;
+    
+    NSUInteger needle = 0;
+    if(diff > 0)
+        needle = diff;
+    
     _peopleNeed = [UILabel new];
-    _peopleNeed.text = @"Нужно ещё 3";
+    _peopleNeed.text = [NSString stringWithFormat:@"Нужно ещё %lu", (unsigned long)needle]; //@"Нужно ещё 3";
     _peopleNeed.textAlignment = NSTextAlignmentLeft;
     _peopleNeed.font = [UIFont systemFontOfSize:12.0f];
     _peopleNeed.textColor = [UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR];

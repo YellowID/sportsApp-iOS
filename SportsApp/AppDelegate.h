@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AppNetworking.h"
 #import "AppUser.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
@@ -18,7 +19,8 @@
 
 @property (strong, nonatomic) AppUser *user;
 
-+ (AppDelegate*) instance;
++ (AppDelegate *) instance;
+- (AppNetworking *) appNetworkingInstance;
 
 @end
 
