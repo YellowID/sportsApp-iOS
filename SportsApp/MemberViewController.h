@@ -10,4 +10,6 @@
 
 @interface MemberViewController : UIViewController
 
+@property (copy, nonatomic) NSArray *members;
+
 @end

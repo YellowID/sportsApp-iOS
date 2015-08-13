@@ -73,22 +73,14 @@
     NSMutableArray* ageItems;
     NSMutableArray* peopleNumberItems;
     
-    NSUInteger selectedSport;
-    NSUInteger selectedAge;
-    NSUInteger selectedPeopleNumber;
-    NSUInteger selectedLevel;
-    
     NewGame *newGame;
+    GameInfo *editGameInfo;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"Новое событие";
-    [self setNavTitle:@"Новое событие"];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
-    
-    [self setNavigationItems];
     
     grayStarImage = [UIImage imageNamed:@"icon_star_small.png"];
     activeStarImage = [UIImage imageNamed:@"icon_star_small_active.png"];
@@ -143,15 +135,78 @@
     _dateTimePicker.minimumDate = todayDate;
     _dateTimePicker.maximumDate = twoYearsFromToday;
     
-    [self setupContainers];
-    [self setupFieldsGroup];
-    [self setupTimeGroup];
-    [self setupAgeGroup];
-    [self setupLevelGroup];
-    
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     newGame = [NewGame new];
+    
+    if(_isEditGameMode){
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        
+        AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+        [appNetworking gameById:_gameId completionHandler:^(GameInfo *gameInfo, NSString *errorMessage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
+                if(errorMessage){
+                    UIAlertView *alert = [[UIAlertView alloc]
+                                          initWithTitle:nil
+                                          message:errorMessage
+                                          delegate:nil
+                                          cancelButtonTitle:@"Ок"
+                                          otherButtonTitles:nil];
+                    
+                    [alert show];
+                }
+                else{
+                    editGameInfo = gameInfo;
+                    newGame.sport = editGameInfo.gameType;
+                    newGame.time = editGameInfo.startAt;
+                    
+                    newGame.age = editGameInfo.age;
+                    newGame.level = editGameInfo.level;
+                    newGame.players = editGameInfo.numbers;
+                    
+                    newGame.placeName = editGameInfo.addressName;
+                    
+                    // UI
+                    [self setNavTitle:@"Новое событие"];
+                    [self setNavigationItems];
+                    
+                    [self setupContainers];
+                    [self setupFieldsGroup];
+                    [self setupTimeGroup];
+                    [self setupAgeGroup];
+                    [self setupLevelGroup];
+                    
+                    NSDate *editDate = [NSDate dateWithJsonString:editGameInfo.startAt];
+                    [_dateTimePicker setDate:editDate];
+                    
+                    [_sportPicker selectRow:editGameInfo.gameType-1 inComponent:0 animated:NO];
+                    [_peopleNumberPicker selectRow:editGameInfo.numbers-1 inComponent:0 animated:NO];
+                    [_agePicker selectRow:editGameInfo.age-1 inComponent:0 animated:NO];
+                    
+                    if(editGameInfo.level == LEVEL_1)
+                        [self oneStarClick];
+                    else if(editGameInfo.level == LEVEL_2)
+                        [self twoStarClick];
+                    else if(editGameInfo.level == LEVEL_3)
+                        [self threeStarClick];
+                }
+            });
+        }];
+    }
+    else{
+        [self setNavTitle:@"Новое событие"];
+        [self setNavigationItems];
+        
+        [self setupContainers];
+        [self setupFieldsGroup];
+        [self setupTimeGroup];
+        [self setupAgeGroup];
+        [self setupLevelGroup];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -187,7 +242,12 @@
     _btnCreate = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_btnCreate setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [_btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
+    
+    if(_isEditGameMode)
+        [_btnCreate setTitle:@"Изменить" forState:UIControlStateNormal];
+    else
+        [_btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
+    
     _btnCreate.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [_btnCreate setUserInteractionEnabled:NO];
     [_btnCreate setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
@@ -264,6 +324,10 @@
     _tfKindOfSport.translatesAutoresizingMaskIntoConstraints = NO;
     _tfKindOfSport.delegate = self;
     _tfKindOfSport.placeholder = @"Вид спорта";
+    
+    if(_isEditGameMode)
+        _tfKindOfSport.text = editGameInfo.gameName;
+    
     _tfKindOfSport.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfKindOfSport];
     
@@ -305,6 +369,10 @@
     _tfLocation.delegate = self;
     _tfLocation.translatesAutoresizingMaskIntoConstraints = NO;
     _tfLocation.placeholder = @"Место";
+    
+    if(_isEditGameMode)
+        _tfLocation.text = editGameInfo.addressName;
+    
     _tfLocation.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfLocation];
     
@@ -419,7 +487,13 @@
     _tfAge = [UITextField new];
     _tfAge.translatesAutoresizingMaskIntoConstraints = NO;
     _tfAge.delegate = self;
-    _tfAge.text = @"20-28";
+    _tfAge.placeholder = @"20-28";
+    
+    if(_isEditGameMode){
+        if(editGameInfo.age > 0 && editGameInfo.age <= ageItems.count)
+            _tfAge.text = ageItems[editGameInfo.age - 1];
+    }
+    
     _tfAge.textAlignment = NSTextAlignmentRight;
     _tfAge.font = [UIFont systemFontOfSize:12.0f];
     
@@ -522,13 +596,21 @@
     _tfTime = [UITextField new];
     _tfTime.translatesAutoresizingMaskIntoConstraints = NO;
     _tfTime.delegate = self;
-    _tfTime.text = @"17 июля 2015 г. 17:00";
+    //_tfTime.text = @"17 июля 2015 г. 17:00";
     _tfTime.textAlignment = NSTextAlignmentRight;
     _tfTime.font = [UIFont systemFontOfSize:12.0f];
     
+    NSDate *dateToDisplay = nil;
+    if(_isEditGameMode){
+        dateToDisplay = [NSDate dateWithJsonString:editGameInfo.startAt];
+    }
+    else{
+        dateToDisplay = [NSDate date];
+    }
+    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"d MMMM yyyy HH:mm"];
-    _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:[NSDate date]]];
+    _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:dateToDisplay]];
     
     [_timeGroupView addSubview:_tfTime];
     
@@ -679,7 +761,13 @@
     _tfPeopleNumber = [UITextField new];
     _tfPeopleNumber.translatesAutoresizingMaskIntoConstraints = NO;
     _tfPeopleNumber.delegate = self;
-    _tfPeopleNumber.text = @"15";
+    //_tfPeopleNumber.text = @"15";
+    _tfPeopleNumber.placeholder = @"15";
+    
+    if(_isEditGameMode){
+        _tfPeopleNumber.text = [NSString stringWithFormat:@"%lu", (unsigned long)editGameInfo.numbers];
+    }
+    
     _tfPeopleNumber.textAlignment = NSTextAlignmentRight;
     _tfPeopleNumber.font = [UIFont systemFontOfSize:12.0f];
     [_levelGroupView addSubview:_tfPeopleNumber];
@@ -848,28 +936,60 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking createNewGame:newGame completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
-            if(errorMessage){
-                UIAlertView *alert = [[UIAlertView alloc]
-                                      initWithTitle:nil
-                                      message:errorMessage
-                                      delegate:nil
-                                      cancelButtonTitle:@"Ок"
-                                      otherButtonTitles:nil];
+    
+    if(_isEditGameMode){
+        [appNetworking editGame:newGame withId:_gameId completionHandler:^(NSString *errorMessage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
                 
-                [alert show];
-            }
-            else{
-                InviteUserViewController* controller = [[InviteUserViewController alloc] init];
-                controller.gameId = gameId;
-                [self.navigationController pushViewController:controller animated:YES];
-            }
-        });
-    }];
+                if(errorMessage){
+                    UIAlertView *alert = [[UIAlertView alloc]
+                                          initWithTitle:nil
+                                          message:errorMessage
+                                          delegate:nil
+                                          cancelButtonTitle:@"Ок"
+                                          otherButtonTitles:nil];
+                    
+                    [alert show];
+                }
+                else{
+                    UIAlertView *alert = [[UIAlertView alloc]
+                                          initWithTitle:nil
+                                          message:@"Игра изменена"
+                                          delegate:nil
+                                          cancelButtonTitle:@"Ок"
+                                          otherButtonTitles:nil];
+                    
+                    [alert show];
+                }
+            });
+        }];
+    }
+    else{
+        [appNetworking createNewGame:newGame completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
+                if(errorMessage){
+                    UIAlertView *alert = [[UIAlertView alloc]
+                                          initWithTitle:nil
+                                          message:errorMessage
+                                          delegate:nil
+                                          cancelButtonTitle:@"Ок"
+                                          otherButtonTitles:nil];
+                    
+                    [alert show];
+                }
+                else{
+                    InviteUserViewController* controller = [[InviteUserViewController alloc] init];
+                    controller.gameId = gameId;
+                    [self.navigationController pushViewController:controller animated:YES];
+                }
+            });
+        }];
+    }
 }
 
 #pragma mark -
@@ -877,7 +997,11 @@
 - (void)gamePlaceDidChanged:(PlaceSearchViewController *)controller place:(FoursquareResponse *)placeLocation {
     if(placeLocation){
         //_tfLocation.text = placeLocation.name;
-        _tfLocation.text = [NSString stringWithFormat:@"%@, %@", placeLocation.city, placeLocation.address];
+        
+        if(placeLocation.address)
+            _tfLocation.text = [NSString stringWithFormat:@"%@, %@", placeLocation.city, placeLocation.address];
+        else
+            _tfLocation.text = [NSString stringWithFormat:@"%@", placeLocation.name];
         
         newGame.placeName = placeLocation.name;
         newGame.country = placeLocation.country;
@@ -972,19 +1096,16 @@
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
     if(pickerView.tag == PEOPLE_NUM_PICKER){
         _tfPeopleNumber.text = peopleNumberItems[row];
-        selectedPeopleNumber = row;
         newGame.players = row + 1;
         [self changeCreateButtonIfNeeded];
     }
     else if(pickerView.tag == AGE_PICKER){
         _tfAge.text = ageItems[row];
-        selectedAge = row;
         newGame.age = row + 1;
         [self changeCreateButtonIfNeeded];
     }
     else if(pickerView.tag == SPORT_PICKER){
         _tfKindOfSport.text = sportItems[row];
-        selectedSport = row;
         newGame.sport = row + 1;
         [self changeCreateButtonIfNeeded];
     }

@@ -11,7 +11,7 @@
 #import "UIColor+Helper.h"
 
 #define PADDING_TOP 7
-#define PADDING_BOTTOM 13
+#define PADDING_BOTTOM 10
 #define PADDING_LEFT 7
 #define PADDING_RIGHT 7
 
@@ -101,27 +101,27 @@
         [self addSubview:container];
         
         _gameNameLabel = [UILabel new];
-        _gameNameLabel.font = [UIFont boldSystemFontOfSize:15.0f];
+        _gameNameLabel.font = [UIFont boldSystemFontOfSize:16.0f];
         _gameNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [container addSubview:_gameNameLabel];
         //_gameNameLabel.backgroundColor = [UIColor greenColor];
         
         _addressLabel = [UILabel new];
-        _addressLabel.font = [UIFont systemFontOfSize:9.0f];
+        _addressLabel.font = [UIFont systemFontOfSize:11.0f];
         [_addressLabel sizeToFit];
         _addressLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [container addSubview:_addressLabel];
         //_addressLabel.backgroundColor = [UIColor greenColor];
         
         _timeLabel = [UILabel new];
-        _timeLabel.font = [UIFont systemFontOfSize:9.0f];
+        _timeLabel.font = [UIFont systemFontOfSize:11.0f];
         [_timeLabel sizeToFit];
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [container addSubview:_timeLabel];
         //_timeLabel.backgroundColor = [UIColor greenColor];
         
         _dateLabel = [UILabel new];
-        _dateLabel.font = [UIFont systemFontOfSize:9.0f];
+        _dateLabel.font = [UIFont systemFontOfSize:11.0f];
         [_dateLabel sizeToFit];
         _dateLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [container addSubview:_dateLabel];
@@ -373,7 +373,7 @@
                                                         toItem:_ivLocation
                                                      attribute:NSLayoutAttributeRight
                                                     multiplier:1
-                                                      constant:4]];
+                                                      constant:8]];
     
     [_addressLabel addConstraint: [NSLayoutConstraint constraintWithItem:_addressLabel
                                                              attribute:NSLayoutAttributeHeight
@@ -456,7 +456,7 @@
                                                              toItem:_ivDate
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:7.5f]];
+                                                           constant:9.0f]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:separator
                                                           attribute:NSLayoutAttributeLeft

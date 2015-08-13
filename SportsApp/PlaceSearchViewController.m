@@ -18,6 +18,7 @@
 #import "MBProgressHUD.h"
 #import "FoursquareResponse.h"
 #import "CustomButton.h"
+#import "UIImage+Utilities.h"
 
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
@@ -53,6 +54,8 @@
     
     BOOL locationFound;
     BOOL wasDisplayedAfterAddressDelegate;
+    
+    NSTimer *searchTimer;
 }
 
 - (void)viewDidLoad {
@@ -79,7 +82,7 @@
 - (void) setupFakeNavigationBar {
     _fakeNavBarView = [UIView new];
     _fakeNavBarView.frame = CGRectMake(0, 0, self.view.bounds.size.width, NAVBAR_HRIGHT);
-    //_fakeNavBarView.backgroundColor = [UIColor whiteColor];
+    _fakeNavBarView.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_NAVBAR_COLOR];
     [self.view addSubview:_fakeNavBarView];
     
     [self setupSearchViews];
@@ -89,7 +92,7 @@
     [btnClose addTarget:self action:@selector(btnBackClick) forControlEvents:UIControlEventTouchUpInside];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
-    [btnClose setImage:[UIImage imageNamed:@"ic_plus.png"] forState:UIControlStateNormal];
+    [btnClose setImage:[UIImage imageNamed:@"icon_close.png"] forState:UIControlStateNormal];
     btnClose.translatesAutoresizingMaskIntoConstraints = NO;
     [_fakeNavBarView addSubview:btnClose];
     
@@ -109,8 +112,11 @@
     [_fakeNavBarView addSubview:searchContainer];
     
     [NSLayoutConstraint setHeight:68 forView:searchContainer];
-    [NSLayoutConstraint stretchHorizontal:searchContainer inContainer:_fakeNavBarView withPadding:44];
     [NSLayoutConstraint setTopPadding:30 forView:searchContainer inContainer:_fakeNavBarView];
+    [NSLayoutConstraint setRightPadding:14 forView:searchContainer inContainer:_fakeNavBarView];
+    [NSLayoutConstraint setLeftPadding:48 forView:searchContainer inContainer:_fakeNavBarView];
+    //[NSLayoutConstraint stretchHorizontal:searchContainer inContainer:_fakeNavBarView withPadding:44];
+    
     
     // children
     _searchPlacesField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -119,9 +125,17 @@
     _searchPlacesField.delegate = self;
     _searchPlacesField.placeholder = @"Название места";
     [_searchPlacesField setBorderStyle:UITextBorderStyleRoundedRect];
-    _searchPlacesField.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR];
+    //_searchPlacesField.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR];
+    _searchPlacesField.backgroundColor = [UIColor whiteColor];
     _searchPlacesField.textAlignment = NSTextAlignmentLeft;
     _searchPlacesField.font = [UIFont systemFontOfSize:12.0f];
+    
+    UIImageView *iconSearch = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_field_search.png"]];
+    iconSearch.frame = CGRectMake(0, 0, 19.0f, 12.5f);
+    _searchPlacesField.leftViewMode = UITextFieldViewModeAlways;
+    _searchPlacesField.leftView = iconSearch;
+    _searchPlacesField.textAlignment = NSTextAlignmentLeft;
+    
     [searchContainer addSubview:_searchPlacesField];
     
     _searchAddressField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -130,11 +144,17 @@
     _searchAddressField.delegate = self;
     _searchAddressField.placeholder = @"Город";
     [_searchAddressField setBorderStyle:UITextBorderStyleRoundedRect];
-    _searchAddressField.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR];
+    _searchAddressField.backgroundColor = [UIColor whiteColor];
     _searchAddressField.textAlignment = NSTextAlignmentLeft;
     _searchAddressField.font = [UIFont systemFontOfSize:12.0f];
-    [searchContainer addSubview:_searchAddressField];
     
+    UIImageView *iconLocation = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_field_location.png"]];
+    iconLocation.frame = CGRectMake(0, 0, 19.0f, 12.5f);
+    _searchAddressField.leftViewMode = UITextFieldViewModeAlways;
+    _searchAddressField.leftView = iconLocation;
+    _searchAddressField.textAlignment = NSTextAlignmentLeft;
+    
+    [searchContainer addSubview:_searchAddressField];
     
     [NSLayoutConstraint setHeight:30 forView:_searchPlacesField];
     [NSLayoutConstraint stretchHorizontal:_searchPlacesField inContainer:searchContainer withPadding:0];
@@ -165,6 +185,25 @@
         return 100.0f;
     else
         return 0.01f;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Remove seperator inset
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    }
+    
+    // Prevent the cell from inheriting the Table View's margin settings
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+        [cell setPreservesSuperviewLayoutMargins:NO];
+    }
+    
+    // Explictly set your cell's layout margins
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        //[cell setLayoutMargins:UIEdgeInsetsZero];
+        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
+    }
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -235,7 +274,7 @@
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if(cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SimpleTableIdentifier];
     
     if(itemsForDisplay == DISPLAY_PLACES){
         FoursquareResponse *placemark = places[indexPath.row];
@@ -269,7 +308,9 @@
         
         [_searchPlacesField becomeFirstResponder];
         itemsForDisplay = DISPLAY_PLACES;
-        [self startSearchFoursquare];
+        
+        [searchTimer invalidate];
+        searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:self selector:@selector(startSearchFoursquare:) userInfo:_searchPlacesField.text repeats:NO];
     }
     
     //[_tableView reloadData];
@@ -293,8 +334,8 @@
 - (void) textFieldDidChange:(UITextField *)textField {
     if (textField == _searchPlacesField){
         if(![textField.text isEmpty]){
-            //[self startSearchFoursquare];
-            [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(startSearchFoursquare) userInfo:nil repeats:NO];
+            [searchTimer invalidate];
+            searchTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(startSearchFoursquare:) userInfo:_searchPlacesField.text repeats:NO];
         }
         else{
             places = [NSArray new];
@@ -303,8 +344,8 @@
     }
     else if(textField == _searchAddressField){
         if(![textField.text isEmpty]){
-            //[self startSearchYandex];
-            [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(startSearchYandex) userInfo:nil repeats:NO];
+            [searchTimer invalidate];
+            searchTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(startSearchYandex:) userInfo:_searchAddressField.text repeats:NO];
         }
         else{
             addresses = [NSArray new];
@@ -313,8 +354,10 @@
     }
 }
 
-- (void) startSearchFoursquare {
-    [AppNetworking findFoursquarePlacesInRegion:_searchAddressField.text search:_searchPlacesField.text completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
+- (void) startSearchFoursquare:(NSTimer *)timer {
+    NSString *searchText = timer.userInfo;
+    
+    [AppNetworking findFoursquarePlacesInRegion:_searchAddressField.text search:searchText completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!resp){
@@ -329,8 +372,10 @@
     }];
 }
 
-- (void) startSearchYandex {
-    [AppNetworking findYandexAddress:_searchAddressField.text completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
+- (void) startSearchYandex:(NSTimer *)timer {
+    NSString *searchText = timer.userInfo;
+    
+    [AppNetworking findYandexAddress:searchText completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if(!items){
                 addresses = [NSArray new];
@@ -403,6 +448,14 @@
 
 #pragma mark -
 #pragma mark Locations
+- (void) startFindingLocation {
+    [self setLocationManager];
+    [_locationManager startUpdatingLocation];
+    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Определение местоположения...";
+}
+
 - (void) setLocationManager {
     if([CLLocationManager locationServicesEnabled]){
         CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
@@ -439,14 +492,6 @@
         alert.tag = GEO_DENY_ALERT;
         [alert show];
     }
-}
-
-- (void) startFindingLocation {
-    [self setLocationManager];
-    [_locationManager startUpdatingLocation];
-    
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Определение местоположения...";
 }
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {

@@ -96,6 +96,36 @@
     [task resume];
 }
 
++ (void) sendPatch:(NSString *)urlString withParams:(NSDictionary *)params completionHandler:(void(^)(NSData *data, NSURLResponse *response, NSError *error))blockHandler {
+        NSURLSessionConfiguration *defaultConfigObject = [NSURLSessionConfiguration defaultSessionConfiguration];
+        
+        NSURLSession *defaultSession = [NSURLSession sessionWithConfiguration:defaultConfigObject delegate:nil delegateQueue: [NSOperationQueue mainQueue]];
+        
+        NSURL *url = [NSURL URLWithString:urlString];
+        NSMutableURLRequest *urlRequest = [NSMutableURLRequest requestWithURL:url];
+        
+        [urlRequest setHTTPMethod:@"PATCH"];
+        
+        NSString *boundary = @"----Asrf456BGe4h---------------";
+        NSString *contentType = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
+        [urlRequest setValue:contentType forHTTPHeaderField: @"Content-Type"];
+        
+        if(params){
+            NSMutableData *body = [NetManager dictionaryToPostBody:params withBoundary:boundary];
+            [urlRequest setHTTPBody:body];
+            
+            NSString *postLength = [NSString stringWithFormat:@"%lu", (unsigned long)[body length]];
+            [urlRequest setValue:postLength forHTTPHeaderField:@"Content-Length"];
+        }
+        
+        NSURLSessionDataTask *task = [defaultSession dataTaskWithRequest:urlRequest completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if(blockHandler != nil)
+                blockHandler(data, response, error);
+        }];
+        [task resume];
+}
+
+#pragma mark -
 + (NSMutableData *) dictionaryToPostBody:(NSDictionary *)params withBoundary:(NSString *)boundary {
     NSMutableData *body = [NSMutableData data];
     NSMutableDictionary *images = [NSMutableDictionary new];

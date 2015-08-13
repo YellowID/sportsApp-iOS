@@ -19,6 +19,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <VKSdk/VKSdk.h>
+#import <Quickblox/Quickblox.h>
 
 #define VK_APP_ID 4932732
 
@@ -33,6 +34,9 @@ static NSArray* SCOPE = nil;
     UILabel* lbAppName;
     UIButton* btnVK;
     UIButton* btnFB;
+    
+    BOOL loginButtonWasPressed;
+    BOOL userWasLogged;
 }
 
 - (void)viewDidLoad {
@@ -98,17 +102,27 @@ static NSArray* SCOPE = nil;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [[self navigationController] setNavigationBarHidden:YES animated:NO];
+    
+    if(loginButtonWasPressed || userWasLogged)
+        return;
+    
+    NSString *lastProvider = [[AppDelegate instance] lastProvider];
+    if([lastProvider isEqualToString:@"vk"]){
+        [self loginWithVkontakte];
+    }
+    else if([lastProvider isEqualToString:@"facebook"]){
+        [self loginWithFacebook];
+    }
 }
 
 #pragma mark -
 #pragma mark create VK button
 - (UIButton*) createButtonVK {
     btnVK = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnVK addTarget:self action:@selector(loginWithVkontakte) forControlEvents:UIControlEventTouchUpInside];
+    [btnVK addTarget:self action:@selector(btnVKClick) forControlEvents:UIControlEventTouchUpInside];
     [btnVK setTitle:@"Войти через Вконтакте" forState:UIControlStateNormal];
     btnVK.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnVK setBackgroundImage:[UIImage imageNamed:@"bg_btn_vk.png"] forState:UIControlStateNormal];
-    //[btnVK setTintColor:[UIColor whiteColor]];
     [btnVK setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     btnVK.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     
@@ -117,11 +131,10 @@ static NSArray* SCOPE = nil;
 
 - (UIButton*) createButtonFB {
     btnFB = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnFB addTarget:self action:@selector(loginWithFacebook) forControlEvents:UIControlEventTouchUpInside];
+    [btnFB addTarget:self action:@selector(btnFBClick) forControlEvents:UIControlEventTouchUpInside];
     [btnFB setTitle:@"Войти через Facebook" forState:UIControlStateNormal];
     btnFB.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnFB setBackgroundImage:[UIImage imageNamed:@"bg_btn_fb.png"] forState:UIControlStateNormal];
-    //[btnFB setTintColor:[UIColor whiteColor]];
     [btnFB setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     btnFB.titleLabel.font = [UIFont systemFontOfSize:13.0f];
     
@@ -131,13 +144,25 @@ static NSArray* SCOPE = nil;
 #pragma mark -
 #pragma mark Buttons handler
 - (void) btnTempClick {
-    [self goToNextScreen];
+    //[self goToNextScreen];
+}
+
+- (void) btnFBClick {
+    loginButtonWasPressed = YES;
+    [self loginWithFacebook];
+}
+
+- (void) btnVKClick {
+    loginButtonWasPressed = YES;
+    [self loginWithVkontakte];
 }
 
 - (void) goToNextScreen {
-    [AppDelegate instance].currentUserId = 1; // TEMP
-    
+    //[AppDelegate instance].currentUserId = 1; // TEMP
     //[[self navigationController] setNavigationBarHidden:NO animated:YES];
+    
+    userWasLogged = YES;
+     
     GamesListViewController *controller = [[GamesListViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
 }
@@ -156,23 +181,32 @@ static NSArray* SCOPE = nil;
         return;
     }
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Авторизация...";
+    
     FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
-    if (fbToken) { // User is logged in, do work such as go to next view controller.
-        //NSLog(@"FB: %@",  fbToken.tokenString);
-        
-        [self appLoginWithProvider:@"facebook" oauthToken:fbToken.tokenString email:nil name:nil];
+    if (fbToken) {
+        [self appLoginWithProvider:@"facebook" oauthToken:fbToken.tokenString oauthId:fbToken.userID email:nil name:nil avatar:nil];
     }
     else{
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
-        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        
         FBSDKLoginManager *login = [[FBSDKLoginManager alloc] init];
         [login logInWithReadPermissions:@[@"email", @"public_profile"] handler:^(FBSDKLoginManagerLoginResult *result, NSError *error) {
             if (error) {
                 NSLog(@"FB Error: %@", error.debugDescription);
                 
-                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
-                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                    
+                    UIAlertView *alert = [[UIAlertView alloc]
+                                          initWithTitle:nil
+                                          message:error.description
+                                          delegate:nil
+                                          cancelButtonTitle:@"Ок"
+                                          otherButtonTitles: nil];
+                    [alert show];
+                });
             }
             else if (result.isCancelled) {
                 NSLog(@"FB Cancelled");
@@ -184,11 +218,14 @@ static NSArray* SCOPE = nil;
                 if ([result.grantedPermissions containsObject:@"email"] && [result.grantedPermissions containsObject:@"public_profile"]) {
                     NSLog(@"FB email Permissions granted!");
                     
-                    FBSDKGraphRequest *fbGraphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:nil];
+                    FBSDKGraphRequest *fbGraphRequest = [[FBSDKGraphRequest alloc] initWithGraphPath:@"me" parameters:@{@"fields": @"picture, email, name"}];
                     [fbGraphRequest startWithCompletionHandler:^(FBSDKGraphRequestConnection *connection, id result, NSError *error) {
                          if (!error) {
-                             NSString *token = [[FBSDKAccessToken currentAccessToken] tokenString];
-                             [self appLoginWithProvider:@"facebook" oauthToken:token email:result[@"email"] name:result[@"name"]];
+                             FBSDKAccessToken *fbToken = [FBSDKAccessToken currentAccessToken];
+                             
+                             NSString *avatarUrl = [NSString stringWithFormat:@"https://graph.facebook.com/%@/picture?type=square", fbToken.userID];
+                             
+                             [self appLoginWithProvider:@"facebook" oauthToken:fbToken.tokenString oauthId:fbToken.userID email:result[@"email"] name:result[@"name"] avatar:avatarUrl];
                          }
                      }];
                 }
@@ -216,12 +253,15 @@ static NSArray* SCOPE = nil;
     }
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.labelText = @"Авторизация...";
     
     [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
     if ([VKSdk wakeUpSession]){
         NSLog(@"VK: %@", [VKSdk getAccessToken].accessToken);
-        [self appLoginWithProvider:@"vk" oauthToken:[VKSdk getAccessToken].accessToken email:nil name:nil];
+        NSLog(@"userId: %@", [VKSdk getAccessToken].userId);
+        NSString *oauthId = [VKSdk getAccessToken].userId;
+        [self appLoginWithProvider:@"vk" oauthToken:[VKSdk getAccessToken].accessToken oauthId:oauthId email:nil name:nil avatar:nil];
     }
     else{
         [VKSdk authorize:SCOPE revokeAccess:YES];
@@ -241,34 +281,32 @@ static NSArray* SCOPE = nil;
     [vkRequest executeWithResultBlock:^(VKResponse *response) {
         NSLog(@"Json result: %@", response.json);
         
+        NSString *oauthId = nil;
         NSString *name = nil;
+        NSString *avatar = nil;
         if([response.json isKindOfClass:[NSArray class]]){
+            oauthId = [NSString stringWithFormat:@"%lu", (unsigned long)[[[response.json firstObject] objectForKey:@"id"] integerValue]];
+            
             NSString *firstName = [[response.json firstObject] objectForKey:@"first_name"];
             NSString *lastName = [[response.json firstObject] objectForKey:@"last_name"];
-            
             name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+            
+            avatar = [[response.json firstObject] objectForKey:@"photo_200"];
         }
         else if([response.json isKindOfClass:[NSDictionary class]]){
+            oauthId = [NSString stringWithFormat:@"%lu", (unsigned long)[[response.json objectForKey:@"id"] integerValue]];
+            
             NSString *firstName = [response.json objectForKey:@"first_name"];
             NSString *lastName = [response.json objectForKey:@"last_name"];
-            
             name = [NSString stringWithFormat:@"%@ %@", firstName, lastName];
+            
+            avatar = [response.json objectForKey:@"photo_200"];
         }
         else{
             name = @"BagUser";
         }
         
-        [self appLoginWithProvider:@"vk" oauthToken:newToken.accessToken email:email name:name];
-        
-        //NSError *error;
-        //NSData *data = [response.json dataUsingEncoding:NSUTF8StringEncoding];
-        //NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        
-        //if(!error){
-            //NSString *name = [NSString stringWithFormat:@"%@ %@", response.json[@"first_name"], response.json[@"last_name"]];
-            //[self appLoginWithProvider:@"vk" oauthToken:newToken.accessToken email:email name:name];
-        //}
-        
+        [self appLoginWithProvider:@"vk" oauthToken:newToken.accessToken oauthId:oauthId email:email name:name avatar:avatar];
         
         }
         errorBlock:^(NSError *error) {
@@ -310,7 +348,7 @@ static NSArray* SCOPE = nil;
 
 #pragma mark -
 #pragma mark LOGIN
-- (void) appLoginWithProvider:(NSString *)provider oauthToken:(NSString *)oauthToken email:(NSString *)email name:(NSString *)name {
+- (void) appLoginWithProvider:(NSString *)provider oauthToken:(NSString *)oauthToken oauthId:(NSString *)userId email:(NSString *)email name:(NSString *)name avatar:(NSString *)avatar {
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:provider forKey:@"provider"];
     [params setValue:oauthToken forKey:@"oauth_token"];
@@ -321,28 +359,64 @@ static NSArray* SCOPE = nil;
     if(name)
         [params setValue:name forKey:@"name"];
     
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    if(avatar)
+        [params setValue:avatar forKey:@"avatar"];
+    
+    if(userId)
+        [params setValue:userId forKey:@"provider_id"];
     
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
     [appNetworking loginUser:params completionHandler:^(AppUser *user, NSString *errorMessage) {
-        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
-        [MBProgressHUD hideHUDForView:self.view animated:YES];
-        
-        if(user){
-            [[AppDelegate instance] setUser:user];
-            [appNetworking setUserToken:user.appToken];
-            [self goToNextScreen];
-        }
-        else{
-            UIAlertView *alert = [[UIAlertView alloc]
-                                  initWithTitle:nil
-                                  message:errorMessage
-                                  delegate:nil
-                                  cancelButtonTitle:@"Ок"
-                                  otherButtonTitles: nil];
-            [alert show];
-        }
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(user){
+                [[AppDelegate instance] setUser:user];
+                [[AppDelegate instance] setLastProvider:user.provider];
+                [appNetworking setUserToken:user.appToken];
+                
+                
+                [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
+                    BOOL isOld = YES;
+                    if(isOld){
+                        //login
+                        [QBRequest logInWithUserLogin:@"TestUser2" password:@"ahtrahtrahtr2" successBlock:^(QBResponse *response, QBUUser *user) {
+                            NSLog(@"QBUUser: %@", user.debugDescription);
+                        } errorBlock:^(QBResponse *response) {
+                            NSLog(@"QBResponse: %@", response.debugDescription);
+                        }];
+                    }
+                    else{
+                        //register
+                        QBUUser *user = [QBUUser user];
+                        user.login = @"TestUser2";
+                        user.password = @"ahtrahtrahtr2";
+                        user.externalUserID = 666666667;
+                        
+                        [QBRequest signUp:user successBlock:^(QBResponse *response, QBUUser *user) {
+                            NSLog(@"QBUUser: %@", user.debugDescription);
+                        }
+                        errorBlock:^(QBResponse *response) {
+                           NSLog(@"QBResponse: %@", response.debugDescription);
+                        }];
+                    }
+                } errorBlock:^(QBResponse *response) {
+                    NSLog(@"QBResponse: %@", response.debugDescription);
+                }];
+                
+                [self goToNextScreen];
+            }
+            else{
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles: nil];
+                [alert show];
+            }
+        });
     }];
 }
 

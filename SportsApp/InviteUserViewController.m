@@ -17,6 +17,7 @@
 #import "AppDelegate.h"
 #import "AppNetworking.h"
 #import "MBProgressHUD.h"
+#import "UIImage+Utilities.h"
 
 #define PHOTO_SIZE 40
 #define PADDING_H 12
@@ -48,6 +49,8 @@
     NSString *emailForInvite;
     
     NSLayoutConstraint* tableHeigtContraint;
+    
+    NSTimer *searchTimer;
 }
 
 - (void)viewDidLoad {
@@ -86,6 +89,7 @@
     [_tableView setDelegate:self];
     [_tableView setDataSource:self];
     [_tableView setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
+    _tableView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     _tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
@@ -93,7 +97,7 @@
     
     _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
-    tableHeigtContraint = [NSLayoutConstraint setHeight:200 forView:_tableView];
+    tableHeigtContraint = [NSLayoutConstraint setHeight:self.view.bounds.size.height - SEARCH_HEIGHT forView:_tableView];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_tableView
                                                           attribute:NSLayoutAttributeTop
@@ -365,19 +369,32 @@
     static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
-    if(cell == nil)
+    if(cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier];
-    
-    MemberInfo* member = members[indexPath.row];
+        
+        UIImage *avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:nil];
+        cell.imageView.image = avatar;
+    }
     
     [cell setBackgroundColor:[UIColor clearColor]];
     
-    UIImage* im = [UIImage imageNamed:@"photo.png"];
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
-    [im drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
-    UIImage* im2 = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    cell.imageView.image = im2;
+    MemberInfo* member = members[indexPath.row];
+    
+    if(member.icon){
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:member.icon]];
+            
+            dispatch_async(dispatch_get_main_queue(), ^(void){
+                UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
+                cell.imageView.image = avatar;
+            });
+        });
+    }
+    else{
+        UIImage *avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:member.name];
+        cell.imageView.image = avatar;
+    }
+    
     cell.imageView.contentMode = UIViewContentModeCenter;
     
     cell.imageView.layer.borderWidth = 0.0;
@@ -441,7 +458,7 @@
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking inviteUserWithEmail:nil forGame:_gameId completionHandler:^(NSString *errorMessage) {
+    [appNetworking inviteUserWithEmail:nil completionHandler:^(NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
@@ -453,7 +470,6 @@
                                       delegate:nil
                                       cancelButtonTitle:@"Ок"
                                       otherButtonTitles:nil];
-                alert.tag = ALERT_ERROR;
                 [alert show];
             }
             else{
@@ -463,7 +479,6 @@
                                       delegate:nil
                                       cancelButtonTitle:@"Ок"
                                       otherButtonTitles:nil];
-                alert.tag = ALERT_INVITE_SENT;
                 [alert show];
             }
         });
@@ -511,20 +526,11 @@
 #pragma mark -
 #pragma mark UISearchBar delegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
-    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            if(!errorMessage){
-                members = arrayData;
-                [_tableView reloadData];
-            }
-        });
-    }];
+    [searchTimer invalidate];
+    searchTimer = [NSTimer scheduledTimerWithTimeInterval:1.0 target:self selector:@selector(startSearch:) userInfo:searchText repeats:NO];
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
-    //[self loadData];
-    
     _inviteFromEmailViewGroup.hidden = YES;
     _tableView.hidden = NO;
     [_tableView reloadData];
@@ -553,17 +559,36 @@
                                               delegate:nil
                                               cancelButtonTitle:@"Ок"
                                               otherButtonTitles:nil];
-                        alert.tag = ALERT_ERROR;
                         [alert show];
                     }
                     else{
-                        // update table
-                        
+                        UIAlertView *alert = [[UIAlertView alloc]
+                                              initWithTitle:nil
+                                              message:@"Приглашение отправлено"
+                                              delegate:nil
+                                              cancelButtonTitle:@"Ок"
+                                              otherButtonTitles:nil];
+                        [alert show];
                     }
                 });
             }];
         }
     }
+}
+
+#pragma mark -
+- (void)startSearch:(NSTimer *)timer {
+    NSString *searchText = timer.userInfo;
+    
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if(!errorMessage){
+                members = arrayData;
+                [_tableView reloadData];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -594,6 +619,8 @@
 - (void)keyboardWillHide:(NSNotification*)aNotification {
     _tableView.contentInset = UIEdgeInsetsZero;
     _tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
+    
+    tableHeigtContraint.constant = self.view.bounds.size.height - SEARCH_HEIGHT;
 }
 
 @end

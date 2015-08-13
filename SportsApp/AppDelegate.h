@@ -22,5 +22,11 @@
 + (AppDelegate *) instance;
 - (AppNetworking *) appNetworkingInstance;
 
+- (void) setNavigationBarAppearanceDefault;
+- (void) setNavigationBarAppearanceSearch;
+
+- (void) setLastProvider:(NSString *)provider;
+- (NSString *) lastProvider;
+
 @end
 

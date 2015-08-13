@@ -19,6 +19,8 @@
 @property (copy, nonatomic) NSString *gameName;
 @property (copy, nonatomic) NSString *address;
 @property (copy, nonatomic) NSString *addressName;
+
+@property (copy, nonatomic) NSString *startAt;
 @property (copy, nonatomic) NSString *date;
 @property (copy, nonatomic) NSString *time;
 
@@ -29,7 +31,7 @@
 @property (nonatomic) NSUInteger adminId;
 @property (nonatomic) NSUInteger participateStatus;
 
-@property (copy, nonatomic) NSMutableArray *members;
+@property (retain, nonatomic) NSMutableArray *members;
 
 //+ (NSString *) gameNameForTypeId:(NSUInteger)gameType;
 

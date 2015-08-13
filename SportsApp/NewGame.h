@@ -13,7 +13,6 @@
 @interface NewGame : NSObject
 
 @property (nonatomic) NSUInteger sport;
-//@property (nonatomic) NSUInteger time; // timestamp
 @property (copy, nonatomic) NSString *time;
 @property (nonatomic) NSUInteger age;
 @property (nonatomic) NSUInteger level;

@@ -21,4 +21,6 @@
 
 @property (copy, nonatomic) NSString *chatPassword;
 
+@property (nonatomic) BOOL isNewUser;
+
 @end

@@ -57,6 +57,7 @@
 #define BTN_PERHAPS_COLOR 0x979696ff
 #define BTN_NO_COLOR 0xe84e40ff
 
+#define BG_SEARCH_NAVBAR_COLOR 0x7986cbff
 
 
 #endif

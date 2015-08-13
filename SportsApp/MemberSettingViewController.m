@@ -93,6 +93,7 @@
     BOOL oneStarStatus, twoStarStatus, threeStarStatus;
     
     CGFloat kScrollItemWidht;
+    CGFloat mainScrollHeight;
 }
 
 - (void)viewDidLoad {
@@ -190,7 +191,6 @@
 }
 
 - (void) makeUI {
-    //[self setupButtonInParentView:self.view];
     [self setupContainerScroll];
     [self setupContainerView];
     
@@ -259,6 +259,14 @@
                                                            constant:-8]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationGreaterThanOrEqual
+                                                             toItem:_ageGroupView
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:-8]];
+    
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:0
                                                              toItem:container
@@ -286,7 +294,15 @@
 - (void) setupContainerScroll {
     _containerScrollView = [UIScrollView new];
     _containerScrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    _containerScrollView.contentSize = CGSizeMake(self.view.bounds.size.width, MAIN_SCROLL_CONTENT_HEIGHT);
+    
+    if(self.view.bounds.size.height > MAIN_SCROLL_CONTENT_HEIGHT){
+        mainScrollHeight = self.view.bounds.size.height;
+    }
+    else{
+        mainScrollHeight = MAIN_SCROLL_CONTENT_HEIGHT;
+    }
+    
+    _containerScrollView.contentSize = CGSizeMake(self.view.bounds.size.width, mainScrollHeight);
     [self.view addSubview:_containerScrollView];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
@@ -333,7 +349,7 @@
 }
 
 - (void) setupContainerView {
-    _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, MAIN_SCROLL_CONTENT_HEIGHT)];
+    _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, mainScrollHeight)];
     [_containerScrollView addSubview:_containerView];
 }
 

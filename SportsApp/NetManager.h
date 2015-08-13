@@ -17,4 +17,6 @@
 
 + (void) sendPostJson:(NSString *)urlString withJSONObject:(id)jsonObject completionHandler:(void(^)(NSData *data, NSURLResponse *response, NSError *error))blockHandler;
 
++ (void) sendPatch:(NSString *)urlString withParams:(NSDictionary *)params completionHandler:(void(^)(NSData *data, NSURLResponse *response, NSError *error))blockHandler;
+
 @end

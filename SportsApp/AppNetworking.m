@@ -52,37 +52,38 @@
         
         BOOL hasError = YES;
         NSString *errorMessage;
-        NSMutableDictionary *dic = nil;
         AppUser *user = nil;
         
         if(!error){
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-            NSInteger statusCode = [httpResponse statusCode];
-            NSLog(@"statusCode: %lu", (long)statusCode);
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
-            if(statusCode >= 200 && statusCode < 300){
-                dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-                
+            /*
+             {"user":{"id":16,"provider":"vk","avatar":null,"provider_id":"244648174","email":null,"name":null,"age":null,"token":"yYo---X0u78hDXYwB-bpMQ","chat_password":"tVTY97LQvGc="},"new":false}
+             */
+            if(!hasError){
                 user = [AppUser new];
-                user.uid = [dic[@"id"] integerValue];
-                //user.age = [dic[@"age"] integerValue];
                 
-                if(![dic[@"email"] isKindOfClass:[NSNull class]])
-                    user.email = dic[@"email"];
+                NSMutableDictionary *dic = (NSMutableDictionary *)resultJson;
+                user.isNewUser = [dic[@"id"] boolValue];
                 
-                if(![dic[@"name"] isKindOfClass:[NSNull class]])
-                    user.email = dic[@"name"];
+                NSMutableDictionary *userDic = dic[@"user"];
                 
-                user.provider = dic[@"provider"];
-                user.oauthToken = dic[@"oauth_token"];
-                user.appToken = dic[@"token"];
-                user.chatPassword = dic[@"chat_password"];
                 
-                hasError = NO;
-            }
-            else{
-                NSLog(@"Something wrong!");
-                errorMessage = dic[@"error"];
+                user.uid = [userDic[@"id"] integerValue];
+                //user.age = [userDic[@"age"] integerValue];
+                
+                if(![userDic[@"email"] isKindOfClass:[NSNull class]])
+                    user.email = userDic[@"email"];
+                
+                if(![userDic[@"name"] isKindOfClass:[NSNull class]])
+                    user.email = userDic[@"name"];
+                
+                user.provider = userDic[@"provider"];
+                //user.oauthToken = userDic[@"oauth_token"];
+                user.oauthToken = params[@"oauth_token"];
+                user.appToken = userDic[@"token"];
+                user.chatPassword = userDic[@"chat_password"];
             }
         }
         else {
@@ -104,34 +105,156 @@
     // IN: username
     // OUT: JSON data - [{userId, avatar, name}, {}, ...]
     
-    NSMutableArray *members = [NSMutableArray new];
-    for(int i = 0; i < 14; ++i){
-        MemberInfo* member = [MemberInfo new];
-        member.userId = 1;
-        member.name = [NSString stringWithFormat:@"User Name %lu", (unsigned long)i];
-        member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-        member.invited = YES;
-        
-        [members addObject:member];
-    }
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/find_by_name.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
-    blockHandler(members, nil);
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    [params setValue:username forKey:@"name"];
+    
+    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        NSMutableArray *members = [NSMutableArray new];
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableArray *arr = (NSMutableArray *)resultJson;
+                
+                for(NSMutableDictionary *dic in arr){
+                    MemberInfo *member = [MemberInfo new];
+                    member.userId = [dic[@"id"] integerValue];
+                    member.name = dic[@"name"];
+                    
+                    if(![dic[@"avatar"] isKindOfClass:[NSNull class]])
+                        member.icon = dic[@"avatar"];
+                        
+                    //member.icon = ; //@"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
+                    //member.invited = YES;
+                    
+                    [members addObject:member];
+                }
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(nil, errorMessage);
+        else
+            blockHandler(members, nil);
+    }];
 }
 
 - (void) inviteUserWithId:(NSUInteger)userId forGame:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    // GET
-    // IN: userId, gameId
-    // OUT: JSON data - null
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
-    blockHandler(nil);
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)userId] forKey:@"user_id"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)gameId] forKey:@"game_id"];
+    
+    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
+                
+                NSString *result = resultDic[@"result"];
+                if(![result isEqualToString:@"success"])
+                    errorMessage = @"Не удалось пригласить пользователя.";
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(errorMessage);
+        else
+            blockHandler(nil);
+    }];
 }
 
-- (void) inviteUserWithEmail:(NSString *)email forGame:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    // GET
-    // IN: email, gameId
-    // OUT: JSON data - null
+- (void) inviteUserWithEmail:(NSString *)email completionHandler:(void(^)(NSString *errorMessage))blockHandler {
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
-    blockHandler(nil);
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    [params setValue:email forKey:@"email"];
+    
+    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
+                
+                NSString *result = resultDic[@"result"];
+                if(![result isEqualToString:@"success"])
+                    errorMessage = @"Не удалось пригласить пользователя.";
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(errorMessage);
+        else
+            blockHandler(nil);
+    }];
+}
+
+- (void) setUserStatusForGame:(NSUInteger)gameId status:(NSUInteger)status completionHandler:(void(^)(NSString *errorMessage))blockHandler {
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)status] forKey:@"state"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)gameId] forKey:@"game_id"];
+    
+    [NetManager sendPatch:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
+                
+                NSString *result = resultDic[@"result"];
+                if(![result isEqualToString:@"success"])
+                    errorMessage = @"Не получилось, что-то пошло не так.";
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(errorMessage);
+        else
+            blockHandler(nil);
+    }];
 }
 
 #pragma mark - 
@@ -214,23 +337,6 @@
         else
             blockHandler(members, nil);
     }];
-    
-    
-    /*
-    for(int i = 0; i < 14; ++i){
-        MemberInfo* member = [MemberInfo new];
-        member.userId = 1;
-        member.name = [NSString stringWithFormat:@"User Name %lu", (unsigned long)i];
-        member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-        member.invited = YES;
-        
-        [members addObject:member];
-    }
-     
-     blockHandler(members, nil);
-    */
-    
-    
 }
 
 - (BOOL) handleResponse:(NSURLResponse *)response data:(NSData *)data resultObject:(id*)jsonObj errorMessage:(NSString **)msg {
@@ -242,6 +348,8 @@
     
     NSError *error = nil;
     if(statusCode >= 200 && statusCode < 300){
+        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
         *jsonObj = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
         hasError = NO;
     }
@@ -256,7 +364,7 @@
     return hasError;
 }
 
-- (void) gamesForCurrentUserCompletionHandler:(void(^)(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage))blockHandler {
+- (void) gamesInCity:(NSString *)city completionHandler:(void(^)(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage))blockHandler {
     // GET
     // IN: userId
     // OUT: JSON data - [{gameName, address, addressName, date, time, adminId, participateStatus}, {...}, ...]
@@ -265,6 +373,9 @@
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
+    
+    if(city)
+        [params setValue:city forKey:@"city"];
     
     [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -286,19 +397,18 @@
                 NSMutableArray *myG = resultDic[@"my"];
                 NSMutableArray *publicG = resultDic[@"public"];
                 
+                // "id":5,"user_id":4,"sport_type_id":2,"start_at":"2015-08-10T10:00:41.000Z","age":4,"numbers":8,"level":3,"title":"Большой спорт зал школы №163","address":"Ул. Тикоцкого,9","participate_status":"possible"
+                
                 if([myG count] > 0){
                     for(NSMutableDictionary *gdic in myG){
                         GameInfo* game = [GameInfo new];
                         game.gameId = [gdic[@"id"] integerValue];
-                        //game.gameName = sportDic[@"name"];
-                        //game.gameType = [gdic[@"sport_type_id"] integerValue];
-                        game.gameType = 1;
+                        game.gameType = [gdic[@"sport_type_id"] integerValue];
+                        //game.gameType = 1;
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
-                        game.addressName = @"Всем спорт"; //gdic[@"title"];
-                        game.address = @"просп. Независимости 192б"; //gdic[@"address"]; //@"просп. Независимости 192б";
-                        
-                        game.time = @"25:00";
+                        game.addressName = gdic[@"title"];
+                        game.address = gdic[@"address"]; //@"просп. Независимости 192б";
                         
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
                         game.time = [gameDate toFormat:@"HH:mm"];
@@ -310,12 +420,13 @@
                             NSInteger days = [gameDate daysAfterDate:[NSDate new]];
                             
                             if(days < 0)
-                                game.date = @"game over";
+                                game.date = @"Игра окончена";
                             else
                                 game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
                         }
                         
-                        game.participateStatus = PARTICIPATE_STATUS_NO;
+                        if([gdic[@"title"] isEqualToString:@"possible"]) //confirmed, 
+                            game.participateStatus = PARTICIPATE_STATUS_YES;
                         
                         [myGames addObject:game];
                     }
@@ -325,15 +436,12 @@
                     for(NSMutableDictionary *gdic in publicG){
                         GameInfo* game = [GameInfo new];
                         game.gameId = [gdic[@"id"] integerValue];
-                        //game.gameName = sportDic[@"name"];
-                        //game.gameType = [gdic[@"sport_type_id"] integerValue];
-                        game.gameType = 1;
+                        game.gameType = [gdic[@"sport_type_id"] integerValue];
+                        //game.gameType = 1;
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
                         game.addressName = @"Всем спорт"; //gdic[@"title"];
                         game.address = @"просп. Независимости 192б"; //gdic[@"address"]; //@"просп. Независимости 192б";
-                        
-                        game.time = @"25:00";
                         
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
                         game.time = [gameDate toFormat:@"HH:mm"];
@@ -343,8 +451,11 @@
                         }
                         else {
                             NSInteger days = [gameDate daysAfterDate:[NSDate new]];
-                            //game.date = @"через 3 дня";
-                            game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+                            
+                            if(days < 0)
+                                game.date = @"Игра окончена";
+                            else
+                                game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
                         }
                         
                         game.participateStatus = PARTICIPATE_STATUS_NO;
@@ -446,6 +557,66 @@
     }];
 }
 
+- (void) editGame:(NewGame *)game withId:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
+     NSString *url = [NSString stringWithFormat:@"https://start-sport.herokuapp.com:443/api/v1/games/%lu.json?api_key=JqwR7ncB-jss5vot23eaFQ", (unsigned long)gameId];
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)gameId] forKey:@"id"];
+    [params setValue:game.time forKey:@"start_at"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.age] forKey:@"age"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.players] forKey:@"numbers"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.level] forKey:@"level"];
+    
+    if(game.placeName)
+        [params setValue:game.placeName forKey:@"title"];
+    else
+        [params setValue:@"Place Name" forKey:@"title"];
+    
+    if(game.country)
+        [params setValue:game.country forKey:@"country"];
+    else
+        [params setValue:@"" forKey:@"country"];
+    
+    if(game.city)
+        [params setValue:game.city forKey:@"city"];
+    else
+        [params setValue:@"" forKey:@"city"];
+    
+    if(game.address)
+        [params setValue:game.address forKey:@"address"];
+    else
+        [params setValue:@"" forKey:@"address"];
+    
+    [params setValue:[NSString stringWithFormat:@"%f", game.latitude] forKey:@"latitude"];
+    [params setValue:[NSString stringWithFormat:@"%f", game.longitude] forKey:@"longitude"];
+    
+    [NetManager sendPatch:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(errorMessage);
+        else
+            blockHandler(nil);
+    }];
+}
+
 - (void) gameById:(NSUInteger)gameId completionHandler:(void(^)(GameInfo *gameInfo, NSString *errorMessage))blockHandler {
     NSString *url = [NSString stringWithFormat:@"https://start-sport.herokuapp.com:443/api/v1/games/%lu.json?api_key=JqwR7ncB-jss5vot23eaFQ", (unsigned long)gameId];
     
@@ -466,17 +637,18 @@
             if(!hasError){
                 NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
                 
-                
                 game.gameId = [resultDic[@"id"] integerValue];
                 game.gameType = 1;
                 game.adminId = 4;
-                game.participateStatus = PARTICIPATE_STATUS_NO;
+                game.participateStatus = PARTICIPATE_STATUS_UNKNOWN;
                 
-                game.addressName = resultDic[@"title"];
-                game.address = resultDic[@"address"]; //@"просп. Независимости 192б";
+                if(![resultDic[@"title"] isKindOfClass:[NSNull class]])
+                    game.addressName = resultDic[@"title"];
                 
-                game.time = @"25:00";
+                if(![resultDic[@"address"] isKindOfClass:[NSNull class]])
+                    game.address = resultDic[@"address"];
                 
+                game.startAt = resultDic[@"start_at"];
                 NSDate *gameDate = [NSDate dateWithJsonString:resultDic[@"start_at"]];
                 game.time = [gameDate toFormat:@"HH:mm"];
                 
@@ -485,24 +657,28 @@
                 }
                 else {
                     NSInteger days = [gameDate daysAfterDate:[NSDate new]];
-                    game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+                    
+                    if(days < 0)
+                        game.date = @"Игра окончена";
+                    else
+                        game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
                 }
                 
                 game.age = [resultDic[@"age"] integerValue];
                 game.level = [resultDic[@"level"] integerValue];
                 game.numbers = [resultDic[@"numbers"] integerValue];
                 
-                game.members = [NSMutableArray new];
-                
                 // members
+                game.members = [NSMutableArray new];
                 NSMutableArray *membersArr = resultDic[@"members"];
                 
-                for(NSMutableDictionary *mdic in membersArr){
-                    MemberInfo* member = [MemberInfo new];
-                    member.userId = 1;
-                    member.name = @"User Name 111";
-                    member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-                    member.invited = YES;
+                for(NSMutableDictionary *dic in membersArr){
+                    MemberInfo *member = [MemberInfo new];
+                    member.userId = [dic[@"id"] integerValue];
+                    member.name = dic[@"name"];
+                    
+                    if(![dic[@"avatar"] isKindOfClass:[NSNull class]])
+                        member.icon = dic[@"avatar"];
                     
                     [game.members addObject:member];
                 }
@@ -517,6 +693,41 @@
             blockHandler(nil, errorMessage);
         else
             blockHandler(game, nil);
+    }];
+}
+
+- (void) citiesCompletionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games/cityes.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    
+    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        NSMutableArray *cities = [NSMutableArray new];
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableArray *arr = (NSMutableArray *)resultJson;
+                
+                cities = arr;
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(nil, errorMessage);
+        else
+            blockHandler(cities, nil);
     }];
 }
 
@@ -708,6 +919,16 @@
             place.lat = [location[@"lat"] floatValue];
             place.lng = [location[@"lng"] floatValue];
             
+            /*
+            NSMutableArray *categories = item[@"categories"];
+            if(categories.count > 0){
+                NSMutableDictionary *icon = categories[0][@"icon"];
+                
+                if(icon)
+                    place.icon = [NSString stringWithFormat:@"%@88%@", icon[@"prefix"], icon[@"suffix"]];
+            }
+             */
+            
             [results addObject:place];
         }
     }
@@ -716,6 +937,20 @@
 }
 
 #pragma mark -
++ (void) downloadImageWithUrl:(NSString *)imageUrl completionHandler:(void(^)(NSData *imageData))blockHandler {
+    NSURL *url = [NSURL URLWithString:imageUrl];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDownloadTask *task = [session downloadTaskWithURL:url completionHandler:^(NSURL *loc, NSURLResponse *response, NSError *error) {
+        if(!error){
+            if(blockHandler != nil){
+                NSData *d = [NSData dataWithContentsOfURL:loc];
+                blockHandler(d);
+            }
+        }
+    }];
+    [task resume];
+}
+
 + (BOOL) isInternetAvaliable {
     return [NetManager isInternetAvaliable];
 }

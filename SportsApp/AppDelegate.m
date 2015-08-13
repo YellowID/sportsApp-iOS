@@ -32,16 +32,14 @@
     self.navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
     self.navigationController.navigationBar.translucent = NO;
     
-    UIView *navBorder = [[UIView alloc] initWithFrame:CGRectMake(0,self.navigationController.navigationBar.frame.size.height-0.5,self.navigationController.navigationBar.frame.size.width, 0.5)];
+    UIView *navBorder = [[UIView alloc] initWithFrame:CGRectMake(0,self.navigationController.navigationBar.frame.size.height-0.5,self.navigationController.navigationBar.frame.size.width, 0.1)];
     [navBorder setBackgroundColor:[UIColor colorWithRGBA:ROW_SEPARATOR_COLOR]];
     [navBorder setOpaque:YES];
     [self.navigationController.navigationBar addSubview:navBorder];
     
     self.window.rootViewController = self.navigationController;
     
-    [[UINavigationBar appearance] setBarTintColor:[UIColor whiteColor]];
-    [[UINavigationBar appearance] setTintColor:[UIColor colorWithRGBA:BAR_TEXT_COLOR]];
-    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: [UIColor blackColor], NSForegroundColorAttributeName, [UIFont boldSystemFontOfSize:13], NSFontAttributeName, nil]];
+    [self setNavigationBarAppearanceDefault];
     
     //[[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
     //[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
@@ -65,6 +63,17 @@
     return YES;
 }
 
+- (void) setNavigationBarAppearanceDefault {
+    [[UINavigationBar appearance] setBarTintColor:[UIColor whiteColor]];
+    [[UINavigationBar appearance] setTintColor:[UIColor colorWithRGBA:BAR_TEXT_COLOR]];
+    [[UINavigationBar appearance] setTitleTextAttributes:[NSDictionary dictionaryWithObjectsAndKeys: [UIColor blackColor], NSForegroundColorAttributeName, [UIFont boldSystemFontOfSize:13], NSFontAttributeName, nil]];
+}
+
+- (void) setNavigationBarAppearanceSearch {
+    [[UINavigationBar appearance] setBarTintColor:[UIColor colorWithRGBA:BG_SEARCH_NAVBAR_COLOR]];
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+}
+
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
@@ -73,10 +82,17 @@
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    [[QBChat instance] logout];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+    
+    // check here if a user was logged in to Chat and login him if YES
+    // ...
+    //[[QBChat instance] loginWithUser:user];
+    [QBChat instance].autoReconnectEnabled = YES;
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -101,6 +117,8 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    
+    [[QBChat instance] logout];
 }
 
 #pragma mark -
@@ -114,6 +132,17 @@
         appNetworking = [AppNetworking sharedInstance];
     
     return appNetworking;
+}
+
+#pragma mark -
+- (void) setLastProvider:(NSString *)provider {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:provider forKey:@"last_provider"];
+    [userDefaults synchronize];
+}
+
+- (NSString *) lastProvider {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"last_provider"];
 }
 
 @end

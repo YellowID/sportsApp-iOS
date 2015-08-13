@@ -10,6 +10,7 @@
 #import "UIViewController+Navigation.h"
 #import "InviteUserViewController.h"
 #import "MemberViewController.h"
+#import "NewEvenViewController.h"
 #import "CustomButton.h"
 #import "ChatTableViewCell.h"
 #import "ChatRightTableViewCell.h"
@@ -21,6 +22,8 @@
 #import "MBProgressHUD.h"
 #import "AppDelegate.h"
 #import "ChatMessage.h"
+
+#import "UIImage+Utilities.h"
 
 #import <Quickblox/Quickblox.h>
 
@@ -115,38 +118,67 @@
                 
                 [self setupChatContentView];
                 [self setupCurtainView];
+                [self changeStatusButtons:game.participateStatus];
             }
         });
     }];
     
     /*
-    [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
-        //NSLog(@"QBResponse: %@", response.debugDescription);
-        //NSLog(@"QBASession: %@", session.debugDescription);
+     - получить сообщения чата (для отображения)
+     - если чат несуществует - создать
+     - при отправке сообщения залогинить пользователя если нужно
+     - если еще не зарегистрирован - зарегать
+    */
+    
+    NSMutableDictionary *extendedRequest = @{@"name" : @"TestDialog1"}.mutableCopy;
+    QBResponsePage *page = [QBResponsePage responsePageWithLimit:100 skip:0];
+    [QBRequest dialogsForPage:page extendedRequest:extendedRequest successBlock:^(QBResponse *response, NSArray *dialogObjects, NSSet *dialogsUsersIDs, QBResponsePage *page) {
         
-        //register
-        QBUUser *user = [QBUUser user];
-        user.login = @"TestUser1";
-        user.password = @"ahtrahtrahtr1";
-        user.externalUserID = 758902384;
-        
-        [QBRequest signUp:user successBlock:^(QBResponse *response, QBUUser *user) {
-            NSLog(@"QBUUser: %@", user.debugDescription);
+        if(dialogObjects.count > 0){
+            QBChatDialog *gameChatDialog = dialogObjects[0];
+            NSLog(@"dialogsForPage: %@", gameChatDialog);
+            
+            NSMutableDictionary *extendedRequest = @{@"sort_desc" : @"date_sent"}.mutableCopy;
+            QBResponsePage *resPage = [QBResponsePage responsePageWithLimit:20 skip:0];
+            
+            [QBRequest messagesWithDialogID:gameChatDialog.ID extendedRequest:extendedRequest forPage:resPage successBlock:^(QBResponse *response, NSArray *messages, QBResponsePage *responcePage) {
+                NSLog(@"messagesWithDialogID: OK");
+                
+            } errorBlock:^(QBResponse *response) {
+                NSLog(@"messagesWithDialogID: %@", response.error);
+            }];
+            
+            /*
+            [gameChatDialog setOnJoin:^() {
+                // joined
+            }];
+            [gameChatDialog setOnJoinFailed:^(NSError *error) {
+                // fail
+            }];
+            [gameChatDialog setOnLeave:^{
+                
+            }];
+            [gameChatDialog join];
+            */
+            
         }
-        errorBlock:^(QBResponse *response) {
-            NSLog(@"QBResponse: %@", response.debugDescription);
-        }];
+        else{
+            QBChatDialog *chatDialog = [QBChatDialog new];
+            chatDialog.name = @"TestDialog1";
+            //chatDialog.occupantIDs = @[@(55), @(678), @(22)];
+            chatDialog.type = QBChatDialogTypeGroup;
+            
+            [QBRequest createDialog:chatDialog successBlock:^(QBResponse *response, QBChatDialog *createdDialog) {
+                NSLog(@"createDialog: %@", createdDialog);
+            } errorBlock:^(QBResponse *response) {
+                NSLog(@"createDialog errorBlock: %@", response.error.debugDescription);
+            }];
+        }
         
-        //login
-        [QBRequest logInWithUserLogin:@"TestUser1" password:@"ahtrahtrahtr1" successBlock:^(QBResponse *response, QBUUser *user) {
-            NSLog(@"QBUUser: %@", user.debugDescription);
-        } errorBlock:^(QBResponse *response) {
-            NSLog(@"QBResponse: %@", response.debugDescription);
-        }];
     } errorBlock:^(QBResponse *response) {
-        NSLog(@"QBResponse: %@", response.debugDescription);
+        NSLog(@"dialogsForPage errorBlock: %@", response.error.debugDescription);
     }];
-     */
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -162,6 +194,33 @@
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+}
+
+#pragma mark -
+#pragma mark QBChatDelegate
+- (void)chatRoomDidReceiveMessage:(QBChatMessage *)message fromRoomJID:(NSString *)roomJID {
+     NSLog(@"chatRoomDidReceiveMessage: %@", message.text);
+}
+
+- (void)chatDidNotSendMessage:(QBChatMessage *)message toRoomJid:(NSString *)roomJid error:(NSError *)error {
+     NSLog(@"chatDidNotSendMessage: %@", message.text);
+}
+
+- (void) sendMessage:(NSString *)msg toChat:(QBChatDialog *)chat {
+    QBChatMessage *message = [QBChatMessage message];
+    [message setText:msg];
+    
+    NSMutableDictionary *params = [NSMutableDictionary dictionary];
+    params[@"save_to_history"] = @YES;
+    [message setCustomParameters:params];
+    
+    //[chat sendMessage:message];
+    
+    /*
+    [[QBChat instance] sendMessage:message sentBlock:^(NSError *error) {
+        NSLog(@"ERROR %@", error);
+    }];
+    */
 }
 
 #pragma mark -
@@ -368,18 +427,10 @@
         chatCell.showUserName = NO;
         
         UIImage *avatar = nil;
-        if(chatMessage.avatarLink){
-            avatar = [self imageForAvatar:[UIImage imageNamed:chatMessage.avatarLink]];
-        }
-        else{
-            //avatar = [UIImage imageNamed:@"ic_avatar.png"];
-            /*
-            avatar = [self imageForAvatar:[UIImage imageNamed:@"ic_avatar.png"]];
-            CALayer *textLayer = [self layerForEmptyAvatar:avatar text:chatMessage.userName];
-            [chatCell.ivPhoto.layer addSublayer:textLayer];
-            */
-            avatar = [self imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
-        }
+        if(chatMessage.avatarLink)
+            avatar = [UIImage imageForAvatar:[UIImage imageNamed:chatMessage.avatarLink]];
+        else
+            avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
         
         chatCell.ivPhoto.image = avatar;
         chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
@@ -422,101 +473,6 @@
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-- (UIImage *) imageForAvatar:(UIImage *)image {
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
-    [image drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
-    
-    UIImage *avatar = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return avatar;
-}
-
-- (UIImage *) imageForAvatarDefault:(UIImage *)image text:(NSString *)text {
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
-    [image drawInRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)];
-    
-    
-    NSString *avatarText = @"?";
-    NSString *temp = [text stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
-    NSArray *parts = [temp componentsSeparatedByString: @" "];
-    
-    if([parts count] > 0){
-        NSString *firstNameChar = [parts[0] substringToIndex:1];
-        
-        if([parts count] > 1){
-            NSString *lastNameChar = [parts[1] substringToIndex:1];
-            avatarText = [NSString stringWithFormat:@"%@%@", firstNameChar, lastNameChar];
-        }
-        else{
-            avatarText = firstNameChar;
-        }
-    }
-    
-    CGSize size = [avatarText sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:20.0f]}];
-    CGFloat x = (PHOTO_SIZE - size.width) / 2;
-    CGFloat y = (PHOTO_SIZE - size.height) / 2;
-    CGRect textRect = CGRectMake(x, y, size.width, size.height);
-    
-    if([avatarText respondsToSelector:@selector(drawInRect:withAttributes:)]){
-        //[[UIColor clearColor] setFill];
-        //[[UIBezierPath bezierPathWithRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)] fill];
-        
-        NSDictionary *att = @{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [avatarText drawInRect:textRect withAttributes:att];
-    }
-    
-    UIImage *avatar = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    return avatar;
-}
-
-- (CALayer *) layerForEmptyAvatar:(UIImage *)image2 text:(NSString *)text {
-    NSString *avatarText = @"?";
-    NSString *temp = [text stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
-    NSArray *parts = [temp componentsSeparatedByString: @" "];
-    
-    if([parts count] > 0){
-        NSString *firstNameChar = [parts[0] substringToIndex:1];
-        
-        if([parts count] > 1){
-            NSString *lastNameChar = [parts[1] substringToIndex:1];
-            avatarText = [NSString stringWithFormat:@"%@%@", firstNameChar, lastNameChar];
-        }
-        else{
-            avatarText = firstNameChar;
-        }
-    }
-    
-    CGSize size = [avatarText sizeWithAttributes:@{NSFontAttributeName: [UIFont systemFontOfSize:20.0f]}];
-    CGFloat x = (PHOTO_SIZE - size.width) / 2;
-    CGFloat y = (PHOTO_SIZE - size.height) / 2;
-    CGRect textRect = CGRectMake(x, y, size.width, size.height);
-    
-    UIGraphicsBeginImageContextWithOptions(CGSizeMake(PHOTO_SIZE, PHOTO_SIZE), NO, 0);
-    
-    if([avatarText respondsToSelector:@selector(drawInRect:withAttributes:)]){
-        //[[UIColor clearColor] setFill];
-        //[[UIBezierPath bezierPathWithRect:CGRectMake(0, 0, PHOTO_SIZE, PHOTO_SIZE)] fill];
-        
-        NSDictionary *att = @{NSFontAttributeName:[UIFont systemFontOfSize:20],NSForegroundColorAttributeName:[UIColor whiteColor]};
-        [avatarText drawInRect:textRect withAttributes:att];
-    }
-    
-    UIImage *textImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    CALayer* textLayer = [CALayer new];
-    CGRect lRect = textLayer.frame;
-    lRect.origin = CGPointMake(0, 0);
-    lRect.size = CGSizeMake(PHOTO_SIZE, PHOTO_SIZE);
-    textLayer.frame = lRect;
-    textLayer.contents = (id)textImage.CGImage;
-    
-    return textLayer;
-}
-
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
@@ -529,7 +485,7 @@
         [btnChange addTarget:self action:@selector(btnChangeClick) forControlEvents:UIControlEventTouchUpInside];
         [btnChange setTitle:@"Изменить" forState:UIControlStateNormal];
         btnChange.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-        [btnChange setUserInteractionEnabled:NO];
+        [btnChange setUserInteractionEnabled:YES];
         [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
         [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
         [btnChange sizeToFit];
@@ -752,7 +708,7 @@
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_curtainRowOneView];
     
-    UIImageView* locIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_location.png"]];
+    UIImageView* locIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_location_gray.png"]];
     [_curtainRowOneView addSubview:locIcon];
     locIcon.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:8 height:10.5 forView:locIcon];
@@ -764,7 +720,7 @@
     [NSLayoutConstraint setHeight:15 forView:locTitle];
     [NSLayoutConstraint centerVertical:locTitle withView:locIcon inContainer:_curtainRowOneView];
     
-    UIImageView* timeIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_time.png"]];
+    UIImageView* timeIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_time_gray.png"]];
     [_curtainRowOneView addSubview:timeIcon];
     timeIcon.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:10.5 height:11 forView:timeIcon];
@@ -937,7 +893,7 @@
     _peopleInGame.attributedText = [attributeString copy];
     */
     
-    _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count]; //@"Идут 7 человек";
+    _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count];
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
@@ -1108,26 +1064,72 @@
 }
 
 - (void) btnUserDecisionClick:(UIButton*)button {
-    if(button == _btnAnswerYes){
-        _btnAnswerPerhaps.selected = NO;
-        _btnAnswerNo.selected = NO;
-    }
-    else if(button == _btnAnswerPerhaps){
-        _btnAnswerYes.selected = NO;
-        _btnAnswerNo.selected = NO;
-    }
-    else if(button == _btnAnswerNo){
-        _btnAnswerYes.selected = NO;
-        _btnAnswerPerhaps.selected = NO;
-    }
+    /*
+     #define PARTICIPATE_STATUS_NO 1
+     #define PARTICIPATE_STATUS_YES 2
+     #define PARTICIPATE_STATUS_UNKNOWN 3
+     */
     
-    button.selected = !button.selected;
+    if(button.selected)
+        return;
+    
+    NSUInteger desireStatus = 0;
+    
+    if(button == _btnAnswerYes)
+        desireStatus = PARTICIPATE_STATUS_YES;
+    else if(button == _btnAnswerPerhaps)
+        desireStatus = PARTICIPATE_STATUS_UNKNOWN;
+    else if(button == _btnAnswerNo)
+        desireStatus = PARTICIPATE_STATUS_NO;
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking setUserStatusForGame:_gameId status:desireStatus completionHandler:^(NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(errorMessage){
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:errorMessage
+                                      delegate:nil
+                                      cancelButtonTitle:@"Ок"
+                                      otherButtonTitles:nil];
+                [alert show];
+            }
+            else{
+                [self changeStatusButtons:desireStatus];
+            }
+        });
+    }];
+}
+
+- (void) changeStatusButtons:(NSUInteger)desireStatus {
+    if(desireStatus == PARTICIPATE_STATUS_YES){
+        _btnAnswerYes.selected = YES;
+        _btnAnswerPerhaps.selected = NO;
+        _btnAnswerNo.selected = NO;
+    }
+    else if(desireStatus == PARTICIPATE_STATUS_UNKNOWN){
+        _btnAnswerYes.selected = NO;
+        _btnAnswerPerhaps.selected = YES;
+        _btnAnswerNo.selected = NO;
+    }
+    else if(desireStatus == PARTICIPATE_STATUS_NO){
+        _btnAnswerYes.selected = NO;
+        _btnAnswerPerhaps.selected = NO;
+        _btnAnswerNo.selected = YES;
+    }
 }
 
 #pragma mark -
 #pragma mark Buttons click methods
 - (void) btnInviteUserClick {
-    InviteUserViewController* controller = [[InviteUserViewController alloc] init];
+    InviteUserViewController *controller = [[InviteUserViewController alloc] init];
+    controller.gameId = _gameId;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -1136,7 +1138,10 @@
 }
 
 - (void) btnChangeClick {
-    
+    NewEvenViewController *controller = [[NewEvenViewController alloc] init];
+    controller.isEditGameMode = YES;
+    controller.gameId = _gameId;
+    [self.navigationController pushViewController:controller animated:YES];
 }
 
 - (void) btnSendClick {
@@ -1147,7 +1152,8 @@
 }
 
 - (void) showGamers {
-    MemberViewController* controller = [[MemberViewController alloc] init];
+    MemberViewController *controller = [[MemberViewController alloc] init];
+    controller.members = game.members;
     [self.navigationController pushViewController:controller animated:YES];
 }
 

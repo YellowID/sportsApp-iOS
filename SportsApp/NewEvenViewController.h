@@ -10,4 +10,7 @@
 
 @interface NewEvenViewController : UIViewController
 
+@property (nonatomic) BOOL isEditGameMode;
+@property (nonatomic) NSUInteger gameId;
+
 @end

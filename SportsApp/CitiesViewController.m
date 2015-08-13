@@ -1,12 +1,12 @@
 //
-//  MemberViewController.m
+//  CitiesViewController.m
 //  SportsApp
 //
-//  Created by sergeyZ on 21.05.15.
+//  Created by sergeyZ on 05.08.15.
 //
 //
 
-#import "MemberViewController.h"
+#import "CitiesViewController.h"
 #import "UIViewController+Navigation.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -18,19 +18,19 @@
 
 #define PHOTO_SIZE 40
 
-@interface MemberViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface CitiesViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
-//@property (strong, nonatomic) NSMutableArray *members;
+@property (strong, nonatomic) NSMutableArray *cities;
 
 @end
 
-@implementation MemberViewController
+@implementation CitiesViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setNavTitle:@"Участники"];
+    [self setNavTitle:@"Выберите город"];
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *btnClose = [UIButton buttonWithType:UIButtonTypeRoundedRect];
@@ -53,23 +53,21 @@
     self.tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
     
-    /*
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-     
+    
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking membersForGame:3 completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+    [appNetworking citiesCompletionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             
             if(!errorMessage){
-                _members = arrayData;
+                _cities = arrayData;
                 [_tableView reloadData];
             }
         });
     }];
-    */
 }
 
 - (void) btnCloseClick {
@@ -78,77 +76,22 @@
 
 #pragma mark -
 #pragma mark UITableView delegate methods
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-        [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
-    
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-        [cell setPreservesSuperviewLayoutMargins:NO];
-    }
-    
-    // Explictly set your cell's layout margins
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        //[cell setLayoutMargins:UIEdgeInsetsZero];
-        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
-        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
-    }
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 59;
-}
-
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return _members.count;
-    //return 10;
+    return _cities.count;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
-    if(cell == nil){
+    if(cell == nil)
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier];
-        
-        UIImage *avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:nil];
-        cell.imageView.image = avatar;
-    }
     
     [cell setBackgroundColor:[UIColor clearColor]];
     
-    MemberInfo* member = _members[indexPath.row];
+    NSString *city = _cities[indexPath.row];
     
-    if(member.icon){
-        /*
-        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:member.icon]];
-        UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
-        cell.imageView.image = avatar;
-        */
-        
-        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-            NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:member.icon]];
-            
-            dispatch_async(dispatch_get_main_queue(), ^(void){
-                UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
-                cell.imageView.image = avatar;
-            });
-        });
-    }
-    else{
-        UIImage *avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:member.name];
-        cell.imageView.image = avatar;
-    }
-    
-    cell.imageView.contentMode = UIViewContentModeCenter;
-    
-    cell.imageView.layer.borderWidth = 0.0;
-    cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
-    cell.imageView.layer.masksToBounds = YES;
-    
-    cell.textLabel.text = member.name;
+    cell.textLabel.text = city;
     cell.textLabel.textColor = [UIColor blackColor];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     
@@ -156,7 +99,13 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    if([self.delegate respondsToSelector:@selector(cityDidChanged:city:)]){
+        NSString *city = _cities[indexPath.row];
+        [self.delegate cityDidChanged:self city:city];
+    }
+    
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

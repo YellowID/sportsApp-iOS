@@ -16,6 +16,8 @@
 @property (copy, nonatomic) NSString *city;
 @property (copy, nonatomic) NSString *address;
 
+@property (copy, nonatomic) NSString *icon;
+
 @property (nonatomic) CGFloat lat;
 @property (nonatomic) CGFloat lng;
 
