@@ -300,7 +300,7 @@
                                                                              toItem:_tfEmail
                                                                           attribute:NSLayoutAttributeBottom
                                                                          multiplier:1
-                                                                           constant:24]];
+                                                                           constant:20]]; // 24
     
     [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_btnInvite
                                                                           attribute:NSLayoutAttributeLeft
@@ -454,11 +454,14 @@
 }
 
 - (void) btnInviteClick {
+    if(_tfEmail.text.length <= 0)
+        return;
+    
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking inviteUserWithEmail:nil completionHandler:^(NSString *errorMessage) {
+    [appNetworking inviteUserWithEmail:_tfEmail.text completionHandler:^(NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
             [MBProgressHUD hideHUDForView:self.view animated:YES];

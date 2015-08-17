@@ -368,46 +368,71 @@ static NSArray* SCOPE = nil;
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
     [appNetworking loginUser:params completionHandler:^(AppUser *user, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^(void){
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
             if(user){
                 [[AppDelegate instance] setUser:user];
                 [[AppDelegate instance] setLastProvider:user.provider];
                 [appNetworking setUserToken:user.appToken];
                 
-                
-                [QBRequest createSessionWithSuccessBlock:^(QBResponse *response, QBASession *session) {
-                    BOOL isOld = YES;
-                    if(isOld){
-                        //login
-                        [QBRequest logInWithUserLogin:@"TestUser2" password:@"ahtrahtrahtr2" successBlock:^(QBResponse *response, QBUUser *user) {
-                            NSLog(@"QBUUser: %@", user.debugDescription);
-                        } errorBlock:^(QBResponse *response) {
-                            NSLog(@"QBResponse: %@", response.debugDescription);
-                        }];
-                    }
-                    else{
-                        //register
-                        QBUUser *user = [QBUUser user];
-                        user.login = @"TestUser2";
-                        user.password = @"ahtrahtrahtr2";
-                        user.externalUserID = 666666667;
+                AppChat *appChat = [[AppDelegate instance] appChatInstance];
+                if(user.isNewUser){
+                    [appChat signUpWithLogin:user.chatLogin password:user.chatPassword externalID:user.uid fullName:user.name avatarUrl:user.avatar completionHandler:^(BOOL isSuccess) {
+                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                        [MBProgressHUD hideHUDForView:self.view animated:YES];
                         
-                        [QBRequest signUp:user successBlock:^(QBResponse *response, QBUUser *user) {
-                            NSLog(@"QBUUser: %@", user.debugDescription);
+                        if(isSuccess)
+                            NSLog(@"appChat signUp - OK");
+                        else
+                            NSLog(@"appChat signUp - ERR");
+                        
+                        [self goToNextScreen];
+                    }];
+                }
+                else{
+                    [appChat loginWithName:user.chatLogin password:user.chatPassword completionHandler:^(BOOL isSuccess) {
+                        if(!isSuccess){
+                            NSLog(@"Probably user is not registered. Trying to sing up.");
+                            
+                            [appChat signUpWithLogin:user.chatLogin password:user.chatPassword externalID:user.uid fullName:user.name avatarUrl:user.avatar completionHandler:^(BOOL isSuccess) {
+                                if(isSuccess){
+                                    NSLog(@"appChat signUp - OK");
+                                    
+                                    [appChat loginWithName:user.chatLogin password:user.chatPassword completionHandler:^(BOOL isSuccess) {
+                                        if(isSuccess){
+                                            NSLog(@"appChat login - OK");
+                                        }
+                                        else{
+                                            NSLog(@"appChat login - ERR");
+                                        }
+                                        
+                                        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                                        [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                        
+                                        [self goToNextScreen];
+                                    }];
+                                }
+                                else{
+                                    NSLog(@"appChat signUp - ERR");
+                                    
+                                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                                    [MBProgressHUD hideHUDForView:self.view animated:YES];
+                                    
+                                    [self goToNextScreen];
+                                }
+                            }];
                         }
-                        errorBlock:^(QBResponse *response) {
-                           NSLog(@"QBResponse: %@", response.debugDescription);
-                        }];
-                    }
-                } errorBlock:^(QBResponse *response) {
-                    NSLog(@"QBResponse: %@", response.debugDescription);
-                }];
-                
-                [self goToNextScreen];
+                        else{
+                            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                            [MBProgressHUD hideHUDForView:self.view animated:YES];
+                            
+                            [self goToNextScreen];
+                        }
+                    }];
+                }
             }
             else{
+                [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                [MBProgressHUD hideHUDForView:self.view animated:YES];
+                
                 UIAlertView *alert = [[UIAlertView alloc]
                                       initWithTitle:nil
                                       message:errorMessage

@@ -24,6 +24,8 @@
 #import "ChatMessage.h"
 
 #import "UIImage+Utilities.h"
+#import "NSDate+Utilities.h"
+#import "NSDate+Formater.h"
 
 #import <Quickblox/Quickblox.h>
 
@@ -38,7 +40,7 @@
 #define TMP_MSG @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)"
 
 // curtain
-@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate>
+@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate, AppChatDelegate>
 
 #pragma mark -
 #pragma mark Containers
@@ -65,7 +67,7 @@
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *messages;
-@property (strong, nonatomic) NSArray *sectionNames;
+//@property (strong, nonatomic) NSArray *sectionNames;
 
 @end
 
@@ -88,6 +90,10 @@
     [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     
     currentUserId = [AppDelegate instance].user.uid;
+    
+    // for getting messages
+    AppChat *appChat = [[AppDelegate instance] appChatInstance];
+    appChat.delegate = self;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -122,63 +128,6 @@
             }
         });
     }];
-    
-    /*
-     - получить сообщения чата (для отображения)
-     - если чат несуществует - создать
-     - при отправке сообщения залогинить пользователя если нужно
-     - если еще не зарегистрирован - зарегать
-    */
-    
-    NSMutableDictionary *extendedRequest = @{@"name" : @"TestDialog1"}.mutableCopy;
-    QBResponsePage *page = [QBResponsePage responsePageWithLimit:100 skip:0];
-    [QBRequest dialogsForPage:page extendedRequest:extendedRequest successBlock:^(QBResponse *response, NSArray *dialogObjects, NSSet *dialogsUsersIDs, QBResponsePage *page) {
-        
-        if(dialogObjects.count > 0){
-            QBChatDialog *gameChatDialog = dialogObjects[0];
-            NSLog(@"dialogsForPage: %@", gameChatDialog);
-            
-            NSMutableDictionary *extendedRequest = @{@"sort_desc" : @"date_sent"}.mutableCopy;
-            QBResponsePage *resPage = [QBResponsePage responsePageWithLimit:20 skip:0];
-            
-            [QBRequest messagesWithDialogID:gameChatDialog.ID extendedRequest:extendedRequest forPage:resPage successBlock:^(QBResponse *response, NSArray *messages, QBResponsePage *responcePage) {
-                NSLog(@"messagesWithDialogID: OK");
-                
-            } errorBlock:^(QBResponse *response) {
-                NSLog(@"messagesWithDialogID: %@", response.error);
-            }];
-            
-            /*
-            [gameChatDialog setOnJoin:^() {
-                // joined
-            }];
-            [gameChatDialog setOnJoinFailed:^(NSError *error) {
-                // fail
-            }];
-            [gameChatDialog setOnLeave:^{
-                
-            }];
-            [gameChatDialog join];
-            */
-            
-        }
-        else{
-            QBChatDialog *chatDialog = [QBChatDialog new];
-            chatDialog.name = @"TestDialog1";
-            //chatDialog.occupantIDs = @[@(55), @(678), @(22)];
-            chatDialog.type = QBChatDialogTypeGroup;
-            
-            [QBRequest createDialog:chatDialog successBlock:^(QBResponse *response, QBChatDialog *createdDialog) {
-                NSLog(@"createDialog: %@", createdDialog);
-            } errorBlock:^(QBResponse *response) {
-                NSLog(@"createDialog errorBlock: %@", response.error.debugDescription);
-            }];
-        }
-        
-    } errorBlock:^(QBResponse *response) {
-        NSLog(@"dialogsForPage errorBlock: %@", response.error.debugDescription);
-    }];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -197,35 +146,23 @@
 }
 
 #pragma mark -
-#pragma mark QBChatDelegate
-- (void)chatRoomDidReceiveMessage:(QBChatMessage *)message fromRoomJID:(NSString *)roomJID {
-     NSLog(@"chatRoomDidReceiveMessage: %@", message.text);
-}
-
-- (void)chatDidNotSendMessage:(QBChatMessage *)message toRoomJid:(NSString *)roomJid error:(NSError *)error {
-     NSLog(@"chatDidNotSendMessage: %@", message.text);
-}
-
-- (void) sendMessage:(NSString *)msg toChat:(QBChatDialog *)chat {
-    QBChatMessage *message = [QBChatMessage message];
-    [message setText:msg];
-    
-    NSMutableDictionary *params = [NSMutableDictionary dictionary];
-    params[@"save_to_history"] = @YES;
-    [message setCustomParameters:params];
-    
-    //[chat sendMessage:message];
-    
-    /*
-    [[QBChat instance] sendMessage:message sentBlock:^(NSError *error) {
-        NSLog(@"ERROR %@", error);
-    }];
-    */
-}
-
-#pragma mark -
 #pragma mark TEMP
 - (void) loadChatMessages {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    
+    AppChat *appChat = [[AppDelegate instance] appChatInstance];
+    [appChat messagesForGameId:_gameId completionHandler:^(NSArray *chatMessages) {
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+        
+        _messages = [chatMessages mutableCopy];
+        
+        [_tableView reloadData];
+        CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+        [_tableView setContentOffset:CGPointMake(0, y)];
+    }];
+    
+    
+    /*
     currentUserId = 0;
     
     _sectionNames = @[@"Апрель 23", @"сегодня"];
@@ -309,13 +246,58 @@
     [day2 addObject:msg25];
     
     [_messages addObject:day2];
+    */
     
+}
+
+- (void) putNewMessageInArray:(ChatMessage *)newMessage {
+    NSUInteger count = _messages.count;
+    
+    if(count > 0){
+        NSMutableArray *messagesOfLastDay = _messages[count-1];
+        
+        if(messagesOfLastDay.count > 0){
+            ChatMessage *someMessage = messagesOfLastDay[0];
+            
+            if([newMessage.fullDate isEqualToDateIgnoringTime:someMessage.fullDate]){
+                [messagesOfLastDay addObject:newMessage];
+            }
+            else{
+                NSMutableArray *messagesForNewDay = [NSMutableArray new];
+                [_messages addObject:messagesForNewDay];
+                
+                [messagesForNewDay addObject:newMessage];
+            }
+        }
+        else{
+            [messagesOfLastDay addObject:newMessage];
+        }
+    }
+    else{
+        NSMutableArray *messagesForNewDay = [NSMutableArray new];
+        [_messages addObject:messagesForNewDay];
+        
+        [messagesForNewDay addObject:newMessage];
+    }
+    
+    [_tableView reloadData];
+    CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+    [_tableView setContentOffset:CGPointMake(0, y)];
+}
+
+#pragma mark -
+#pragma mark AppChat delegate methods
+- (void) appChatDidReceiveMessage:(ChatMessage *)message {
+    NSLog(@"appChatDidReceiveMessage: %@", message.message);
+    
+    if(message)
+        [self putNewMessageInArray:message];
 }
 
 #pragma mark -
 #pragma mark UITableView delegate methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return [_sectionNames count];
+    return [_messages count];
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
@@ -361,7 +343,18 @@
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
-    NSString *title = _sectionNames[section];
+    NSMutableArray *messagesOfSection = _messages[section];
+    if(messagesOfSection.count <= 0)
+        return nil;
+    
+    ChatMessage *firstMsg = messagesOfSection[0];
+    
+    NSString *title;
+    if([firstMsg.fullDate isToday])
+        title = @"сегодня";
+    else
+        title = [firstMsg.fullDate toFormat:@"LLLL d"];
+    
     if(!title)
         return nil;
     
@@ -426,13 +419,20 @@
     if(!theSameUser){
         chatCell.showUserName = NO;
         
-        UIImage *avatar = nil;
-        if(chatMessage.avatarLink)
-            avatar = [UIImage imageForAvatar:[UIImage imageNamed:chatMessage.avatarLink]];
-        else
-            avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
+        if(chatMessage.avatarLink){
+            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:chatMessage.avatarLink]];
+                
+                dispatch_async(dispatch_get_main_queue(), ^(void){
+                    UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
+                    chatCell.ivPhoto.image = avatar;
+                });
+            });
+        }
+        else{
+            chatCell.ivPhoto.image = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
+        }
         
-        chatCell.ivPhoto.image = avatar;
         chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
         
         chatCell.ivPhoto.layer.borderWidth = 0.0;
@@ -441,9 +441,14 @@
     }
     else{
         chatCell.showUserName = YES;
+        chatCell.ivPhoto.image = nil;
     }
     
-    chatCell.userNameLabel.text = chatMessage.userName;
+    if(chatMessage.userName.length > 0)
+        chatCell.userNameLabel.text = chatMessage.userName;
+    else
+        chatCell.userNameLabel.text = @"Гость";
+    
     chatCell.userNameLabel.textColor = [UIColor colorWithRGBA:CHAT_USERNAME_COLOR];
     
     chatCell.userMessage.text = chatMessage.message;
@@ -711,7 +716,7 @@
     UIImageView* locIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_location_gray.png"]];
     [_curtainRowOneView addSubview:locIcon];
     locIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:8 height:10.5 forView:locIcon];
+    [NSLayoutConstraint setWidht:13.5f height:13.5f forView:locIcon];
     //[NSLayoutConstraint centerVertical:locIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     UILabel* locTitle = [self makeLocationLable];
@@ -723,7 +728,7 @@
     UIImageView* timeIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_time_gray.png"]];
     [_curtainRowOneView addSubview:timeIcon];
     timeIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:10.5 height:11 forView:timeIcon];
+    [NSLayoutConstraint setWidht:13.5f height:13.5f forView:timeIcon];
     //[NSLayoutConstraint centerVertical:timeIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     UILabel* timeTitle = [self makeTimeLable];
@@ -801,7 +806,7 @@
     UILabel* lable = [UILabel new];
     lable.text = [NSString stringWithFormat:@"%@ %@", game.time, game.date]; //@"10:00 через 3 дня";
     lable.textAlignment = NSTextAlignmentLeft;
-    lable.font = [UIFont systemFontOfSize:9.0f];
+    lable.font = [UIFont systemFontOfSize:11.0f];
     [lable sizeToFit];
     return lable;
 }
@@ -818,7 +823,7 @@
     UILabel* lable = [UILabel new];
     lable.text = text; //@"Суперзал, ул. Пушкина, 120Д/1";
     lable.textAlignment = NSTextAlignmentLeft;
-    lable.font = [UIFont systemFontOfSize:9.0f];
+    lable.font = [UIFont systemFontOfSize:11.0f];
     [lable sizeToFit];
     return lable;
 }
@@ -1145,10 +1150,38 @@
 }
 
 - (void) btnSendClick {
-    _tfMessage.text = @"";
-    [_tfMessage resignFirstResponder];
-    messageHeightConstraint.constant = MSG_INPUT_NORMAL_HEIGHT;
-    footerViewHeightConstraint.constant = FOOTER_NORMAL_HEIGHT;
+    if(_tfMessage.text.length > 0){
+        _btnSend.enabled = NO;
+        
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+        
+        AppUser *appUser = [AppDelegate instance].user;
+        AppChat *appChat = [[AppDelegate instance] appChatInstance];
+        [appChat sendMessage:_tfMessage.text forGameId:_gameId fromUser:appUser completionHandler:^(BOOL isSent) {
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            
+            if(isSent){
+                _btnSend.enabled = NO;
+                _tfMessage.text = @"";
+                [_tfMessage resignFirstResponder];
+                messageHeightConstraint.constant = MSG_INPUT_NORMAL_HEIGHT;
+                footerViewHeightConstraint.constant = FOOTER_NORMAL_HEIGHT;
+                
+                //[self loadChatMessages];
+            }
+            else{
+                _btnSend.enabled = YES;
+                
+                UIAlertView *alert = [[UIAlertView alloc]
+                                      initWithTitle:nil
+                                      message:@"Не удалось отправить сообщение"
+                                      delegate:nil
+                                      cancelButtonTitle:@"Отмена"
+                                      otherButtonTitles: nil];
+                [alert show];
+            }
+        }];
+    }
 }
 
 - (void) showGamers {

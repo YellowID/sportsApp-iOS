@@ -23,6 +23,7 @@
 
 @implementation AppDelegate {
     AppNetworking *appNetworking;
+    AppChat *appChat;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -79,20 +80,25 @@
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
+- (void)applicationWillTerminate:(UIApplication *)application {
+    [AppChat logout];
+}
+
 - (void)applicationDidEnterBackground:(UIApplication *)application {
     // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
     // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
     
-    [[QBChat instance] logout];
+    [AppChat logout];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    
-    // check here if a user was logged in to Chat and login him if YES
-    // ...
-    //[[QBChat instance] loginWithUser:user];
-    [QBChat instance].autoReconnectEnabled = YES;
+    if(_user && !_user.isNewUser){
+        AppChat *chat = [self appChatInstance];
+        [chat loginWithName:_user.chatLogin password:_user.chatPassword completionHandler:^(BOOL isSuccess) {
+            if(!isSuccess)
+                NSLog(@"Something wrong wgen login");
+        }];
+    }
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
@@ -115,12 +121,6 @@
     return callBack;
 }
 
-- (void)applicationWillTerminate:(UIApplication *)application {
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    
-    [[QBChat instance] logout];
-}
-
 #pragma mark -
 #pragma mark - Other
 + (AppDelegate*) instance {
@@ -132,6 +132,13 @@
         appNetworking = [AppNetworking sharedInstance];
     
     return appNetworking;
+}
+
+- (AppChat *) appChatInstance {
+    if(!appChat)
+        appChat = [AppChat sharedInstance];
+    
+    return appChat;
 }
 
 #pragma mark -

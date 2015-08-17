@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "AppChat.h"
 #import "AppNetworking.h"
 #import "AppUser.h"
 
@@ -21,6 +22,7 @@
 
 + (AppDelegate *) instance;
 - (AppNetworking *) appNetworkingInstance;
+- (AppChat *) appChatInstance;
 
 - (void) setNavigationBarAppearanceDefault;
 - (void) setNavigationBarAppearanceSearch;

@@ -256,7 +256,7 @@
                                                              toItem:container
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
-                                                           constant:-8]];
+                                                           constant:-PADDING_H]];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeTop

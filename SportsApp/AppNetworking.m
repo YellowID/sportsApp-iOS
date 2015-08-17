@@ -65,11 +65,9 @@
                 user = [AppUser new];
                 
                 NSMutableDictionary *dic = (NSMutableDictionary *)resultJson;
-                user.isNewUser = [dic[@"id"] boolValue];
+                user.isNewUser = [dic[@"new"] boolValue];
                 
                 NSMutableDictionary *userDic = dic[@"user"];
-                
-                
                 user.uid = [userDic[@"id"] integerValue];
                 //user.age = [userDic[@"age"] integerValue];
                 
@@ -77,13 +75,21 @@
                     user.email = userDic[@"email"];
                 
                 if(![userDic[@"name"] isKindOfClass:[NSNull class]])
-                    user.email = userDic[@"name"];
+                    user.name = userDic[@"name"];
+                
+                if(![userDic[@"avatar"] isKindOfClass:[NSNull class]])
+                    user.avatar = userDic[@"avatar"];
                 
                 user.provider = userDic[@"provider"];
                 //user.oauthToken = userDic[@"oauth_token"];
                 user.oauthToken = params[@"oauth_token"];
                 user.appToken = userDic[@"token"];
+                
+                user.chatLogin = [NSString stringWithFormat:@"AppChatLoginName_%lu", (unsigned long)user.uid];
                 user.chatPassword = userDic[@"chat_password"];
+                
+                //user.chatLogin = @"TestUser2";
+                //user.chatPassword = @"ahtrahtrahtr2";
             }
         }
         else {
@@ -187,7 +193,7 @@
 }
 
 - (void) inviteUserWithEmail:(NSString *)email completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/mail_invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -637,9 +643,13 @@
             if(!hasError){
                 NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
                 
+                /*
+                {"id":10,"user_id":24,"sport_type_id":7,"start_at":"2015-11-01T11:47:37.000Z","title":"Делта-Спорт Nike","country":"Беларусь","city":"Минск","address":"ул. Ленина, 16","latitude":"53.899731","longitude":"27.560171","age":2,"numbers":21,"level":3,"members":
+                    */
+                
                 game.gameId = [resultDic[@"id"] integerValue];
-                game.gameType = 1;
-                game.adminId = 4;
+                game.gameType = [resultDic[@"sport_type_id"] integerValue];
+                game.adminId = [resultDic[@"user_id"] integerValue];
                 game.participateStatus = PARTICIPATE_STATUS_UNKNOWN;
                 
                 if(![resultDic[@"title"] isKindOfClass:[NSNull class]])
