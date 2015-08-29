@@ -184,6 +184,7 @@ static NSArray* SCOPE = nil;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Авторизация...";
+    //hud.color = [UIColor greenColor];
     
     FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
     if (fbToken) {

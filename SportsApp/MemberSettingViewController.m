@@ -8,7 +8,6 @@
 
 #import "MemberSettingViewController.h"
 #import "UIViewController+Navigation.h"
-//#import "CustomDotPageControl.h"
 #import "DDPageControl.h"
 #import "NSLayoutConstraint+Helper.h"
 #import "UIColor+Helper.h"
@@ -22,7 +21,7 @@
 #import "CustomButton.h"
 
 #define PADDING_H 12.5
-#define MAIN_SCROLL_CONTENT_HEIGHT 464 //462.5 //415
+#define MAIN_SCROLL_CONTENT_HEIGHT 464
 #define SCROLL_ITEM_HEIGHT 99
 
 @interface MemberSettingViewController () <UIScrollViewDelegate>
@@ -47,8 +46,6 @@
 #pragma mark -
 #pragma mark Sports group views
 @property (strong, nonatomic) UIScrollView* sportsScrollView;
-//@property (strong, nonatomic) UIPageControl* sportsPageControl;
-//@property (strong, nonatomic) CustomDotPageControl* sportsPageControl;
 @property (strong, nonatomic) DDPageControl* sportsPageControl;
 @property (strong, nonatomic) NSMutableArray* sportInfoItems;
 @property (strong, nonatomic) NSMutableArray* sportUIItems;
@@ -775,8 +772,8 @@
     }
     
     // icons !! order is important
-    [self setupIconTwoStar:isLevelOne];
-    [self setupIconOneStar:isLevelTwo];
+    [self setupIconTwoStar:isLevelTwo];
+    [self setupIconOneStar:isLevelOne];
     [self setupIconThreeStar:isLevelThree];
     [self setLevelImagesGestureRecognizers];
 }
@@ -1213,6 +1210,11 @@
     _ivTwoStarLevel.image = grayStarImage;
     _ivThreeStarLevel.image = grayStarImage;
     
+    oneStarStatus = YES;
+    _ivOneStarLevel.image = activeStarImage;
+    memberSettings.level = LEVEL_1;
+    
+    /*
     if(oneStarStatus){
         oneStarStatus = NO;
         _ivOneStarLevel.image = grayStarImage;
@@ -1225,6 +1227,7 @@
         
         memberSettings.level = LEVEL_1;
     }
+    */
 }
 
 - (void) twoStarClick {

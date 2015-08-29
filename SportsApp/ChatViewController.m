@@ -37,17 +37,12 @@
 #define MSG_INPUT_NORMAL_HEIGHT 30
 #define MAX_MSG_INPUT_HEIGHT 120
 
-#define TMP_MSG @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)"
-
-// curtain
-@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate, AppChatDelegate>
+@interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate, AppChatDelegate, NewEvenViewControllerDelegate>
 
 #pragma mark -
 #pragma mark Containers
-//@property (strong, nonatomic) UIScrollView* chatScrollView;
 @property (strong, nonatomic) UIView* chatContentView;
 @property (strong, nonatomic) UIView* chatFooterView;
-//@property (strong, nonatomic) UITextField* tfMessage;
 @property (strong, nonatomic) UITextView* tfMessage;
 @property (strong, nonatomic) UIButton* btnSend;
 
@@ -77,18 +72,29 @@
     NSLayoutConstraint* curtainHeigtContraint;
     BOOL isCurtainOpen;
     
+    UILabel* locTitle;
+    UILabel* timeTitle;
+    
     CGFloat mainViewHeight;
     
     NSUInteger currentUserId;
     GameInfo *game;
+    
+    NSMutableDictionary *avatarCache;
+    NSMutableDictionary *chatRowHeightCache;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnBackClick)];
+    self.navigationItem.leftBarButtonItem = btnBack;
+    
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_chat.png"]];
     [self.view setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     
+    avatarCache = [NSMutableDictionary new];
+    chatRowHeightCache = [NSMutableDictionary new];
     currentUserId = [AppDelegate instance].user.uid;
     
     // for getting messages
@@ -145,6 +151,12 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
 }
 
+- (void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    mainViewHeight = self.view.frame.size.height;
+}
+
 #pragma mark -
 #pragma mark TEMP
 - (void) loadChatMessages {
@@ -160,94 +172,6 @@
         CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
         [_tableView setContentOffset:CGPointMake(0, y)];
     }];
-    
-    
-    /*
-    currentUserId = 0;
-    
-    _sectionNames = @[@"Апрель 23", @"сегодня"];
-    _messages = [NSMutableArray new];
-    
-    // day1
-    NSMutableArray *day1 = [NSMutableArray new];
-    ChatMessage *msg1 = [ChatMessage new];
-    msg1.userName = @"Антон Якушев";
-    //msg1.avatarLink = @"photo.png";
-    msg1.userId = 1;
-    msg1.time = @"10:00";
-    msg1.message = @"Всем привет! Сегодня играем!! Расскажите всем. Соберем большую команду)";
-    [day1 addObject:msg1];
-    
-    ChatMessage *msg2 = [ChatMessage new];
-    msg2.userName = @"Саша Лукашенко";
-    //msg2.avatarLink = @"photo.png";
-    msg2.userId = 3;
-    msg2.time = @"10:05";
-    msg2.message = @"Да?";
-    [day1 addObject:msg2];
-    
-    ChatMessage *msg3 = [ChatMessage new];
-    msg3.userName = @"Саша Лукашенко";
-    msg3.avatarLink = @"photo.png";
-    msg3.userId = 3;
-    msg3.time = @"10:12";
-    msg3.message = @"Я тоже у хакей!";
-    [day1 addObject:msg3];
-    
-    ChatMessage *msg4 = [ChatMessage new];
-    msg4.userName = @"Саша Лукашенко";
-    msg3.avatarLink = @"photo.png";
-    msg4.userId = 3;
-    msg4.time = @"13:00";
-    msg4.message = @"Возьмите меня";
-    [day1 addObject:msg4];
-    
-    [_messages addObject:day1];
-    
-    // day2
-    NSMutableArray *day2 = [NSMutableArray new];
-    ChatMessage *msg21 = [ChatMessage new];
-    msg21.userName = @"Антон Якушев";
-    msg21.avatarLink = @"photo.png";
-    msg21.userId = 1;
-    msg21.time = @"11:02";
-    msg21.message = @"У хакей играют самыя настоящие мужчыны.";
-    [day2 addObject:msg21];
-    
-    ChatMessage *msg22 = [ChatMessage new];
-    msg22.userName = @"Саша Лукашенко";
-    msg22.avatarLink = @"photo.png";
-    msg22.userId = 3;
-    msg22.time = @"11:03";
-    msg22.message = @"Я на усё сагласен";
-    [day2 addObject:msg22];
-    
-    ChatMessage *msg23 = [ChatMessage new];
-    msg23.userName = @"Павел Ларчик";
-    msg23.userId = 2;
-    msg23.time = @"11:23";
-    msg23.message = @"А где играем?";
-    [day2 addObject:msg23];
-    
-    ChatMessage *msg24 = [ChatMessage new];
-    msg24.userName = @"Я";
-    msg24.avatarLink = @"photo.png";
-    msg24.userId = 0;
-    msg24.time = @"11:25";
-    msg24.message = @"В зале";
-    [day2 addObject:msg24];
-    
-    ChatMessage *msg25 = [ChatMessage new];
-    msg25.userName = @"Я";
-    msg24.avatarLink = @"photo.png";
-    msg25.userId = 0;
-    msg25.time = @"11:25";
-    msg25.message = @"В большом зале";
-    [day2 addObject:msg25];
-    
-    [_messages addObject:day2];
-    */
-    
 }
 
 - (void) putNewMessageInArray:(ChatMessage *)newMessage {
@@ -312,20 +236,30 @@
     
     CGFloat height = 0;
     
-    ChatMessage *chatMessage = rows[indexPath.row];
-    
-    BOOL theSameUser = NO;
-    if(indexPath.row > 0){
-        ChatMessage *prevMessage = rows[indexPath.row - 1];
-        if(prevMessage.userId == chatMessage.userId)
-            theSameUser = YES;
-    }
-    
-    if(chatMessage.userId == currentUserId){
-        height = [ChatRightTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+    NSString *keyForHeight = [NSString stringWithFormat:@"%lu_%lu", (unsigned long)indexPath.section, (unsigned long)indexPath.row];
+    NSNumber *numHeight = [chatRowHeightCache objectForKey:keyForHeight];
+    if(numHeight){
+        height = [numHeight floatValue];
     }
     else{
-        height = [ChatTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+        ChatMessage *chatMessage = rows[indexPath.row];
+        
+        BOOL theSameUser = NO;
+        if(indexPath.row > 0){
+            ChatMessage *prevMessage = rows[indexPath.row - 1];
+            if(prevMessage.userId == chatMessage.userId)
+                theSameUser = YES;
+        }
+        
+        if(chatMessage.userId == currentUserId){
+            height = [ChatRightTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+        }
+        else{
+            height = [ChatTableViewCell heightRowForMessage:chatMessage.message andWidth:tableView.bounds.size.width showUserName:!theSameUser];
+        }
+        
+        numHeight = [NSNumber numberWithFloat:height];
+        [chatRowHeightCache setObject:numHeight forKey:keyForHeight];
     }
     
     return height;
@@ -385,29 +319,40 @@
     static NSString *LeftChatCellIdentifier = @"LeftChatCellIdentifier";
     static NSString *RightChatCellIdentifier = @"RightChatCellIdentifier";
     
-    UITableViewCell *cell = nil;
-    
     NSArray *rows = [_messages objectAtIndex:indexPath.section];
     ChatMessage *chatMessage = rows[indexPath.row];
-    
     BOOL isMessageOfCurrentUser = (chatMessage.userId == currentUserId);
     
+    UITableViewCell *cell = nil;
     if(isMessageOfCurrentUser){
         cell = [tableView dequeueReusableCellWithIdentifier:RightChatCellIdentifier];
-        if(cell == nil)
+        if(cell == nil){
             cell = [[ChatRightTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:RightChatCellIdentifier];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.userInteractionEnabled = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
     }
     else{
         cell = [tableView dequeueReusableCellWithIdentifier:LeftChatCellIdentifier];
-        if(cell == nil)
+        if(cell == nil){
             cell = [[ChatTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:LeftChatCellIdentifier];
+            cell.backgroundColor = [UIColor clearColor];
+            cell.userInteractionEnabled = YES;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
     }
     
-    [cell setBackgroundColor:[UIColor clearColor]];
-    cell.userInteractionEnabled = YES;
-    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+
+- (void) tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSArray *rows = [_messages objectAtIndex:indexPath.section];
+    ChatMessage *chatMessage = rows[indexPath.row];
+    BOOL isMessageOfCurrentUser = (chatMessage.userId == currentUserId);
     
-    ChatRightTableViewCell *chatCell = (ChatRightTableViewCell *)cell;
+    //ChatRightTableViewCell *chatCell = (ChatRightTableViewCell *)cell;
+    ChatTableViewCell *chatCell = (ChatTableViewCell *)cell;
     
     BOOL theSameUser = NO;
     if(indexPath.row > 0){
@@ -416,21 +361,31 @@
             theSameUser = YES;
     }
     
+    chatCell.showUserName = !theSameUser;
+    
     if(!theSameUser){
-        chatCell.showUserName = NO;
-        
-        if(chatMessage.avatarLink){
-            dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:chatMessage.avatarLink]];
-                
-                dispatch_async(dispatch_get_main_queue(), ^(void){
-                    UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
-                    chatCell.ivPhoto.image = avatar;
-                });
-            });
+        NSString *keyForUserAvatar = [NSString stringWithFormat:@"%lu", (unsigned long)chatMessage.userId];
+        __block UIImage *avatar = [avatarCache objectForKey:keyForUserAvatar];
+        if(avatar){
+            chatCell.ivPhoto.image = avatar;
         }
         else{
-            chatCell.ivPhoto.image = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
+            if(chatMessage.avatarLink){
+                dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+                    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:chatMessage.avatarLink]];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^(void){
+                        avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
+                        [avatarCache setObject:avatar forKey:keyForUserAvatar];
+                        chatCell.ivPhoto.image = avatar;
+                    });
+                });
+            }
+            else{
+                avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:chatMessage.userName];
+                [avatarCache setObject:avatar forKey:keyForUserAvatar];
+                chatCell.ivPhoto.image = avatar;
+            }
         }
         
         chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
@@ -440,7 +395,6 @@
         chatCell.ivPhoto.layer.masksToBounds = YES;
     }
     else{
-        chatCell.showUserName = YES;
         chatCell.ivPhoto.image = nil;
     }
     
@@ -470,8 +424,6 @@
         else
             [chatCell setBackgroundImageForMessageView:[UIImage imageNamed:@"bg_chat_message.png"]];
     }
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -481,9 +433,6 @@
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
-    UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnBackClick)];
-    self.navigationItem.leftBarButtonItem = btnBack;
-    
     if(currentUserId == game.adminId){
         UIButton* btnChange = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
@@ -560,17 +509,18 @@
 
 - (void) setupMessageField {
     _tfMessage = [UITextView new];
-    //_tfMessage = [UITextField new];
     _tfMessage.translatesAutoresizingMaskIntoConstraints = NO;
     //[_tfMessage addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _tfMessage.delegate = self;
-    _tfMessage.backgroundColor = [UIColor whiteColor];
+    //_tfMessage.backgroundColor = [UIColor whiteColor];
     _tfMessage.font = [UIFont systemFontOfSize:14.0f];
+    _tfMessage.autocorrectionType = UITextAutocorrectionTypeNo;
     
-    _tfMessage.layer.borderWidth = 0.5;
+    _tfMessage.layer.borderWidth = 0.0;
     _tfMessage.layer.cornerRadius = 6.0;
-    _tfMessage.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
-    _tfMessage.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
+    //_tfMessage.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+    //_tfMessage.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
+    _tfMessage.layer.backgroundColor = [[UIColor whiteColor] CGColor];
     
     [_chatFooterView addSubview:_tfMessage];
 }
@@ -719,7 +669,7 @@
     [NSLayoutConstraint setWidht:13.5f height:13.5f forView:locIcon];
     //[NSLayoutConstraint centerVertical:locIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
-    UILabel* locTitle = [self makeLocationLable];
+    locTitle = [self makeLocationLable];
     [_curtainRowOneView addSubview:locTitle];
     locTitle.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setHeight:15 forView:locTitle];
@@ -731,7 +681,7 @@
     [NSLayoutConstraint setWidht:13.5f height:13.5f forView:timeIcon];
     //[NSLayoutConstraint centerVertical:timeIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
-    UILabel* timeTitle = [self makeTimeLable];
+    timeTitle = [self makeTimeLable];
     [_curtainRowOneView addSubview:timeTitle];
     timeTitle.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setHeight:15 forView:timeTitle];
@@ -804,7 +754,7 @@
 
 - (UILabel*) makeTimeLable {
     UILabel* lable = [UILabel new];
-    lable.text = [NSString stringWithFormat:@"%@ %@", game.time, game.date]; //@"10:00 через 3 дня";
+    lable.text = [self titleForTimeLable:game];
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:11.0f];
     [lable sizeToFit];
@@ -812,20 +762,32 @@
 }
 
 - (UILabel*) makeLocationLable {
-    NSString *text = @"Место неизвестно";
-    if(game.addressName && game.address)
-        text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
-    else if(game.addressName)
-        text = [NSString stringWithFormat:@"%@", game.addressName];
-    else if(game.address)
-        text = [NSString stringWithFormat:@"%@", game.address];
-    
     UILabel* lable = [UILabel new];
-    lable.text = text; //@"Суперзал, ул. Пушкина, 120Д/1";
+    lable.text = [self titleForLocationLable:game];
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:11.0f];
     [lable sizeToFit];
     return lable;
+}
+
+- (NSString *) titleForTimeLable:(GameInfo *)gameInfo {
+    return [NSString stringWithFormat:@"%@ %@", gameInfo.time, gameInfo.date]; //@"10:00 через 3 дня";
+}
+
+- (NSString *) titleForLocationLable:(GameInfo *)gameInfo {
+    NSString *text = @"Место неизвестно";
+    
+    BOOL hasAddressName = (gameInfo.addressName.length > 0);
+    BOOL hasAddress = (gameInfo.address.length > 0);
+    
+    if(hasAddressName && hasAddress)
+        text = [NSString stringWithFormat:@"%@, %@", gameInfo.addressName, gameInfo.address];
+    else if(hasAddressName)
+        text = [NSString stringWithFormat:@"%@", gameInfo.addressName];
+    else if(hasAddress)
+        text = [NSString stringWithFormat:@"%@", gameInfo.address];
+    
+    return text;
 }
 
 #pragma mark -
@@ -1083,7 +1045,7 @@
     if(button == _btnAnswerYes)
         desireStatus = PARTICIPATE_STATUS_YES;
     else if(button == _btnAnswerPerhaps)
-        desireStatus = PARTICIPATE_STATUS_UNKNOWN;
+        desireStatus = PARTICIPATE_STATUS_POSSIBLE;
     else if(button == _btnAnswerNo)
         desireStatus = PARTICIPATE_STATUS_NO;
     
@@ -1118,7 +1080,7 @@
         _btnAnswerPerhaps.selected = NO;
         _btnAnswerNo.selected = NO;
     }
-    else if(desireStatus == PARTICIPATE_STATUS_UNKNOWN){
+    else if(desireStatus == PARTICIPATE_STATUS_POSSIBLE){
         _btnAnswerYes.selected = NO;
         _btnAnswerPerhaps.selected = YES;
         _btnAnswerNo.selected = NO;
@@ -1133,9 +1095,11 @@
 #pragma mark -
 #pragma mark Buttons click methods
 - (void) btnInviteUserClick {
-    InviteUserViewController *controller = [[InviteUserViewController alloc] init];
+    InviteUserViewController* controller = [[InviteUserViewController alloc] init];
     controller.gameId = _gameId;
-    [self.navigationController pushViewController:controller animated:YES];
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void) btnBackClick {
@@ -1146,7 +1110,10 @@
     NewEvenViewController *controller = [[NewEvenViewController alloc] init];
     controller.isEditGameMode = YES;
     controller.gameId = _gameId;
-    [self.navigationController pushViewController:controller animated:YES];
+    controller.delegate = self;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void) btnSendClick {
@@ -1188,6 +1155,52 @@
     MemberViewController *controller = [[MemberViewController alloc] init];
     controller.members = game.members;
     [self.navigationController pushViewController:controller animated:YES];
+}
+
+#pragma mark -
+- (void)gameWasSavedWithController:(NewEvenViewController *)controller gameId:(NSUInteger)gameID {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+    
+    [self updateGame:gameID];
+    
+    UIAlertView *alert = [[UIAlertView alloc]
+                          initWithTitle:nil
+                          message:@"Игра изменена"
+                          delegate:nil
+                          cancelButtonTitle:@"Ок"
+                          otherButtonTitles:nil];
+    
+    [alert show];
+}
+
+- (void) updateGame:(NSUInteger)gID {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking gameById:gID completionHandler:^(GameInfo *gameInfo, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            
+            if(!errorMessage){
+                game = gameInfo;
+                
+                [self setNavTitle:game.gameName];
+                locTitle.text = [self titleForLocationLable:game];
+                timeTitle.text = [self titleForTimeLable:game];
+                
+                _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count];
+                
+                NSInteger diff = game.numbers - game.members.count;
+                NSUInteger needle = 0;
+                if(diff > 0)
+                    needle = diff;
+                
+                _peopleNeed.text = [NSString stringWithFormat:@"Нужно ещё %lu", (unsigned long)needle];
+                
+                [self changeStatusButtons:game.participateStatus];
+            }
+        });
+    }];
 }
 
 #pragma mark -
@@ -1296,18 +1309,19 @@
         
         CGFloat fixedWidth = textField.frame.size.width;
         CGSize newSize = [textField sizeThatFits:CGSizeMake(fixedWidth, MAXFLOAT)];
-        //CGRect newFrame = textField.frame;
-        //newFrame.size = CGSizeMake(fmaxf(newSize.width, fixedWidth), newSize.height);
-        //textField.frame = newFrame;
+        
+        if(newSize.height == textField.frame.size.height)
+            return;
         
         if(newSize.height < MAX_MSG_INPUT_HEIGHT){
             int diffH = FOOTER_NORMAL_HEIGHT - MSG_INPUT_NORMAL_HEIGHT;
             messageHeightConstraint.constant = newSize.height;
             footerViewHeightConstraint.constant = newSize.height + diffH;
+            
+            [self.view layoutIfNeeded];
+            CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+            [_tableView setContentOffset:CGPointMake(0, y)];
         }
-        
-        
-        //[self scrollToCursorForTextView:textField];
     }
 }
 
@@ -1335,14 +1349,15 @@
 # pragma mark Keyboard show/hide
 - (void)keyboardWillShow:(NSNotification*)notification {
     NSDictionary* info = [notification userInfo];
-    CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
     CGRect newRect = self.view.frame;
-    mainViewHeight = newRect.size.height;
-    newRect.size.height = self.view.frame.size.height - kbSize.height;
+    newRect.size.height = mainViewHeight - kbSize.height;
     self.view.frame = newRect;
     [self.view layoutIfNeeded];
     
+    CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+    [_tableView setContentOffset:CGPointMake(0, y)];
 }
 
 - (void)keyboardWillHide:(NSNotification*)notification {

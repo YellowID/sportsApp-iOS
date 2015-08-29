@@ -19,6 +19,9 @@
 #import "AppDelegate.h"
 
 #import "NSDate+Formater.h"
+#import "NSDate+Utilities.h"
+
+#import "CustomTextField.h"
 
 #define PADDING_H 12
 #define MAIN_SCROLL_CONTENT_HEIGHT 340
@@ -47,6 +50,8 @@
 @property (strong, nonatomic) UITextField* tfLocation;
 
 @property (strong, nonatomic) UITextField* tfTime;
+//@property (strong, nonatomic) CustomTextField* tfTime;
+
 @property (strong, nonatomic) UIDatePicker* dateTimePicker;
 
 @property (strong, nonatomic) UITextField* tfAge;
@@ -81,6 +86,7 @@
     [super viewDidLoad];
     
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     grayStarImage = [UIImage imageNamed:@"icon_star_small.png"];
     activeStarImage = [UIImage imageNamed:@"icon_star_small_active.png"];
@@ -325,8 +331,14 @@
     _tfKindOfSport.delegate = self;
     _tfKindOfSport.placeholder = @"Вид спорта";
     
-    if(_isEditGameMode)
+    [self setReadyButtonForTextField:_tfKindOfSport];
+    
+    if(_isEditGameMode){
         _tfKindOfSport.text = editGameInfo.gameName;
+        _tfKindOfSport.enabled = NO;
+        _tfKindOfSport.userInteractionEnabled = NO;
+        _tfKindOfSport.textColor = [UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR];
+    }
     
     _tfKindOfSport.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfKindOfSport];
@@ -489,6 +501,8 @@
     _tfAge.delegate = self;
     _tfAge.placeholder = @"20-28";
     
+    [self setReadyButtonForTextField:_tfAge];
+    
     if(_isEditGameMode){
         if(editGameInfo.age > 0 && editGameInfo.age <= ageItems.count)
             _tfAge.text = ageItems[editGameInfo.age - 1];
@@ -594,11 +608,14 @@
 
 - (void) setupLableTime {
     _tfTime = [UITextField new];
+    //_tfTime = [CustomTextField new];
     _tfTime.translatesAutoresizingMaskIntoConstraints = NO;
     _tfTime.delegate = self;
-    //_tfTime.text = @"17 июля 2015 г. 17:00";
     _tfTime.textAlignment = NSTextAlignmentRight;
     _tfTime.font = [UIFont systemFontOfSize:12.0f];
+    //_tfTime.backgroundColor = [UIColor greenColor];
+    
+    [self setReadyButtonForTextField:_tfTime];
     
     NSDate *dateToDisplay = nil;
     if(_isEditGameMode){
@@ -614,7 +631,7 @@
     
     [_timeGroupView addSubview:_tfTime];
     
-    [NSLayoutConstraint setWidht:160 height:30 forView:_tfTime];
+    [NSLayoutConstraint setWidht:200 height:30 forView:_tfTime];
     
     [_timeGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfTime
                                                                attribute:NSLayoutAttributeCenterY
@@ -764,6 +781,8 @@
     //_tfPeopleNumber.text = @"15";
     _tfPeopleNumber.placeholder = @"15";
     
+    [self setReadyButtonForTextField:_tfPeopleNumber];
+    
     if(_isEditGameMode){
         _tfPeopleNumber.text = [NSString stringWithFormat:@"%lu", (unsigned long)editGameInfo.numbers];
     }
@@ -772,7 +791,7 @@
     _tfPeopleNumber.font = [UIFont systemFontOfSize:12.0f];
     [_levelGroupView addSubview:_tfPeopleNumber];
     
-    [NSLayoutConstraint setWidht:100 height:30 forView:_tfPeopleNumber];
+    [NSLayoutConstraint setWidht:140 height:30 forView:_tfPeopleNumber];
     
     [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfPeopleNumber
                                                                attribute:NSLayoutAttributeTop
@@ -922,7 +941,7 @@
 # pragma mark -
 # pragma mark Navigation button click
 - (void) btnCancelClick {
-    [self.navigationController popViewControllerAnimated:YES];
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) btnCreateClick {
@@ -954,14 +973,10 @@
                     [alert show];
                 }
                 else{
-                    UIAlertView *alert = [[UIAlertView alloc]
-                                          initWithTitle:nil
-                                          message:@"Игра изменена"
-                                          delegate:nil
-                                          cancelButtonTitle:@"Ок"
-                                          otherButtonTitles:nil];
-                    
-                    [alert show];
+                    if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
+                        [self.delegate gameWasSavedWithController:self gameId:_gameId];
+                    else
+                        [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
@@ -983,13 +998,18 @@
                     [alert show];
                 }
                 else{
-                    InviteUserViewController* controller = [[InviteUserViewController alloc] init];
-                    controller.gameId = gameId;
-                    [self.navigationController pushViewController:controller animated:YES];
+                    if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
+                        [self.delegate gameWasSavedWithController:self gameId:_gameId];
+                    else
+                        [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
     }
+}
+
+- (void) btnReadyClick {
+    [self.view endEditing:YES]; // hide keyboard
 }
 
 #pragma mark -
@@ -1019,6 +1039,11 @@
     _ivTwoStar.image = grayStarImage;
     _ivThreeStar.image = grayStarImage;
     
+    oneStarStatus = YES;
+    _ivOneStar.image = activeStarImage;
+    newGame.level = LEVEL_1;
+    
+    /*
     if(oneStarStatus){
         oneStarStatus = NO;
         _ivOneStar.image = grayStarImage;
@@ -1031,6 +1056,7 @@
         
         newGame.level = LEVEL_1;
     }
+    */
     
     [self changeCreateButtonIfNeeded];
 }
@@ -1195,6 +1221,50 @@
     
     [_btnCreate setEnabled:YES];
     [_btnCreate setUserInteractionEnabled:YES];
+}
+
+- (void) setReadyButtonForTextField:(UITextField *)textField {
+    UIButton *btnReady = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnReady setFrame:CGRectMake(0, 0.0f, 51.0f, 36.0f)];
+    [btnReady addTarget:self action:@selector(btnReadyClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnReady setTitle:@"Готово" forState:UIControlStateNormal];
+    [btnReady setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
+    btnReady.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    [btnReady setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    //[btnReady sizeToFit];
+    //btnReady.backgroundColor = [UIColor redColor];
+    
+    textField.rightViewMode = UITextFieldViewModeWhileEditing;
+    textField.rightView = btnReady;
+}
+
+- (GameInfo *) gameInfoFromNewGame:(NewGame *)game {
+    GameInfo *gi = [GameInfo new];
+    gi.gameType = game.sport;
+    gi.addressName = game.placeName;
+    gi.address = game.address;
+    gi.startAt = game.time;
+    
+    gi.age = game.age;
+    gi.level = game.level;
+    gi.numbers = game.players;
+    
+    NSDate *gameDate = [NSDate dateWithJsonString:gi.startAt];
+    gi.time = [gameDate toFormat:@"HH:mm"];
+    
+    if([gameDate isToday]){
+        gi.date = @"сегодня";
+    }
+    else {
+        NSInteger days = [gameDate daysAfterDate:[NSDate new]];
+        
+        if(days < 0)
+            gi.date = @"Игра окончена";
+        else
+            gi.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+    }
+    
+    return gi;
 }
 
 @end

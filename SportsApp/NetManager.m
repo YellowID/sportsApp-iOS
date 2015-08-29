@@ -130,11 +130,21 @@
     NSMutableData *body = [NSMutableData data];
     NSMutableDictionary *images = [NSMutableDictionary new];
     
+    // //sport_type_ids[]=1&sport_type_ids[]=2&sport_type_ids[]=3
+    
     for(NSString *key in [params allKeys]){
         id value = [params objectForKey:key];
         
         if([value isKindOfClass:[NSData class]]){
             [images setValue:value forKey:key];
+        }
+        else if([value isKindOfClass:[NSArray class]]){
+            NSArray *arr = (NSArray *)value;
+            for(NSString *arr_value in arr){
+                [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@[]\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+                [body appendData:[[NSString stringWithFormat:@"%@\r\n", arr_value] dataUsingEncoding:NSUTF8StringEncoding]];
+            }
         }
         else {
             [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];

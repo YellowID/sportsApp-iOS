@@ -13,6 +13,7 @@
 #import "MemberSettingViewController.h"
 #import "ChatViewController.h"
 #import "CitiesViewController.h"
+#import "InviteUserViewController.h"
 #import "GameInfo.h"
 #import "UIColor+Helper.h"
 #import "AppColors.h"
@@ -25,9 +26,12 @@
 
 #define SECTION_MY_GAMES 0
 #define SECTION_PUBLIC_GAMES 1
-#define SECTION_HEIGHT 28.5f //35.0f //40.5f
+#define SECTION_HEIGHT 28.5f
 
-@interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate, CitiesViewControllerDelegate>
+#define CELL_PADDING_FIRST 5.5f
+#define CELL_PADDING_NORMAL 2.5f
+
+@interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate, CitiesViewControllerDelegate, NewEvenViewControllerDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *myGames;
@@ -37,6 +41,7 @@
 
 @implementation GamesListViewController {
     NSUInteger currentUserId;
+    NSString *selectedCity;
     
     UILabel *navTitleLabel;
 }
@@ -55,56 +60,13 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     [self.tableView setDelegate:self];
     [self.tableView setDataSource:self];
     [self.tableView setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
-    
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    //UINib *nib = [UINib nibWithNibName:@"GamesListTableViewCell" bundle:nil];
-    //[self.tableView registerNib:nib forCellReuseIdentifier:GamesListCellTableIdentifier];
     [self.view addSubview:self.tableView];
     
-    //[self prepareData:nil];
-    
-    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    
-    currentUserId = [AppDelegate instance].user.uid;
-    
-    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
-    [appNetworking gamesInCity:nil completionHandler:^(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
-            [MBProgressHUD hideHUDForView:self.view animated:YES];
-            
-            if(errorMessage){
-                [self setNavTitle:@"Игры"];
-                
-                UIAlertView *alert = [[UIAlertView alloc]
-                                      initWithTitle:nil
-                                      message:errorMessage
-                                      delegate:nil
-                                      cancelButtonTitle:@"Ок"
-                                      otherButtonTitles:nil];
-                [alert show];
-            }
-            else{
-                self.navigationItem.titleView = [self navigationItemTitleView:[UIImage imageNamed:@"icon_arrow_down.png"]
-                                                                        title:@"Все города"
-                                                                        color:[UIColor blackColor]];
-                
-                if(!myGames)
-                    _myGames = [NSMutableArray new];
-                else
-                    _myGames = myGames;
-                
-                if(!publicGames)
-                    _publicGames = [NSMutableArray new];
-                else
-                    _publicGames = publicGames;
-                
-                [_tableView reloadData];
-            }
-        });
-    }];
+    self.navigationItem.titleView = [self navigationItemTitleView:[UIImage imageNamed:@"icon_arrow_down.png"]
+                                                            title:@"Все города"
+                                                            color:[UIColor blackColor]];
+    [self updateGamesListForCity:nil];
 }
 
 #pragma mark -
@@ -182,7 +144,10 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 - (void) btnAddClick {
     NewEvenViewController *controller = [[NewEvenViewController alloc] init];
     controller.isEditGameMode = NO;
-    [self.navigationController pushViewController:controller animated:YES];
+    controller.delegate = self;
+    
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 - (void) btnSettingClick {
@@ -201,24 +166,19 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 #pragma mark -
-#pragma mark UITableView delegate methods
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
-        [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
+- (void)gameWasSavedWithController:(NewEvenViewController *)controller gameId:(NSUInteger)gameID {
+    [controller dismissViewControllerAnimated:YES completion:nil];
+    [self updateGamesListForCity:selectedCity];
     
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-        [cell setPreservesSuperviewLayoutMargins:NO];
-    }
+    InviteUserViewController *inviteController = [[InviteUserViewController alloc] init];
+    inviteController.gameId = gameID;
     
-    // Explictly set your cell's layout margins
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsZero];
-    }
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:inviteController];
+    [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+#pragma mark -
+#pragma mark UITableView delegate methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     return 2;
 }
@@ -245,9 +205,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     }
     
     if(isFirstRowInSection && isLastRowInSection)
-        return 105.5f;
+        return 100 + CELL_PADDING_FIRST; //105.5f;
     else if(isFirstRowInSection || isLastRowInSection)
-        return 102.75f;
+        return 100 + CELL_PADDING_NORMAL; //102.75f;
     else
         return 100;
 }
@@ -268,7 +228,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     
     if(section == SECTION_PUBLIC_GAMES){
         view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SECTION_HEIGHT)];
-        //view = [UIView new];
         view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_blue.png"]];
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, SECTION_HEIGHT)];
@@ -279,7 +238,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     }
     else if(section == SECTION_MY_GAMES){
         view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SECTION_HEIGHT)];
-        //view = [UIView new];
         view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_orange.png"]];
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, SECTION_HEIGHT)];
@@ -289,52 +247,33 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         [view addSubview:label];
     }
     
-    /*
-    UIView *mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SECTION_HEIGHT)];
-    view.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    [mainView addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                     attribute:NSLayoutAttributeTop
-                                                     relatedBy:0
-                                                        toItem:mainView
-                                                     attribute:NSLayoutAttributeTop
-                                                    multiplier:1
-                                                      constant:2.75]];
-    
-    [mainView addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                     attribute:NSLayoutAttributeBottom
-                                                     relatedBy:0
-                                                        toItem:mainView
-                                                     attribute:NSLayoutAttributeBottom
-                                                    multiplier:1
-                                                      constant:-2.75]];
-    
-    [mainView addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                     attribute:NSLayoutAttributeLeft
-                                                     relatedBy:0
-                                                        toItem:mainView
-                                                     attribute:NSLayoutAttributeLeft
-                                                    multiplier:1
-                                                      constant:0]];
-    
-    [mainView addConstraint:[NSLayoutConstraint constraintWithItem:view
-                                                     attribute:NSLayoutAttributeRight
-                                                     relatedBy:0
-                                                        toItem:mainView
-                                                     attribute:NSLayoutAttributeRight
-                                                    multiplier:1
-                                                      constant:0]];
-    
-    [mainView addSubview:view];
-    */
-    
     return view;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:GamesListCellTableIdentifier];
-    if(cell == nil)
+    if(cell == nil){
         cell = [[GamesListTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:GamesListCellTableIdentifier];
+        
+        GamesListTableViewCell *gameCell = (GamesListTableViewCell *)cell;
+        gameCell.addressLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
+        gameCell.dateLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
+        gameCell.timeLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
+    }
+    
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
+        [cell setPreservesSuperviewLayoutMargins:NO];
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)])
+        [cell setLayoutMargins:UIEdgeInsetsZero];
+    
     
     GamesListTableViewCell* gameCell = (GamesListTableViewCell *)cell;
     
@@ -363,53 +302,28 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     BOOL isFirstRowInSection = (indexPath.row == 0);
     
     if(isFirstRowInSection)
-        [gameCell setTopPadding:5.5f];
+        [gameCell setTopPadding:CELL_PADDING_FIRST];
     else
-        [gameCell setTopPadding:2.75f];
-        
+        [gameCell setTopPadding:CELL_PADDING_NORMAL];
+    
     if(isLastRowInSection)
-        [gameCell setBottomPadding:-5.5f];
+        [gameCell setBottomPadding:-CELL_PADDING_FIRST];
     else
-        [gameCell setBottomPadding:-2.75f];
+        [gameCell setBottomPadding:-CELL_PADDING_NORMAL];
     
+    gameCell.gameNameLabel.text = game.gameName;
     
-
-    UIColor *highlightedColor = [UIColor colorWithRGBA:BG_SELECTED_ROW_COLOR];
-    [gameCell setBackgroundColor:highlightedColor forState:UIControlStateHighlighted];
-    
-    /*
-    if((indexPath.row % 2) == 0) {
-        if(isLastRowInSection){
-            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white.png"]];
-            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
-        }
-        else{
-            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_white_line.png"]];
-            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
-        }
-    }
-    else {
-        if(isLastRowInSection){
-            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray.png"]];
-            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
-        }
-        else{
-            UIColor *colorFormImage = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_cell_gray_line.png"]];
-            [gameCell setBackgroundColor:colorFormImage forState:UIControlStateNormal];
-        }
-    }
-     */
-    
-    gameCell.gameNameLabel.text = game.gameName; // [self gameNameForTypeId:game.gameId];
-    
-    gameCell.addressLabel.text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
-    gameCell.addressLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
+    BOOL hasAddressName = (game.addressName.length > 0);
+    BOOL hasAddress = (game.address.length > 0);
+    if(hasAddressName && hasAddress)
+        gameCell.addressLabel.text = [NSString stringWithFormat:@"%@, %@", game.addressName, game.address];
+    else if(hasAddressName)
+        gameCell.addressLabel.text = [NSString stringWithFormat:@"%@", game.addressName];
+    else if(hasAddress)
+        gameCell.addressLabel.text = [NSString stringWithFormat:@"%@", game.address];
     
     gameCell.dateLabel.text = game.date;
-    gameCell.dateLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
-    
     gameCell.timeLabel.text = game.time;
-    gameCell.timeLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
     
     if(game.adminId == currentUserId)
         gameCell.ivAdmin.image = [UIImage imageNamed:@"icon_status_admin.png"];
@@ -422,8 +336,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
     else
         gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_q.png"];
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -438,8 +350,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 #pragma mark -
-#pragma mark Other
-- (void)cityDidChanged:(CitiesViewController *)controller city:(NSString *)city {
+- (void) updateGamesListForCity:(NSString *)city {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     
@@ -463,9 +374,6 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
                 [alert show];
             }
             else{
-                navTitleLabel.text = city;
-                //navTitleLabel.text = @"Санкт-Петербург и еще длиннее название ыдвла";
-                
                 if(!myGames)
                     _myGames = [NSMutableArray new];
                 else
@@ -480,6 +388,14 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
             }
         });
     }];
+}
+
+#pragma mark -
+#pragma mark Other
+- (void)cityDidChanged:(CitiesViewController *)controller city:(NSString *)city {
+    selectedCity = city;
+    navTitleLabel.text = selectedCity;
+    [self updateGamesListForCity:selectedCity];
 }
 
 @end

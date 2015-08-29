@@ -151,6 +151,7 @@
     _searchBar.delegate = self;
     _searchBar.translatesAutoresizingMaskIntoConstraints = NO;
     //_searchBar.translucent = YES;
+    _searchBar.autocorrectionType = UITextAutocorrectionTypeNo;
     
     _searchBar.barTintColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
@@ -257,6 +258,7 @@
     _tfEmail.backgroundColor = [UIColor whiteColor];
     _tfEmail.textAlignment = NSTextAlignmentCenter;
     _tfEmail.font = [UIFont systemFontOfSize:12.0f];
+    _tfEmail.autocorrectionType = UITextAutocorrectionTypeNo;
     [_inviteFromEmailViewGroup addSubview:_tfEmail];
     
     _tfEmail.translatesAutoresizingMaskIntoConstraints = NO;
@@ -428,6 +430,7 @@
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
+    /*
     UIButton *btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
@@ -436,6 +439,10 @@
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCancel sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
+    */
+    
+    UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnCancelClick)];
+    self.navigationItem.leftBarButtonItem = btnBack;
 }
 
 #pragma mark -
@@ -444,7 +451,8 @@
 # pragma mark Navigation button click
 - (void) btnCancelClick {
     if(_tableView.hidden){
-        [self.navigationController popViewControllerAnimated:YES];
+        [self.view endEditing:YES]; // hide keyboard
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     else{
         _tableView.hidden = YES;
@@ -456,6 +464,8 @@
 - (void) btnInviteClick {
     if(_tfEmail.text.length <= 0)
         return;
+    
+    [self.view endEditing:YES]; // hide keyboard
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];

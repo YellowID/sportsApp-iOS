@@ -357,9 +357,12 @@
 - (void) startSearchFoursquare:(NSTimer *)timer {
     NSString *searchText = timer.userInfo;
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    
     [AppNetworking findFoursquarePlacesInRegion:_searchAddressField.text search:searchText completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
-        
         dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            
             if(!resp){
                 places = [NSArray new];
             }
@@ -375,8 +378,12 @@
 - (void) startSearchYandex:(NSTimer *)timer {
     NSString *searchText = timer.userInfo;
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    
     [AppNetworking findYandexAddress:searchText completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            
             if(!items){
                 addresses = [NSArray new];
             }

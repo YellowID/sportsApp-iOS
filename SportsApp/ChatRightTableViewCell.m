@@ -39,25 +39,13 @@
     
     CGFloat contentWidth = cellWidth - PADDING_LEFT - PHOTO_SIZE - PADDING_RIGHT;
     CGSize newSize = [tv sizeThatFits:CGSizeMake(contentWidth, MAXFLOAT)];
-    
     CGFloat cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT;
-    
-    /*
-    CGFloat cellHeight = 0;
-    if(showUserName){
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + USERNAME_LABLE_HEIGHT + TIME_LABLE_HEIGHT + USERNAME_MESSAGE_PADDING;
-    }
-    else{
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT;
-    }
-    */
     
     return cellHeight;
 }
 
 - (void)layoutSubviews{
-    [self layoutPhoto];
-    [self layoutMessageView];
+    [super layoutSubviews];
 }
 
 - (void) layoutPhoto {

@@ -9,6 +9,7 @@
 #import "GamesListTableViewCell.h"
 #import "AppColors.h"
 #import "UIColor+Helper.h"
+#include <QuartzCore/QuartzCore.h>
 
 #define PADDING_TOP 7
 #define PADDING_BOTTOM 10
@@ -19,13 +20,15 @@
 
 #define PADDING_SECOND_ROW_TOP 13
 
-#define SMALL_LABLE_HEIGHT 10
+#define SMALL_LABLE_HEIGHT 13
 
 @implementation GamesListTableViewCell {
     UIColor* bgColorNormal;
     UIColor* bgColorSelected;
     UIColor* bgColorHighlighted;
     UIColor* bgColorDisabled;
+    
+    UIImageView *backgroundImage;
     
     UIView *container;
     NSLayoutConstraint *topPadding;
@@ -77,28 +80,40 @@
 }
 
 - (void) setTopPadding:(CGFloat)padding {
-    //topPadding.constant = padding;
     topPaddingValue = padding;
 }
 
 - (void) setBottomPadding:(CGFloat)padding {
-    //bottomPadding.constant = padding;
     bottomPaddingValue = padding;
 }
 
 - (instancetype) initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if(self){
-        topPaddingValue = 2.75f;
-        bottomPaddingValue = -2.75f;
+        topPaddingValue = 2.5f;
+        bottomPaddingValue = -2.5f;
         
         container = [UIView new];
-        container.backgroundColor = [UIColor whiteColor];
-        container.layer.borderWidth = 0.5;
-        container.layer.cornerRadius = 6.0;
-        container.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+        container.backgroundColor = [UIColor clearColor];
         container.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:container];
+        /**/
+        container.backgroundColor = [UIColor whiteColor];
+        container.layer.borderWidth = 0.4;
+        container.layer.cornerRadius = 6.0;
+        container.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
+        
+        
+        /*
+        backgroundImage = [UIImageView new];
+        backgroundImage.translatesAutoresizingMaskIntoConstraints = NO;
+        [container addSubview:backgroundImage];
+        
+        UIImage *tempImg = [UIImage imageNamed:@"bg_game_cell.png"];
+        UIImage *stretchableImage = [tempImg resizableImageWithCapInsets:UIEdgeInsetsMake(30, 30, 30, 30) resizingMode:UIImageResizingModeStretch];
+        backgroundImage.image = stretchableImage;
+        */
+        
         
         _gameNameLabel = [UILabel new];
         _gameNameLabel.font = [UIFont boldSystemFontOfSize:16.0f];
@@ -149,6 +164,24 @@
         _ivDate.translatesAutoresizingMaskIntoConstraints = NO;
         [container addSubview:_ivDate];
         //_ivDate.backgroundColor = [UIColor greenColor];
+        
+        [self layoutContainerView];
+        //[self layoutBackgoundImage];
+        
+        [self layoutGameNameLabel];
+        [self layoutStatusIcon];
+        [self layoutAdminIcon];
+        
+        [self layoutDateIcon];
+        [self layoutDateLabel];
+        
+        [self layoutTimeLabel];
+        [self layoutTimeIcon];
+        
+        [self layoutSeparatorView];
+        
+        [self layoutLocationIcon];
+        [self layoutAddressLabel];
     }
     
     return self;
@@ -157,61 +190,66 @@
 - (void)layoutSubviews{
     [super layoutSubviews];
     
-    [self layoutContainerView];
+    [self updateContainerPadding];
+}
+
+- (void) layoutBackgoundImage {
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:backgroundImage
+                                                             attribute:NSLayoutAttributeTop
+                                                             relatedBy:0
+                                                                toItem:container
+                                                             attribute:NSLayoutAttributeTop
+                                                            multiplier:1
+                                                              constant:0]];
     
-    [self layoutGameNameLabel];
-    [self layoutStatusIcon];
-    [self layoutAdminIcon];
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:backgroundImage
+                                                             attribute:NSLayoutAttributeLeft
+                                                             relatedBy:0
+                                                                toItem:container
+                                                             attribute:NSLayoutAttributeLeft
+                                                            multiplier:1
+                                                              constant:0]];
     
-    [self layoutDateIcon];
-    [self layoutDateLabel];
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:backgroundImage
+                                                             attribute:NSLayoutAttributeRight
+                                                             relatedBy:0
+                                                                toItem:container
+                                                             attribute:NSLayoutAttributeRight
+                                                            multiplier:1
+                                                              constant:0]];
     
-    [self layoutTimeLabel];
-    [self layoutTimeIcon];
-    
-    [self layoutSeparatorView];
-    
-    [self layoutLocationIcon];
-    [self layoutAddressLabel];
-    
-    
-    /*
-    NSDictionary* views = NSDictionaryOfVariableBindings(_dateLabel, _ivTime);
-    
-    NSString* hc_str = @"H:[_dateLabel]-(>=11)-[_ivTime]";
-    NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
-    [self addConstraints:hzConstraints];
-    */
+    [container addConstraint:[NSLayoutConstraint constraintWithItem:backgroundImage
+                                                             attribute:NSLayoutAttributeBottom
+                                                             relatedBy:0
+                                                                toItem:container
+                                                             attribute:NSLayoutAttributeBottom
+                                                            multiplier:1
+                                                              constant:0]];
+}
+
+- (void) updateContainerPadding {
+    topPadding.constant = topPaddingValue;
+    bottomPadding.constant = bottomPaddingValue;
 }
 
 - (void) layoutContainerView {
-    if(!topPadding){
-        topPadding = [NSLayoutConstraint constraintWithItem:container
-                                                  attribute:NSLayoutAttributeTop
-                                                  relatedBy:0
-                                                     toItem:self
-                                                  attribute:NSLayoutAttributeTop
-                                                 multiplier:1
-                                                   constant:topPaddingValue];
-        [self addConstraint:topPadding];
-    }
-    else{
-        topPadding.constant = topPaddingValue;
-    }
+    topPadding = [NSLayoutConstraint constraintWithItem:container
+                                              attribute:NSLayoutAttributeTop
+                                              relatedBy:0
+                                                 toItem:self
+                                              attribute:NSLayoutAttributeTop
+                                             multiplier:1
+                                               constant:topPaddingValue];
+    [self addConstraint:topPadding];
     
-    if(!bottomPadding){
-        bottomPadding = [NSLayoutConstraint constraintWithItem:container
-                                                  attribute:NSLayoutAttributeBottom
-                                                  relatedBy:0
-                                                     toItem:self
-                                                  attribute:NSLayoutAttributeBottom
-                                                 multiplier:1
-                                                   constant:bottomPaddingValue];
-        [self addConstraint:bottomPadding];
-    }
-    else{
-        bottomPadding.constant = bottomPaddingValue;
-    }
+    bottomPadding = [NSLayoutConstraint constraintWithItem:container
+                                                 attribute:NSLayoutAttributeBottom
+                                                 relatedBy:0
+                                                    toItem:self
+                                                 attribute:NSLayoutAttributeBottom
+                                                multiplier:1
+                                                  constant:bottomPaddingValue];
+    [self addConstraint:bottomPadding];
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:container
                                                      attribute:NSLayoutAttributeLeft

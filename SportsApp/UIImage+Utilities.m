@@ -42,7 +42,7 @@
     
     NSString *avatarText = @"?";
     
-    if(text.length > 0){
+    if(![text isKindOfClass:[NSNull class]] && text.length > 0){
         NSString *temp = [text stringByTrimmingCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
         NSArray *parts = [temp componentsSeparatedByString: @" "];
         

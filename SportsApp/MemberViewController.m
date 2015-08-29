@@ -148,7 +148,11 @@
     cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
     cell.imageView.layer.masksToBounds = YES;
     
-    cell.textLabel.text = member.name;
+    if(member.name)
+        cell.textLabel.text = member.name;
+    else
+        cell.textLabel.text = @"Гость";
+    
     cell.textLabel.textColor = [UIColor blackColor];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
     

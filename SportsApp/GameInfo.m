@@ -15,19 +15,19 @@
 - (void) setGameType:(NSUInteger)type {
     _gameType = type;
     
-    if(type == 1)
+    if(type == GAME_TYPE_FOOTBALL)
         self.gameName = @"Футбол";
-    else if(type == 2)
+    else if(type == GAME_TYPE_BASKETBALL)
         self.gameName = @"Баскетбол";
-    else if(type == 3)
+    else if(type == GAME_TYPE_VOLLEYBALL)
         self.gameName = @"Волейбол";
-    else if(type == 4)
+    else if(type == GAME_TYPE_HANDBALL)
         self.gameName = @"Гандбол";
-    else if(type == 5)
+    else if(type == GAME_TYPE_TENNIS)
         self.gameName = @"Тенис";
-    else if(type == 6)
+    else if(type == GAME_TYPE_HOCKEY)
         self.gameName = @"Хоккей";
-    else if(type == 7)
+    else if(type == GAME_TYPE_SQUASH)
         self.gameName = @"Сквош";
 }
 

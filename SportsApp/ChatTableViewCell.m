@@ -82,6 +82,9 @@
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_timeLabel];
         //_timeLabel.backgroundColor = [UIColor greenColor];
+        
+        [self layoutPhoto];
+        [self layoutMessageView];
     }
     
     return self;
@@ -89,9 +92,7 @@
 
 - (void)layoutSubviews{
     [super layoutSubviews];
-    
-    [self layoutPhoto];
-    [self layoutMessageView];
+    [self updateNameLabelConstraintsIfNeeded];
 }
 
 + (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)cellWidth showUserName:(BOOL)showUserName {
@@ -107,17 +108,17 @@
     
     CGFloat cellHeight = 0;
     if(showUserName){
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + USERNAME_LABLE_HEIGHT + TIME_LABLE_HEIGHT + USERNAME_MESSAGE_PADDING;
+        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + USERNAME_LABLE_HEIGHT + TIME_LABLE_HEIGHT + USERNAME_MESSAGE_PADDING + 2;
     }
     else{
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT;
+        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT + 2;
     }
     
     return cellHeight;
 }
 
 - (void) setBackgroundImageForMessageView:(UIImage *)backgroundImage {
-    UIImage *stretchableImage = [backgroundImage resizableImageWithCapInsets:UIEdgeInsetsMake(10, 10, 10, 10) resizingMode:UIImageResizingModeStretch];
+    UIImage *stretchableImage = [backgroundImage resizableImageWithCapInsets:UIEdgeInsetsMake(20, 20, 20, 20) resizingMode:UIImageResizingModeStretch];
     _backgroundCallout.image = stretchableImage;
 }
 
@@ -253,49 +254,37 @@
                                                             multiplier:1
                                                               constant:-CONTENT_PADDING_RIGHT]];
     
-    if(userNameHeightConstraint){
-        if(!self.showUserName)
-            userNameHeightConstraint.constant = USERNAME_LABLE_HEIGHT;
-        else
-            userNameHeightConstraint.constant = 0;
+    CGFloat userNameHeight = 0;
+    if(self.showUserName){
+        userNameHeight = USERNAME_LABLE_HEIGHT;
     }
     else{
-        CGFloat userNameHeight = 0;
-        if(!self.showUserName)
-            userNameHeight = USERNAME_LABLE_HEIGHT;
-        
-        userNameHeightConstraint = [NSLayoutConstraint constraintWithItem:_userNameLabel
-                                                                attribute:NSLayoutAttributeHeight
-                                                                relatedBy:0
-                                                                   toItem:nil
-                                                                attribute:0
-                                                               multiplier:1
-                                                                 constant:userNameHeight];
-        [_userNameLabel addConstraint: userNameHeightConstraint];
+        _userNameLabel.text = @"";
     }
+    
+    userNameHeightConstraint = [NSLayoutConstraint constraintWithItem:_userNameLabel
+                                                            attribute:NSLayoutAttributeHeight
+                                                            relatedBy:0
+                                                               toItem:nil
+                                                            attribute:0
+                                                           multiplier:1
+                                                             constant:userNameHeight];
+    [_userNameLabel addConstraint: userNameHeightConstraint];
 }
 
 - (void) layoutMessageLabel {
-    if(userNamePaddingConstraint){
-        if(!self.showUserName)
-            userNamePaddingConstraint.constant = USERNAME_MESSAGE_PADDING;
-        else
-            userNamePaddingConstraint.constant = 0;
-    }
-    else{
-        CGFloat userNamePadding = 0;
-        if(!self.showUserName)
-            userNamePadding = USERNAME_MESSAGE_PADDING;
-        
-        userNamePaddingConstraint = [NSLayoutConstraint constraintWithItem:_userMessage
-                                                                 attribute:NSLayoutAttributeTop
-                                                                 relatedBy:0
-                                                                    toItem:_userNameLabel
-                                                                 attribute:NSLayoutAttributeBottom
-                                                                multiplier:1
-                                                                  constant:userNamePadding];
-        [_messageView addConstraint: userNamePaddingConstraint];
-    }
+    CGFloat userNamePadding = 0;
+    if(self.showUserName)
+        userNamePadding = USERNAME_MESSAGE_PADDING;
+    
+    userNamePaddingConstraint = [NSLayoutConstraint constraintWithItem:_userMessage
+                                                             attribute:NSLayoutAttributeTop
+                                                             relatedBy:0
+                                                                toItem:_userNameLabel
+                                                             attribute:NSLayoutAttributeBottom
+                                                            multiplier:1
+                                                              constant:userNamePadding];
+    [_messageView addConstraint: userNamePaddingConstraint];
     
     [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userMessage
                                                             attribute:NSLayoutAttributeLeft
@@ -348,6 +337,18 @@
                                                                    attribute:0
                                                                   multiplier:1
                                                                     constant:TIME_LABLE_HEIGHT]];
+}
+
+- (void) updateNameLabelConstraintsIfNeeded {
+    if(self.showUserName){
+        userNameHeightConstraint.constant = USERNAME_LABLE_HEIGHT;
+        userNamePaddingConstraint.constant = USERNAME_MESSAGE_PADDING;
+    }
+    else{
+        userNameHeightConstraint.constant = 0;
+        userNamePaddingConstraint.constant = 0;
+        _userNameLabel.text = @"";
+    }
 }
 
 @end

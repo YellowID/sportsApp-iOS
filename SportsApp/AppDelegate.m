@@ -42,14 +42,6 @@
     
     [self setNavigationBarAppearanceDefault];
     
-    //[[UINavigationBar appearance] setBackgroundImage:[[UIImage alloc] init] forBarMetrics:UIBarMetricsDefault];
-    //[[UINavigationBar appearance] setShadowImage:[[UIImage alloc] init]];
-    //[[UINavigationBar appearance] setShadowImage:[UIImage imageNamed:@"2pxWidthLineImage"]];
-    
-    //[[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-    
-    
-    
     self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     
@@ -96,7 +88,7 @@
         AppChat *chat = [self appChatInstance];
         [chat loginWithName:_user.chatLogin password:_user.chatPassword completionHandler:^(BOOL isSuccess) {
             if(!isSuccess)
-                NSLog(@"Something wrong wgen login");
+                NSLog(@"Something wrong when login");
         }];
     }
 }

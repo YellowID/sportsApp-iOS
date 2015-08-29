@@ -8,9 +8,17 @@
 
 #import <Foundation/Foundation.h>
 
+#define GAME_TYPE_FOOTBALL 1
+#define GAME_TYPE_BASKETBALL 2
+#define GAME_TYPE_VOLLEYBALL 3
+#define GAME_TYPE_HANDBALL 4
+#define GAME_TYPE_TENNIS 5
+#define GAME_TYPE_HOCKEY 6
+#define GAME_TYPE_SQUASH 7
+
 #define PARTICIPATE_STATUS_NO 1
 #define PARTICIPATE_STATUS_YES 2
-#define PARTICIPATE_STATUS_UNKNOWN 3
+#define PARTICIPATE_STATUS_POSSIBLE 3
 
 @interface GameInfo : NSObject
 
