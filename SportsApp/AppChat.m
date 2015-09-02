@@ -43,18 +43,6 @@
         newUser.customData = avatarUrl;
         
         [QBRequest signUp:newUser successBlock:^(QBResponse *response, QBUUser *user) {
-            // login to QBChat
-            /*
-            QBUUser *currentUser = [QBUUser user];
-            currentUser.ID = session.userID;
-            currentUser.password = pass;
-            
-            if([[QBChat instance] loginWithUser:currentUser])
-                NSLog(@"QBChat loginWithUser - OK");
-            else
-                NSLog(@"QBChat loginWithUser - ERR");
-            */
-            
             blockHandler(YES);
         } errorBlock:^(QBResponse *response) {
             NSLog(@"QBRequest signUp newUser: %@", response.error.debugDescription);
@@ -117,7 +105,6 @@
         else{
             [self createDialogWithName:dialogName completionHandler:^(QBChatDialog *chatDialog) {
                 if(chatDialog){
-                    NSLog(@"createDialogWithName - OK");
                     [dialogsCache setObject:chatDialog forKey:dialogName];
                     lastUsedChatDialog = chatDialog;
                 }

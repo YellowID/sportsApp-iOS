@@ -31,7 +31,6 @@
         url = [NSURL URLWithString:[str_url stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     else {
-        //url = [NSURL URLWithString:urlString];
         url = [NSURL URLWithString:[urlString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     }
     
@@ -130,8 +129,6 @@
     NSMutableData *body = [NSMutableData data];
     NSMutableDictionary *images = [NSMutableDictionary new];
     
-    // //sport_type_ids[]=1&sport_type_ids[]=2&sport_type_ids[]=3
-    
     for(NSString *key in [params allKeys]){
         id value = [params objectForKey:key];
         
@@ -170,7 +167,6 @@
     return body;
 }
 
-/**/
 +(BOOL)isInternetAvaliable {
     Reachability *reachability = [Reachability reachabilityForInternetConnection];
     NetworkStatus networkStatus = [reachability currentReachabilityStatus];

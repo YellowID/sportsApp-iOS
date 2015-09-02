@@ -7,6 +7,7 @@
 //
 
 #import "ChatTableViewCell.h"
+#import "NSLayoutConstraint+Helper.h"
 
 #define PADDING_TOP 8
 #define PADDING_BOTTOM 8
@@ -32,10 +33,6 @@
 @implementation ChatTableViewCell {
     NSLayoutConstraint *userNameHeightConstraint;
     NSLayoutConstraint *userNamePaddingConstraint;
-}
-
-- (void)awakeFromNib {
-    // Initialization code
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
@@ -95,6 +92,7 @@
     [self updateNameLabelConstraintsIfNeeded];
 }
 
+#pragma mark -
 + (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)cellWidth showUserName:(BOOL)showUserName {
     UITextView *tv = [UITextView new];
     tv.textAlignment = NSTextAlignmentLeft;
@@ -122,56 +120,17 @@
     _backgroundCallout.image = stretchableImage;
 }
 
+#pragma mark -
 - (void) layoutPhoto {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivPhoto
-                                                     attribute:NSLayoutAttributeTop
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeTop
-                                                    multiplier:1
-                                                      constant:PADDING_TOP]];
-    
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_ivPhoto
-                                                     attribute:NSLayoutAttributeLeft
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeLeft
-                                                    multiplier:1
-                                                      constant:PADDING_LEFT]];
-    
-    [_ivPhoto addConstraint: [NSLayoutConstraint constraintWithItem:_ivPhoto
-                                                           attribute:NSLayoutAttributeWidth
-                                                           relatedBy:0
-                                                              toItem:nil
-                                                           attribute:0
-                                                          multiplier:1
-                                                            constant:PHOTO_SIZE]];
-    
-    [_ivPhoto addConstraint: [NSLayoutConstraint constraintWithItem:_ivPhoto
-                                                           attribute:NSLayoutAttributeHeight
-                                                           relatedBy:0
-                                                              toItem:nil
-                                                           attribute:0
-                                                          multiplier:1
-                                                            constant:PHOTO_SIZE]];
+    [NSLayoutConstraint setWidht:PHOTO_SIZE height:PHOTO_SIZE forView:_ivPhoto];
+    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_ivPhoto inContainer:self];
+    [NSLayoutConstraint setLeftPadding:PADDING_LEFT forView:_ivPhoto inContainer:self];
 }
 
 - (void) layoutMessageView {
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_messageView
-                                                     attribute:NSLayoutAttributeTop
-                                                     relatedBy:0
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeTop
-                                                    multiplier:1
-                                                      constant:PADDING_TOP]];
-    
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_messageView
-                                                     attribute:NSLayoutAttributeLeft
-                                                     relatedBy:0
-                                                        toItem:_ivPhoto
-                                                     attribute:NSLayoutAttributeRight
-                                                    multiplier:1
-                                                      constant:0]];
+    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_messageView inContainer:self];
+    [NSLayoutConstraint setBottomPadding:PADDING_BOTTOM forView:_messageView inContainer:self];
+    [NSLayoutConstraint setLeftDistance:0 fromView:_messageView toView:_ivPhoto inContainer:self];
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_messageView
                                                             attribute:NSLayoutAttributeRight
@@ -181,14 +140,6 @@
                                                            multiplier:1
                                                              constant:-PADDING_RIGHT]];
     
-    [self addConstraint:[NSLayoutConstraint constraintWithItem:_messageView
-                                                            attribute:NSLayoutAttributeBottom
-                                                            relatedBy:0
-                                                               toItem:self
-                                                            attribute:NSLayoutAttributeBottom
-                                                           multiplier:1
-                                                             constant:-PADDING_BOTTOM]];
-    
     [self layoutBackgoundImage];
     [self layoutUserNameLabel];
     [self layoutMessageLabel];
@@ -196,55 +147,12 @@
 }
 
 - (void) layoutBackgoundImage {
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_backgroundCallout
-                                                            attribute:NSLayoutAttributeTop
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeTop
-                                                           multiplier:1
-                                                             constant:0]];
-    
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_backgroundCallout
-                                                            attribute:NSLayoutAttributeLeft
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeLeft
-                                                           multiplier:1
-                                                             constant:0]];
-    
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_backgroundCallout
-                                                            attribute:NSLayoutAttributeRight
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeRight
-                                                           multiplier:1
-                                                             constant:0]];
-    
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_backgroundCallout
-                                                            attribute:NSLayoutAttributeBottom
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeBottom
-                                                           multiplier:1
-                                                             constant:0]];
+    [NSLayoutConstraint stretch:_backgroundCallout inContainer:_messageView withPadding:0];
 }
 
 - (void) layoutUserNameLabel {
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userNameLabel
-                                                     attribute:NSLayoutAttributeTop
-                                                     relatedBy:0
-                                                        toItem:_messageView
-                                                     attribute:NSLayoutAttributeTop
-                                                    multiplier:1
-                                                      constant:CONTENT_PADDING_TOP]];
-    
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userNameLabel
-                                                     attribute:NSLayoutAttributeLeft
-                                                     relatedBy:0
-                                                        toItem:_messageView
-                                                     attribute:NSLayoutAttributeLeft
-                                                    multiplier:1
-                                                      constant:CONTENT_PADDING_LEFT]];
+    [NSLayoutConstraint setTopPadding:CONTENT_PADDING_TOP forView:_userNameLabel inContainer:_messageView];
+    [NSLayoutConstraint setLeftPadding:CONTENT_PADDING_LEFT forView:_userNameLabel inContainer:_messageView];
     
     [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userNameLabel
                                                              attribute:NSLayoutAttributeRight
@@ -262,14 +170,7 @@
         _userNameLabel.text = @"";
     }
     
-    userNameHeightConstraint = [NSLayoutConstraint constraintWithItem:_userNameLabel
-                                                            attribute:NSLayoutAttributeHeight
-                                                            relatedBy:0
-                                                               toItem:nil
-                                                            attribute:0
-                                                           multiplier:1
-                                                             constant:userNameHeight];
-    [_userNameLabel addConstraint: userNameHeightConstraint];
+    userNameHeightConstraint = [NSLayoutConstraint setHeight:userNameHeight forView:_userNameLabel];
 }
 
 - (void) layoutMessageLabel {
@@ -277,22 +178,9 @@
     if(self.showUserName)
         userNamePadding = USERNAME_MESSAGE_PADDING;
     
-    userNamePaddingConstraint = [NSLayoutConstraint constraintWithItem:_userMessage
-                                                             attribute:NSLayoutAttributeTop
-                                                             relatedBy:0
-                                                                toItem:_userNameLabel
-                                                             attribute:NSLayoutAttributeBottom
-                                                            multiplier:1
-                                                              constant:userNamePadding];
-    [_messageView addConstraint: userNamePaddingConstraint];
+    userNamePaddingConstraint = [NSLayoutConstraint setTopDistance:userNamePadding fromView:_userMessage toView:_userNameLabel inContainer:_messageView];
     
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userMessage
-                                                            attribute:NSLayoutAttributeLeft
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeLeft
-                                                           multiplier:1
-                                                             constant:CONTENT_PADDING_LEFT]];
+    [NSLayoutConstraint setLeftPadding:CONTENT_PADDING_LEFT forView:_userMessage inContainer:_messageView];
     
     [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userMessage
                                                             attribute:NSLayoutAttributeRight
@@ -305,40 +193,13 @@
 }
 
 - (void) layoutTimeLabel {
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
-                                                            attribute:NSLayoutAttributeBottom
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeBottom
-                                                           multiplier:1
-                                                             constant:-CONTENT_PADDING_BOTTOM]];
-    
-    /**/
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
-                                                            attribute:NSLayoutAttributeTop
-                                                            relatedBy:0
-                                                               toItem:_userMessage
-                                                            attribute:NSLayoutAttributeBottom
-                                                           multiplier:1
-                                                             constant:1]];
-    
-    [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_timeLabel
-                                                            attribute:NSLayoutAttributeRight
-                                                            relatedBy:0
-                                                               toItem:_messageView
-                                                            attribute:NSLayoutAttributeRight
-                                                           multiplier:1
-                                                             constant:-CONTENT_PADDING_RIGHT]];
-    
-    [_timeLabel addConstraint: [NSLayoutConstraint constraintWithItem:_timeLabel
-                                                                   attribute:NSLayoutAttributeHeight
-                                                                   relatedBy:0
-                                                                      toItem:nil
-                                                                   attribute:0
-                                                                  multiplier:1
-                                                                    constant:TIME_LABLE_HEIGHT]];
+    [NSLayoutConstraint setHeight:TIME_LABLE_HEIGHT forView:_timeLabel];
+    [NSLayoutConstraint setBottomPadding:CONTENT_PADDING_BOTTOM forView:_timeLabel inContainer:_messageView];
+    [NSLayoutConstraint setRightPadding:CONTENT_PADDING_RIGHT forView:_timeLabel inContainer:_messageView];
+    [NSLayoutConstraint setTopDistance:1 fromView:_timeLabel toView:_userMessage inContainer:_messageView];
 }
 
+#pragma mark -
 - (void) updateNameLabelConstraintsIfNeeded {
     if(self.showUserName){
         userNameHeightConstraint.constant = USERNAME_LABLE_HEIGHT;

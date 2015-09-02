@@ -48,9 +48,7 @@
 @property (strong, nonatomic) UIPickerView* sportPicker;
 
 @property (strong, nonatomic) UITextField* tfLocation;
-
 @property (strong, nonatomic) UITextField* tfTime;
-//@property (strong, nonatomic) CustomTextField* tfTime;
 
 @property (strong, nonatomic) UIDatePicker* dateTimePicker;
 
@@ -119,8 +117,8 @@
     [sportItems addObject:@"Баскетбол"];
     [sportItems addObject:@"Волейбол"];
     [sportItems addObject:@"Гандбол"];
-    [sportItems addObject:@"Хоккей"];
     [sportItems addObject:@"Теннис"];
+    [sportItems addObject:@"Хоккей"];
     [sportItems addObject:@"Сквош"];
     _sportPicker = [[UIPickerView alloc] init];
     _sportPicker.dataSource = self;
@@ -144,6 +142,7 @@
     self.automaticallyAdjustsScrollViewInsets = NO;
     
     newGame = [NewGame new];
+    //newGame.time = [datePicker.date toJsonFormat];
     
     if(_isEditGameMode){
         [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
@@ -286,37 +285,9 @@
     _fieldsGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [_containerView addSubview:_fieldsGroupView];
     
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_fieldsGroupView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_containerView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:8]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_fieldsGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:_containerView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_fieldsGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_containerView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:-PADDING_H]];
-    
-    [_fieldsGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_fieldsGroupView
-                                                                  attribute:NSLayoutAttributeHeight
-                                                                  relatedBy:0
-                                                                     toItem:nil
-                                                                  attribute:0
-                                                                 multiplier:1
-                                                                   constant:77]];
+    [NSLayoutConstraint setHeight:77 forView:_fieldsGroupView];
+    [NSLayoutConstraint setTopPadding:8 forView:_fieldsGroupView inContainer:_containerView];
+    [NSLayoutConstraint stretchHorizontal:_fieldsGroupView inContainer:_containerView withPadding:PADDING_H];
     
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_fieldsGroupView];
@@ -343,37 +314,9 @@
     _tfKindOfSport.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfKindOfSport];
     
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfKindOfSport
-                                                                 attribute:NSLayoutAttributeTop
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeTop
-                                                                multiplier:1
-                                                                  constant:4]];
-    
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfKindOfSport
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                multiplier:1
-                                                                  constant:PADDING_H]];
-    
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfKindOfSport
-                                                                 attribute:NSLayoutAttributeRight
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1
-                                                                  constant:-PADDING_H]];
-    
-    [_tfKindOfSport addConstraint: [NSLayoutConstraint constraintWithItem:_tfKindOfSport
-                                                                attribute:NSLayoutAttributeHeight
-                                                                relatedBy:0
-                                                                   toItem:nil
-                                                                attribute:0
-                                                               multiplier:1
-                                                                 constant:30]];
+    [NSLayoutConstraint setHeight:30 forView:_tfKindOfSport];
+    [NSLayoutConstraint setTopPadding:4 forView:_tfKindOfSport inContainer:_fieldsGroupView];
+    [NSLayoutConstraint stretchHorizontal:_tfKindOfSport inContainer:_fieldsGroupView withPadding:PADDING_H];
 }
 
 - (void) setupLocationField {
@@ -388,37 +331,9 @@
     _tfLocation.font = [UIFont systemFontOfSize:12.0f];
     [_fieldsGroupView addSubview:_tfLocation];
     
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfLocation
-                                                                 attribute:NSLayoutAttributeBottom
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeBottom
-                                                                multiplier:1
-                                                                  constant:-4]];
-    
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfLocation
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeLeft
-                                                                multiplier:1
-                                                                  constant:PADDING_H]];
-    
-    [_fieldsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfLocation
-                                                                 attribute:NSLayoutAttributeRight
-                                                                 relatedBy:0
-                                                                    toItem:_fieldsGroupView
-                                                                 attribute:NSLayoutAttributeRight
-                                                                multiplier:1
-                                                                  constant:-PADDING_H]];
-    
-    [_tfLocation addConstraint: [NSLayoutConstraint constraintWithItem:_tfLocation
-                                                             attribute:NSLayoutAttributeHeight
-                                                             relatedBy:0
-                                                                toItem:nil
-                                                             attribute:0
-                                                            multiplier:1
-                                                              constant:30]];
+    [NSLayoutConstraint setHeight:30 forView:_tfLocation];
+    [NSLayoutConstraint setBottomPadding:4 forView:_tfLocation inContainer:_fieldsGroupView];
+    [NSLayoutConstraint stretchHorizontal:_tfLocation inContainer:_fieldsGroupView withPadding:PADDING_H];
 }
 
 #pragma mark -
@@ -432,37 +347,9 @@
     _ageGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [_containerView addSubview:_ageGroupView];
     
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1
-                                                                constant:8]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
-    
-    [_ageGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                                attribute:NSLayoutAttributeHeight
-                                                                relatedBy:0
-                                                                   toItem:nil
-                                                                attribute:0
-                                                               multiplier:1
-                                                                 constant:38]];
+    [NSLayoutConstraint setHeight:38 forView:_ageGroupView];
+    [NSLayoutConstraint setTopDistance:8 fromView:_ageGroupView toView:_timeGroupView inContainer:_containerView];
+    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:_containerView withPadding:PADDING_H];
     
     [self setupTitleForAgeGroup];
     [self setupLableAge];
@@ -477,22 +364,8 @@
     [_ageGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:60 height:21 forView:title];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                               attribute:NSLayoutAttributeCenterY
-                                                               relatedBy:0
-                                                                  toItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
+    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_ageGroupView];
+    [NSLayoutConstraint centerVertical:title withView:_ageGroupView inContainer:_ageGroupView];
 }
 
 - (void) setupLableAge {
@@ -514,22 +387,8 @@
     [_ageGroupView addSubview:_tfAge];
     
     [NSLayoutConstraint setWidht:160 height:30 forView:_tfAge];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfAge
-                                                               attribute:NSLayoutAttributeCenterY
-                                                               relatedBy:0
-                                                                  toItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfAge
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
+    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfAge inContainer:_ageGroupView];
+    [NSLayoutConstraint centerVertical:_tfAge withView:_ageGroupView inContainer:_ageGroupView];
 }
 
 #pragma mark -
@@ -543,37 +402,9 @@
     _timeGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [_containerView addSubview:_timeGroupView];
     
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_fieldsGroupView
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1
-                                                                constant:8]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
-    
-    [_timeGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_timeGroupView
-                                                                  attribute:NSLayoutAttributeHeight
-                                                                  relatedBy:0
-                                                                     toItem:nil
-                                                                  attribute:0
-                                                                 multiplier:1
-                                                                   constant:38]];
+    [NSLayoutConstraint setHeight:38 forView:_timeGroupView];
+    [NSLayoutConstraint setTopDistance:8 fromView:_timeGroupView toView:_fieldsGroupView inContainer:_containerView];
+    [NSLayoutConstraint stretchHorizontal:_timeGroupView inContainer:_containerView withPadding:PADDING_H];
     
     [self setupTitleForTimeGroup];
     [self setupLableTime];
@@ -588,76 +419,34 @@
     [_timeGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:60 height:21 forView:title];
-    
-    [_timeGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                          attribute:NSLayoutAttributeCenterY
-                                                          relatedBy:0
-                                                             toItem:_timeGroupView
-                                                          attribute:NSLayoutAttributeCenterY
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [_timeGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
+    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_timeGroupView];
+    [NSLayoutConstraint centerVertical:title withView:_timeGroupView inContainer:_timeGroupView];
 }
 
 - (void) setupLableTime {
     _tfTime = [UITextField new];
-    //_tfTime = [CustomTextField new];
     _tfTime.translatesAutoresizingMaskIntoConstraints = NO;
     _tfTime.delegate = self;
     _tfTime.textAlignment = NSTextAlignmentRight;
     _tfTime.font = [UIFont systemFontOfSize:12.0f];
-    //_tfTime.backgroundColor = [UIColor greenColor];
     
     [self setReadyButtonForTextField:_tfTime];
     
-    NSDate *dateToDisplay = nil;
-    if(_isEditGameMode){
-        dateToDisplay = [NSDate dateWithJsonString:editGameInfo.startAt];
-    }
-    else{
-        dateToDisplay = [NSDate date];
-    }
-    
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"d MMMM yyyy HH:mm"];
-    _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:dateToDisplay]];
+    
+    _tfTime.placeholder = [NSString stringWithFormat:@"%@",[df stringFromDate:[NSDate date]]];
+    
+    if(_isEditGameMode){
+        NSDate *dateToDisplay = [NSDate dateWithJsonString:editGameInfo.startAt];
+        _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:dateToDisplay]];
+    }
     
     [_timeGroupView addSubview:_tfTime];
     
     [NSLayoutConstraint setWidht:200 height:30 forView:_tfTime];
-    
-    [_timeGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfTime
-                                                               attribute:NSLayoutAttributeCenterY
-                                                               relatedBy:0
-                                                                  toItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeCenterY
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [_timeGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfTime
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_timeGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
-    
-    /*
-    [_tfTime addConstraint: [NSLayoutConstraint constraintWithItem:_tfTime
-                                                       attribute:NSLayoutAttributeHeight
-                                                       relatedBy:0
-                                                          toItem:nil
-                                                       attribute:0
-                                                      multiplier:1
-                                                        constant:21]];
-    */
+    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfTime inContainer:_timeGroupView];
+    [NSLayoutConstraint centerVertical:_tfTime withView:_timeGroupView inContainer:_timeGroupView];
 }
 
 #pragma mark -
@@ -671,37 +460,9 @@
     _levelGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [_containerView addSubview:_levelGroupView];
     
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_ageGroupView
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1
-                                                                constant:8]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
-    
-    [_containerView addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_containerView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
-    
-    [_levelGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                                  attribute:NSLayoutAttributeHeight
-                                                                  relatedBy:0
-                                                                     toItem:nil
-                                                                  attribute:0
-                                                                 multiplier:1
-                                                                   constant:77]];
+    [NSLayoutConstraint setHeight:77 forView:_levelGroupView];
+    [NSLayoutConstraint setTopDistance:8 fromView:_levelGroupView toView:_ageGroupView inContainer:_containerView];
+    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:_containerView withPadding:PADDING_H];
     
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_levelGroupView];
@@ -729,22 +490,8 @@
     [title addGestureRecognizer:tapSportRecognizer];
     
     [NSLayoutConstraint setWidht:152 height:30 forView:title];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeTop
-                                                              multiplier:1
-                                                                constant:5]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
+    [NSLayoutConstraint setTopPadding:5 forView:title inContainer:_levelGroupView];
+    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_levelGroupView];
 }
 
 - (void) setupTitleForLevelRow {
@@ -756,58 +503,28 @@
     [_levelGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:152 height:30 forView:title];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                                attribute:NSLayoutAttributeBottom
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:-5]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:title
-                                                                attribute:NSLayoutAttributeLeft
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeLeft
-                                                               multiplier:1
-                                                                 constant:PADDING_H]];
+    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_levelGroupView];
+    [NSLayoutConstraint setBottomPadding:5 forView:title inContainer:_levelGroupView];
 }
 
 - (void) setupLablePeopleNumber {
     _tfPeopleNumber = [UITextField new];
     _tfPeopleNumber.translatesAutoresizingMaskIntoConstraints = NO;
     _tfPeopleNumber.delegate = self;
-    //_tfPeopleNumber.text = @"15";
     _tfPeopleNumber.placeholder = @"15";
     
     [self setReadyButtonForTextField:_tfPeopleNumber];
     
-    if(_isEditGameMode){
+    if(_isEditGameMode)
         _tfPeopleNumber.text = [NSString stringWithFormat:@"%lu", (unsigned long)editGameInfo.numbers];
-    }
     
     _tfPeopleNumber.textAlignment = NSTextAlignmentRight;
     _tfPeopleNumber.font = [UIFont systemFontOfSize:12.0f];
     [_levelGroupView addSubview:_tfPeopleNumber];
     
     [NSLayoutConstraint setWidht:140 height:30 forView:_tfPeopleNumber];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfPeopleNumber
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeTop
-                                                              multiplier:1
-                                                                constant:5]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_tfPeopleNumber
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_levelGroupView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
+    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfPeopleNumber inContainer:_levelGroupView];
+    [NSLayoutConstraint setTopPadding:5 forView:_tfPeopleNumber inContainer:_levelGroupView];
 }
 
 #pragma mark -
@@ -817,23 +534,10 @@
     _ivOneStar.translatesAutoresizingMaskIntoConstraints = NO;
     _ivOneStar.image = grayStarImage;
     [_levelGroupView addSubview:_ivOneStar];
+    
     [NSLayoutConstraint setWidht:18 height:17 forView:_ivOneStar];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStar
-                                                                attribute:NSLayoutAttributeBottom
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:-12]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStar
-                                                                attribute:NSLayoutAttributeRight
-                                                                relatedBy:0
-                                                                   toItem:_ivTwoStar
-                                                                attribute:NSLayoutAttributeLeft
-                                                               multiplier:1
-                                                                 constant:-20]];
+    [NSLayoutConstraint setBottomPadding:12 forView:_ivOneStar inContainer:_levelGroupView];
+    [NSLayoutConstraint setRightDistance:20 fromView:_ivOneStar toView:_ivTwoStar inContainer:_levelGroupView];
 }
 
 - (void) setupIconTwoStar {
@@ -841,23 +545,10 @@
     _ivTwoStar.translatesAutoresizingMaskIntoConstraints = NO;
     _ivTwoStar.image = grayStarImage;
     [_levelGroupView addSubview:_ivTwoStar];
+    
     [NSLayoutConstraint setWidht:18 height:17 forView:_ivTwoStar];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStar
-                                                                attribute:NSLayoutAttributeBottom
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:-12]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStar
-                                                                attribute:NSLayoutAttributeRight
-                                                                relatedBy:0
-                                                                   toItem:_ivThreeStar
-                                                                attribute:NSLayoutAttributeLeft
-                                                               multiplier:1
-                                                                 constant:-20]];
+    [NSLayoutConstraint setBottomPadding:12 forView:_ivTwoStar inContainer:_levelGroupView];
+    [NSLayoutConstraint setRightDistance:20 fromView:_ivTwoStar toView:_ivThreeStar inContainer:_levelGroupView];
 }
 
 - (void) setupIconThreeStar {
@@ -865,23 +556,10 @@
     _ivThreeStar.translatesAutoresizingMaskIntoConstraints = NO;
     _ivThreeStar.image = grayStarImage;
     [_levelGroupView addSubview:_ivThreeStar];
+    
     [NSLayoutConstraint setWidht:18 height:17 forView:_ivThreeStar];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStar
-                                                                attribute:NSLayoutAttributeBottom
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:-12]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStar
-                                                                attribute:NSLayoutAttributeRight
-                                                                relatedBy:0
-                                                                   toItem:_levelGroupView
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1
-                                                                 constant:-PADDING_H]];
+    [NSLayoutConstraint setBottomPadding:12 forView:_ivThreeStar inContainer:_levelGroupView];
+    [NSLayoutConstraint setRightPadding:PADDING_H forView:_ivThreeStar inContainer:_levelGroupView];
 }
 
 - (void) setLevelImagesGestureRecognizers {
@@ -905,37 +583,9 @@
     separator.backgroundColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [group addSubview:separator];
     
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeCenterY
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeCenterY
-                                                     multiplier:1
-                                                       constant:0]];
-    
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeLeft
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeLeft
-                                                     multiplier:1
-                                                       constant:PADDING_H]];
-    
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeRight
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeRight
-                                                     multiplier:1
-                                                       constant:-PADDING_H]];
-    
-    [separator addConstraint: [NSLayoutConstraint constraintWithItem:separator
-                                                           attribute:NSLayoutAttributeHeight
-                                                           relatedBy:0
-                                                              toItem:nil
-                                                           attribute:0
-                                                          multiplier:1
-                                                            constant:0.5f]];
+    [NSLayoutConstraint setHeight:0.5f forView:separator];
+    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:PADDING_H];
+    [NSLayoutConstraint centerVertical:separator withView:group inContainer:group];
 }
 
 # pragma mark -
@@ -1143,13 +793,6 @@
     if (datePicker == _dateTimePicker){
         _tfTime.text = [datePicker.date toFormat:@"d MMMM yyyy HH:mm"];
         
-        /*
-        NSDate *jsDate = [NSDate dateWithJsonString:@"2015-05-26T12:20:00+0000"];
-        NSLog(@"json: %@", [jsDate toJsonFormat]);
-        NSLog(@"custom: %@", [jsDate toFormat:@"d MMMM yyyy HH:mm"]);
-        */
-        
-        //newGame.time = [datePicker.date timeIntervalSince1970];
         newGame.time = [datePicker.date toJsonFormat];
         [self changeCreateButtonIfNeeded];
     }
@@ -1160,15 +803,12 @@
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
     if (textField == _tfKindOfSport){
         textField.inputView = _sportPicker;
-        //textField.inputAccessoryView = toolBar;
     }
     else if (textField == _tfPeopleNumber){
         textField.inputView = _peopleNumberPicker;
-        //textField.inputAccessoryView = toolBar;
     }
     else if (textField == _tfAge){
         textField.inputView = _agePicker;
-        //textField.inputAccessoryView = toolBar;
     }
     else if(textField == _tfTime){
         textField.inputView = _dateTimePicker;
@@ -1207,7 +847,7 @@
     if(newGame.sport <= 0)
         return;
     
-    if(newGame.time == 0)
+    if(newGame.time == nil)
         return;
     
     if(newGame.age == 0)
@@ -1231,8 +871,6 @@
     [btnReady setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
     btnReady.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnReady setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    //[btnReady sizeToFit];
-    //btnReady.backgroundColor = [UIColor redColor];
     
     textField.rightViewMode = UITextFieldViewModeWhileEditing;
     textField.rightView = btnReady;

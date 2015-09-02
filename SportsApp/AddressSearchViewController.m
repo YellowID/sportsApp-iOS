@@ -42,7 +42,6 @@
     _searchField.delegate = self;
     _searchField.placeholder = @"Адрес";
     [_searchField setBorderStyle:UITextBorderStyleRoundedRect];
-    //_searchField.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR];
     _searchField.backgroundColor = [UIColor whiteColor];
     [_searchField setTintColor:[UIColor darkGrayColor]];
     _searchField.textAlignment = NSTextAlignmentLeft;
@@ -56,7 +55,6 @@
     
     self.navigationItem.titleView = _searchField;
     
-    //_tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 44, self.view.bounds.size.width, self.view.bounds.size.height - 44) style:UITableViewStylePlain];
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     [_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     [_tableView setDelegate:self];
@@ -68,7 +66,6 @@
 #pragma mark UITableView delegate methods
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return items.count;
-    //return 10;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -179,7 +176,6 @@
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
-    //CGFloat bottom = _searchBar.frame.origin.y + 44;
     CGRect frame = _tableView.frame;
     frame.size.height = self.view.frame.size.height - kbSize.height;// - bottom;
     _tableView.frame = frame;

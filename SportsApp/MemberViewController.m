@@ -79,19 +79,13 @@
 #pragma mark -
 #pragma mark UITableView delegate methods
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
         [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
     
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
         [cell setPreservesSuperviewLayoutMargins:NO];
-    }
     
-    // Explictly set your cell's layout margins
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        //[cell setLayoutMargins:UIEdgeInsetsZero];
         [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
         [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
     }
@@ -103,7 +97,6 @@
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return _members.count;
-    //return 10;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -122,12 +115,6 @@
     MemberInfo* member = _members[indexPath.row];
     
     if(member.icon){
-        /*
-        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:member.icon]];
-        UIImage *avatar = [UIImage imageForAvatar:[UIImage imageWithData:data]];
-        cell.imageView.image = avatar;
-        */
-        
         dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
             NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:member.icon]];
             

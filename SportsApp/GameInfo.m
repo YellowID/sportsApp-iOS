@@ -12,6 +12,29 @@
 
 @synthesize gameType = _gameType;
 
+/*
+- (NSString *) gameName {
+    NSString *name = @"Игра";
+    
+    if(_gameType == GAME_TYPE_FOOTBALL)
+        name = @"Футбол";
+    else if(_gameType == GAME_TYPE_BASKETBALL)
+        name = @"Баскетбол";
+    else if(_gameType == GAME_TYPE_VOLLEYBALL)
+        name = @"Волейбол";
+    else if(_gameType == GAME_TYPE_HANDBALL)
+        name = @"Гандбол";
+    else if(_gameType == GAME_TYPE_TENNIS)
+        name = @"Тенис";
+    else if(_gameType == GAME_TYPE_HOCKEY)
+        name = @"Хоккей";
+    else if(_gameType == GAME_TYPE_SQUASH)
+        name = @"Сквош";
+    
+    return name;
+}
+*/
+
 - (void) setGameType:(NSUInteger)type {
     _gameType = type;
     

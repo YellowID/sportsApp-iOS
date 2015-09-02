@@ -2,7 +2,7 @@
 //  NSLayoutConstraint+Helper.h
 //  SportsApp
 //
-//  Created by sergeyZ on 27.05.15.
+//  Created by sergeyZ on 17.06.15.
 //
 //
 
@@ -24,5 +24,10 @@
 + (NSLayoutConstraint *) setBottomPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
 + (NSLayoutConstraint *) setLeftPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
 + (NSLayoutConstraint *) setRightPadding:(CGFloat)padding forView:(UIView*)view inContainer:(UIView*)container;
+
++ (NSLayoutConstraint *) setTopDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setBottomDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setLeftDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container;
++ (NSLayoutConstraint *) setRightDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container;
 
 @end

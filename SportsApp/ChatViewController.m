@@ -491,17 +491,13 @@
     [self setupMessageField];
     [self setupSendButton];
     
-    //[NSLayoutConstraint setWidht:20 height:18.5 forView:_btnSend];
     [NSLayoutConstraint setWidht:30 height:30 forView:_btnSend];
-    //[NSLayoutConstraint centerVertical:_btnSend withView:_chatFooterView inContainer:_chatFooterView];
     [NSLayoutConstraint setBottomPadding:10 forView:_btnSend inContainer:_chatFooterView];
     
     messageHeightConstraint = [NSLayoutConstraint setHeight:MSG_INPUT_NORMAL_HEIGHT forView:_tfMessage];
-    //[NSLayoutConstraint centerVertical:_tfMessage withView:_chatFooterView inContainer:_chatFooterView];
     [NSLayoutConstraint setBottomPadding:10 forView:_tfMessage inContainer:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tfMessage, _btnSend);
-    
     NSString* hc_str = @"H:|-8-[_tfMessage]-8-[_btnSend]-8-|";
     NSArray* hzConstraints = [NSLayoutConstraint constraintsWithVisualFormat:hc_str options:0 metrics:nil views:views];
     [_chatFooterView addConstraints:hzConstraints];
@@ -510,16 +506,12 @@
 - (void) setupMessageField {
     _tfMessage = [UITextView new];
     _tfMessage.translatesAutoresizingMaskIntoConstraints = NO;
-    //[_tfMessage addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _tfMessage.delegate = self;
-    //_tfMessage.backgroundColor = [UIColor whiteColor];
     _tfMessage.font = [UIFont systemFontOfSize:14.0f];
     _tfMessage.autocorrectionType = UITextAutocorrectionTypeNo;
     
     _tfMessage.layer.borderWidth = 0.0;
     _tfMessage.layer.cornerRadius = 6.0;
-    //_tfMessage.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
-    //_tfMessage.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
     _tfMessage.layer.backgroundColor = [[UIColor whiteColor] CGColor];
     
     [_chatFooterView addSubview:_tfMessage];
@@ -544,38 +536,10 @@
     _curtainView.clipsToBounds = YES;
     [self.view addSubview:_curtainView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeTop
-                                                              multiplier:1
-                                                                constant:0]];
+    [NSLayoutConstraint setTopPadding:0 forView:_curtainView inContainer:self.view];
+    [NSLayoutConstraint stretchHorizontal:_curtainView inContainer:self.view withPadding:0];
+    curtainHeigtContraint = [NSLayoutConstraint setHeight:CURTAIN_HEIGHT forView:_curtainView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainView
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainView
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    curtainHeigtContraint = [NSLayoutConstraint constraintWithItem:_curtainView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:0
-                                                                    toItem:nil
-                                                                 attribute:0
-                                                                multiplier:1
-                                                                  constant:CURTAIN_HEIGHT];
-    [_curtainView addConstraint: curtainHeigtContraint];
     isCurtainOpen = YES;
     
     [self setupCurtainArrowView];
@@ -591,10 +555,6 @@
     _curtainArrowButton.translatesAutoresizingMaskIntoConstraints = NO;
     [_curtainArrowButton addTarget:self action:@selector(tapCurtainArrow) forControlEvents:UIControlEventTouchUpInside];
     
-    //UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(moveCurtainView:)];
-    //panGesture.maximumNumberOfTouches = 1;
-    //[_curtainArrowButton addGestureRecognizer:panGesture];
-    
     _curtainArrowButton.adjustsImageWhenHighlighted = NO;
     
     if(isCurtainOpen){
@@ -608,22 +568,9 @@
     
     [self.view addSubview:_curtainArrowButton];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_curtainView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:-0.5]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_curtainArrowButton
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:_curtainView
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
     [NSLayoutConstraint setWidht:57.5 height:27 forView:_curtainArrowButton];
+    [NSLayoutConstraint setTopDistance:0.5 fromView:_curtainArrowButton toView:_curtainView inContainer:self.view];
+    [NSLayoutConstraint centerHorizontal:_curtainArrowButton withView:_curtainView inContainer:self.view];
 }
 
 #pragma mark -
@@ -635,30 +582,8 @@
     [_curtainView addSubview:_curtainRowOneView];
     
     [NSLayoutConstraint setHeight:57.5 forView:_curtainRowOneView];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowOneView
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_curtainView
-                                                               attribute:NSLayoutAttributeTop
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowOneView
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:_curtainView
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:0]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowOneView
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:_curtainView
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_curtainRowOneView inContainer:_curtainView withPadding:0];
+    [NSLayoutConstraint setTopPadding:0 forView:_curtainRowOneView inContainer:_curtainView];
     
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_curtainRowOneView];
@@ -667,7 +592,6 @@
     [_curtainRowOneView addSubview:locIcon];
     locIcon.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:13.5f height:13.5f forView:locIcon];
-    //[NSLayoutConstraint centerVertical:locIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     locTitle = [self makeLocationLable];
     [_curtainRowOneView addSubview:locTitle];
@@ -679,7 +603,6 @@
     [_curtainRowOneView addSubview:timeIcon];
     timeIcon.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:13.5f height:13.5f forView:timeIcon];
-    //[NSLayoutConstraint centerVertical:timeIcon withView:_curtainRowOneView inContainer:_curtainRowOneView];
     
     timeTitle = [self makeTimeLable];
     [_curtainRowOneView addSubview:timeTitle];
@@ -690,11 +613,11 @@
     
     NSDictionary* views = NSDictionaryOfVariableBindings(locTitle, locIcon, timeTitle, timeIcon, separator);
     
-    NSString* hc1_str = @"H:|-12-[locIcon]-8-[locTitle]";
+    NSString* hc1_str = @"H:|-12-[locIcon]-5.5-[locTitle]";
     NSArray* hz1Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc1_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz1Constraints];
     
-    NSString* hc2_str = @"H:|-12-[timeIcon]-5.5-[timeTitle]";
+    NSString* hc2_str = @"H:|-12-[timeIcon]-6-[timeTitle]";
     NSArray* hz2Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc2_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz2Constraints];
     
@@ -713,37 +636,9 @@
     separator.backgroundColor = [UIColor colorWithRGBA:CELL_SEPARATOR_COLOR];
     [group addSubview:separator];
     
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeCenterY
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeCenterY
-                                                     multiplier:1
-                                                       constant:0]];
-    
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeLeft
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeLeft
-                                                     multiplier:1
-                                                       constant:PADDING_H]];
-    
-    [group addConstraint:[NSLayoutConstraint constraintWithItem:separator
-                                                      attribute:NSLayoutAttributeRight
-                                                      relatedBy:0
-                                                         toItem:group
-                                                      attribute:NSLayoutAttributeRight
-                                                     multiplier:1
-                                                       constant:-PADDING_H]];
-    
-    [separator addConstraint: [NSLayoutConstraint constraintWithItem:separator
-                                                           attribute:NSLayoutAttributeHeight
-                                                           relatedBy:0
-                                                              toItem:nil
-                                                           attribute:0
-                                                          multiplier:1
-                                                            constant:0.5f]];
+    [NSLayoutConstraint setHeight:0.5f forView:separator];
+    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:PADDING_H];
+    [NSLayoutConstraint centerVertical:separator withView:group inContainer:group];
 }
 
 - (UIImageView*) makeFirstRowIconWithImage:(UIImage*)image {
@@ -799,30 +694,8 @@
     [_curtainView addSubview:_curtainRowTwoView];
     
     [NSLayoutConstraint setHeight:57.5 forView:_curtainRowTwoView];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
-                                                             attribute:NSLayoutAttributeTop
-                                                             relatedBy:0
-                                                                toItem:_curtainRowOneView
-                                                             attribute:NSLayoutAttributeBottom
-                                                            multiplier:1
-                                                              constant:0.5f]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
-                                                             attribute:NSLayoutAttributeLeft
-                                                             relatedBy:0
-                                                                toItem:_curtainView
-                                                             attribute:NSLayoutAttributeLeft
-                                                            multiplier:1
-                                                              constant:0]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowTwoView
-                                                             attribute:NSLayoutAttributeRight
-                                                             relatedBy:0
-                                                                toItem:_curtainView
-                                                             attribute:NSLayoutAttributeRight
-                                                            multiplier:1
-                                                              constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_curtainRowTwoView inContainer:_curtainView withPadding:0];
+    [NSLayoutConstraint setTopDistance:0.5f fromView:_curtainRowTwoView toView:_curtainRowOneView inContainer:_curtainView];
     
     [self createPeopleInGameLable];
     [_curtainRowTwoView addSubview:_peopleInGame];
@@ -851,15 +724,6 @@
 
 - (void) createPeopleInGameLable {
     _peopleInGame = [UILabel new];
-    
-    /*
-    NSMutableAttributedString* attributeString = [[NSMutableAttributedString alloc] initWithString:@"Идут 7 человек"];
-    [attributeString addAttribute:NSUnderlineStyleAttributeName
-                            value:[NSNumber numberWithInt:1]
-                            range:(NSRange){0,[attributeString length]}];
-    _peopleInGame.attributedText = [attributeString copy];
-    */
-    
     _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count];
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
@@ -917,30 +781,8 @@
     [_curtainView addSubview:_curtainRowThreeView];
     
     [NSLayoutConstraint setHeight:57.5 forView:_curtainRowThreeView];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
-                                                             attribute:NSLayoutAttributeTop
-                                                             relatedBy:0
-                                                                toItem:_curtainRowTwoView
-                                                             attribute:NSLayoutAttributeBottom
-                                                            multiplier:1
-                                                              constant:0.5f]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
-                                                             attribute:NSLayoutAttributeLeft
-                                                             relatedBy:0
-                                                                toItem:_curtainView
-                                                             attribute:NSLayoutAttributeLeft
-                                                            multiplier:1
-                                                              constant:0]];
-    
-    [_curtainView addConstraint:[NSLayoutConstraint constraintWithItem:_curtainRowThreeView
-                                                             attribute:NSLayoutAttributeRight
-                                                             relatedBy:0
-                                                                toItem:_curtainView
-                                                             attribute:NSLayoutAttributeRight
-                                                            multiplier:1
-                                                              constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_curtainRowThreeView inContainer:_curtainView withPadding:0];
+    [NSLayoutConstraint setTopDistance:0.5f fromView:_curtainRowThreeView toView:_curtainRowTwoView inContainer:_curtainView];
     
     [self createYesButton];
     [_curtainRowThreeView addSubview:_btnAnswerYes];
@@ -1031,12 +873,6 @@
 }
 
 - (void) btnUserDecisionClick:(UIButton*)button {
-    /*
-     #define PARTICIPATE_STATUS_NO 1
-     #define PARTICIPATE_STATUS_YES 2
-     #define PARTICIPATE_STATUS_UNKNOWN 3
-     */
-    
     if(button.selected)
         return;
     
@@ -1130,11 +966,8 @@
             if(isSent){
                 _btnSend.enabled = NO;
                 _tfMessage.text = @"";
-                [_tfMessage resignFirstResponder];
                 messageHeightConstraint.constant = MSG_INPUT_NORMAL_HEIGHT;
                 footerViewHeightConstraint.constant = FOOTER_NORMAL_HEIGHT;
-                
-                //[self loadChatMessages];
             }
             else{
                 _btnSend.enabled = YES;
@@ -1242,7 +1075,6 @@
     if(recognizer.state == UIGestureRecognizerStateChanged){
         
         CGPoint delta = [recognizer translationInView:self.view];
-        //CGFloat newHeight = curtainHeigtContraint.constant + translate.y;
         CGFloat newHeight = curtainHeigtContraint.constant;
         
         CGFloat maxStep = 6;
@@ -1272,11 +1104,7 @@
             curtainHeigtContraint.constant = 0;
         else
             curtainHeigtContraint.constant = CURTAIN_HEIGHT;
-        
-        //NSLog(@"UIGestureRecognizerStateEnded: %f", curtainHeigtContraint.constant);
     }
-    
-    //[self.view layoutIfNeeded];
 }
 
 #pragma mark -

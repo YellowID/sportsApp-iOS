@@ -85,7 +85,7 @@
 
 - (void) setupTableView {
     _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    //[_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
+    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
     [_tableView setDelegate:self];
     [_tableView setDataSource:self];
     [_tableView setBackgroundColor:[UIColor colorWithRGBA:BG_GRAY_COLOR]];
@@ -95,17 +95,9 @@
     _tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
     
-    _tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
     tableHeigtContraint = [NSLayoutConstraint setHeight:self.view.bounds.size.height - SEARCH_HEIGHT forView:_tableView];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_tableView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_searchFieldContainer
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
+    [NSLayoutConstraint setTopDistance:0 fromView:_tableView toView:_searchFieldContainer inContainer:self.view];
     
     _tableView.hidden = YES;
 }
@@ -115,34 +107,12 @@
     sbContaiter.clipsToBounds = YES;
     sbContaiter.translatesAutoresizingMaskIntoConstraints = NO;
     sbContaiter.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
-    //sbContaiter.backgroundColor = [UIColor grayColor];
     [self.view addSubview:sbContaiter];
     
     [NSLayoutConstraint setHeight:SEARCH_HEIGHT forView:sbContaiter];
+    [NSLayoutConstraint stretchHorizontal:sbContaiter inContainer:self.view withPadding:0];
+    [NSLayoutConstraint setTopPadding:12 forView:sbContaiter inContainer:self.view];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:sbContaiter
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:12]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:sbContaiter
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:sbContaiter
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
     return sbContaiter;
 }
 
@@ -150,7 +120,6 @@
     _searchBar = [CustomSearchBar new];
     _searchBar.delegate = self;
     _searchBar.translatesAutoresizingMaskIntoConstraints = NO;
-    //_searchBar.translucent = YES;
     _searchBar.autocorrectionType = UITextAutocorrectionTypeNo;
     
     _searchBar.barTintColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
@@ -158,26 +127,10 @@
     [_searchBar setPlaceholder:@"Найти"];
     [_searchBar setTextColorTF:[UIColor colorWithRGBA:TXT_SEARCH_FIELD_COLOR]];
     [_searchBar setBackgroundColorTF:[UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR]];
-    
     [container addSubview:_searchBar];
     
     [NSLayoutConstraint centerVertical:_searchBar withView:container inContainer:container];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_searchBar
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_searchBar
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_searchBar inContainer:container withPadding:0];
 }
 
 #pragma mark -
@@ -185,40 +138,11 @@
 - (void) layoutInviteFromEmailViewGroup {
     _inviteFromEmailViewGroup = [UIView new];
     _inviteFromEmailViewGroup.translatesAutoresizingMaskIntoConstraints = NO;
-    //_inviteFromEmailViewGroup.backgroundColor = [UIColor grayColor];
     [self.view addSubview:_inviteFromEmailViewGroup];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_inviteFromEmailViewGroup
-                                                               attribute:NSLayoutAttributeTop
-                                                               relatedBy:0
-                                                                  toItem:_searchFieldContainer
-                                                               attribute:NSLayoutAttributeBottom
-                                                              multiplier:1
-                                                                constant:28]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_inviteFromEmailViewGroup
-                                                               attribute:NSLayoutAttributeLeft
-                                                               relatedBy:0
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeLeft
-                                                              multiplier:1
-                                                                constant:PADDING_H]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_inviteFromEmailViewGroup
-                                                               attribute:NSLayoutAttributeRight
-                                                               relatedBy:0
-                                                                  toItem:self.view
-                                                               attribute:NSLayoutAttributeRight
-                                                              multiplier:1
-                                                                constant:-PADDING_H]];
-    
-    [_inviteFromEmailViewGroup addConstraint: [NSLayoutConstraint constraintWithItem:_inviteFromEmailViewGroup
-                                                                  attribute:NSLayoutAttributeHeight
-                                                                  relatedBy:0
-                                                                     toItem:nil
-                                                                  attribute:0
-                                                                 multiplier:1
-                                                                   constant:100]];
+    [NSLayoutConstraint setHeight:100 forView:_inviteFromEmailViewGroup];
+    [NSLayoutConstraint stretchHorizontal:_inviteFromEmailViewGroup inContainer:self.view withPadding:PADDING_H];
+    [NSLayoutConstraint setTopDistance:28 fromView:_inviteFromEmailViewGroup toView:_searchFieldContainer inContainer:self.view];
     
     [self setupTitleInviteFromEmailViewGroup];
     [self setupEmailField];
@@ -236,20 +160,13 @@
     
     [NSLayoutConstraint setHeight:21 forView:_inviteGroupTitle];
     [NSLayoutConstraint centerHorizontal:_inviteGroupTitle withView:_inviteFromEmailViewGroup inContainer:_inviteFromEmailViewGroup];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_inviteGroupTitle
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_inviteFromEmailViewGroup
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint setTopPadding:0 forView:_inviteGroupTitle inContainer:_inviteFromEmailViewGroup];
 }
 
 - (void) setupEmailField {
     _tfEmail = [UITextField new];
+    _tfEmail.translatesAutoresizingMaskIntoConstraints = NO;
     [_tfEmail addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
-    
     _tfEmail.delegate = self;
     _tfEmail.keyboardType = UIKeyboardTypeEmailAddress;
     [_tfEmail setBorderStyle:UITextBorderStyleRoundedRect];
@@ -261,32 +178,9 @@
     _tfEmail.autocorrectionType = UITextAutocorrectionTypeNo;
     [_inviteFromEmailViewGroup addSubview:_tfEmail];
     
-    _tfEmail.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setHeight:34 forView:_tfEmail];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_tfEmail
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_inviteGroupTitle
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:4]];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_tfEmail
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:_inviteFromEmailViewGroup
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_tfEmail
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_inviteFromEmailViewGroup
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_tfEmail inContainer:_inviteFromEmailViewGroup withPadding:0];
+    [NSLayoutConstraint setTopDistance:4 fromView:_tfEmail toView:_inviteGroupTitle inContainer:_inviteFromEmailViewGroup];
 }
 
 - (void) setupInviteButton {
@@ -295,30 +189,8 @@
     [_inviteFromEmailViewGroup addSubview:_btnInvite];
     
     [NSLayoutConstraint setHeight:40 forView:_btnInvite];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_btnInvite
-                                                                          attribute:NSLayoutAttributeTop
-                                                                          relatedBy:0
-                                                                             toItem:_tfEmail
-                                                                          attribute:NSLayoutAttributeBottom
-                                                                         multiplier:1
-                                                                           constant:20]]; // 24
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_btnInvite
-                                                                          attribute:NSLayoutAttributeLeft
-                                                                          relatedBy:0
-                                                                             toItem:_inviteFromEmailViewGroup
-                                                                          attribute:NSLayoutAttributeLeft
-                                                                         multiplier:1
-                                                                           constant:0]];
-    
-    [_inviteFromEmailViewGroup addConstraint:[NSLayoutConstraint constraintWithItem:_btnInvite
-                                                                          attribute:NSLayoutAttributeRight
-                                                                          relatedBy:0
-                                                                             toItem:_inviteFromEmailViewGroup
-                                                                          attribute:NSLayoutAttributeRight
-                                                                         multiplier:1
-                                                                           constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_btnInvite inContainer:_inviteFromEmailViewGroup withPadding:0];
+    [NSLayoutConstraint setTopDistance:20 fromView:_btnInvite toView:_tfEmail inContainer:_inviteFromEmailViewGroup];
 }
 
 - (UIButton*) createInviteButton {
@@ -341,19 +213,13 @@
 #pragma mark -
 #pragma mark UITableView delegate methods
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
         [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
     
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
         [cell setPreservesSuperviewLayoutMargins:NO];
-    }
     
-    // Explictly set your cell's layout margins
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        //[cell setLayoutMargins:UIEdgeInsetsZero];
         [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
         [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
     }
@@ -423,24 +289,12 @@
     alert.tag = ALERT_INVITE_USER;
     [alert show];
     
-    //[_tableView reloadData];
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
-    /*
-    UIButton *btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
-    btnCancel.titleLabel.font = [UIFont systemFontOfSize:12.0f];
-    [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
-    [btnCancel sizeToFit];
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnCancel];
-    */
-    
     UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnCancelClick)];
     self.navigationItem.leftBarButtonItem = btnBack;
 }
@@ -602,20 +456,6 @@
             }
         });
     }];
-}
-
-#pragma mark -
-#pragma mark loadData
-- (void) loadData {
-    members = [NSMutableArray new];
-    for(int i = 0; i < 14; ++i){
-        MemberInfo* member = [MemberInfo new];
-        member.name = [NSString stringWithFormat:@"User Name %lu", (unsigned long)i];
-        member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-        member.invited = YES;
-        
-        [members addObject:member];
-    }
 }
 
 # pragma mark -

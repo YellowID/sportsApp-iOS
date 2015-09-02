@@ -42,7 +42,6 @@
 		534B513F1B20333C001FAD9A /* ic_page_active@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B512F1B20333C001FAD9A /* ic_page_active@3x.png */; };
 		534B51401B20333C001FAD9A /* ic_page@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B51301B20333C001FAD9A /* ic_page@2x.png */; };
 		534B51411B20333C001FAD9A /* ic_page@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B51311B20333C001FAD9A /* ic_page@3x.png */; };
-		534B51441B203B40001FAD9A /* CustomDotPageControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 534B51431B203B40001FAD9A /* CustomDotPageControl.m */; };
 		534B51471B204446001FAD9A /* ic_plus@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B51451B204446001FAD9A /* ic_plus@2x.png */; };
 		534B51481B204446001FAD9A /* ic_plus@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B51461B204446001FAD9A /* ic_plus@3x.png */; };
 		534B514B1B204457001FAD9A /* ic_back_arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 534B51491B204457001FAD9A /* ic_back_arrow@2x.png */; };
@@ -82,6 +81,7 @@
 		536FF2BA1B18684800D3561A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536FF2B91B18684800D3561A /* SystemConfiguration.framework */; };
 		536FF2BC1B18690000D3561A /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536FF2BB1B18690000D3561A /* CoreVideo.framework */; };
 		536FF2BF1B18E44400D3561A /* PlaceSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 536FF2BE1B18E44400D3561A /* PlaceSearchViewController.m */; };
+		53781D761B97069F00FE5869 /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */; };
 		53820F631B17934C00F4EE3B /* MemberInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 53820F621B17934C00F4EE3B /* MemberInfo.m */; };
 		5384D5C11B0C9321009B6CD3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C01B0C9321009B6CD3 /* main.m */; };
 		5384D5C41B0C9321009B6CD3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C31B0C9321009B6CD3 /* AppDelegate.m */; };
@@ -150,7 +150,6 @@
 		53DCC1BE1B0E0DA0002EE36E /* photo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */; };
 		53DD7FF11B1B77060019B5BE /* UIViewController+Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */; };
 		53E4AC381B395517001AE01C /* AddressSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC371B395517001AE01C /* AddressSearchViewController.m */; };
-		53E4AC401B39CC50001AE01C /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */; };
 		53E4AC431B3AA0D1001AE01C /* YandexGeoResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC421B3AA0D1001AE01C /* YandexGeoResponse.m */; };
 		53E4AC4A1B3AC911001AE01C /* FoursquareResponse.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E4AC491B3AC911001AE01C /* FoursquareResponse.m */; };
 		53E519721B10B92600B85DDD /* MemberSettingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519711B10B92600B85DDD /* MemberSettingViewController.m */; };
@@ -256,8 +255,6 @@
 		534B512F1B20333C001FAD9A /* ic_page_active@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_page_active@3x.png"; sourceTree = "<group>"; };
 		534B51301B20333C001FAD9A /* ic_page@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_page@2x.png"; sourceTree = "<group>"; };
 		534B51311B20333C001FAD9A /* ic_page@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_page@3x.png"; sourceTree = "<group>"; };
-		534B51421B203B40001FAD9A /* CustomDotPageControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomDotPageControl.h; sourceTree = "<group>"; };
-		534B51431B203B40001FAD9A /* CustomDotPageControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomDotPageControl.m; sourceTree = "<group>"; };
 		534B51451B204446001FAD9A /* ic_plus@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_plus@2x.png"; sourceTree = "<group>"; };
 		534B51461B204446001FAD9A /* ic_plus@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_plus@3x.png"; sourceTree = "<group>"; };
 		534B51491B204457001FAD9A /* ic_back_arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_back_arrow@2x.png"; sourceTree = "<group>"; };
@@ -303,6 +300,8 @@
 		536FF2BB1B18690000D3561A /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		536FF2BD1B18E44400D3561A /* PlaceSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceSearchViewController.h; sourceTree = "<group>"; };
 		536FF2BE1B18E44400D3561A /* PlaceSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceSearchViewController.m; sourceTree = "<group>"; };
+		53781D741B97069F00FE5869 /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
+		53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
 		53820F611B17934C00F4EE3B /* MemberInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberInfo.h; sourceTree = "<group>"; };
 		53820F621B17934C00F4EE3B /* MemberInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberInfo.m; sourceTree = "<group>"; };
 		5384D5BB1B0C9321009B6CD3 /* SportsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SportsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -394,8 +393,6 @@
 		53DD7FF01B1B77060019B5BE /* UIViewController+Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Navigation.m"; sourceTree = "<group>"; };
 		53E4AC361B395517001AE01C /* AddressSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddressSearchViewController.h; sourceTree = "<group>"; };
 		53E4AC371B395517001AE01C /* AddressSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AddressSearchViewController.m; sourceTree = "<group>"; };
-		53E4AC3E1B39CC50001AE01C /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
-		53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
 		53E4AC411B3AA0D1001AE01C /* YandexGeoResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YandexGeoResponse.h; sourceTree = "<group>"; };
 		53E4AC421B3AA0D1001AE01C /* YandexGeoResponse.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YandexGeoResponse.m; sourceTree = "<group>"; };
 		53E4AC481B3AC911001AE01C /* FoursquareResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FoursquareResponse.h; sourceTree = "<group>"; };
@@ -631,10 +628,10 @@
 		53B994DA1B0D083200558169 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				53781D741B97069F00FE5869 /* NSLayoutConstraint+Helper.h */,
+				53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */,
 				538657C71B6656F20003A186 /* NSDate+Utilities.h */,
 				538657C81B6656F20003A186 /* NSDate+Utilities.m */,
-				53E4AC3E1B39CC50001AE01C /* NSLayoutConstraint+Helper.h */,
-				53E4AC3F1B39CC50001AE01C /* NSLayoutConstraint+Helper.m */,
 				53E519C31B15B74000B85DDD /* NSString+Common.h */,
 				53E519C41B15B74000B85DDD /* NSString+Common.m */,
 				53B994DC1B0D086600558169 /* UIColor+Helper.h */,
@@ -664,8 +661,6 @@
 				53E519C71B1604C700B85DDD /* CustomSearchBar.m */,
 				531F70BA1B1710E800C48478 /* CustomButton.h */,
 				531F70BB1B1710E800C48478 /* CustomButton.m */,
-				534B51421B203B40001FAD9A /* CustomDotPageControl.h */,
-				534B51431B203B40001FAD9A /* CustomDotPageControl.m */,
 				534B51551B20BCBA001FAD9A /* ChatTableViewCell.h */,
 				534B51561B20BCBA001FAD9A /* ChatTableViewCell.m */,
 				534B51621B219DCD001FAD9A /* ChatRightTableViewCell.h */,
@@ -1147,7 +1142,6 @@
 				5367C9551B725DBA00FF74AA /* CitiesViewController.m in Sources */,
 				5384D5C41B0C9321009B6CD3 /* AppDelegate.m in Sources */,
 				53E519C81B1604C700B85DDD /* CustomSearchBar.m in Sources */,
-				534B51441B203B40001FAD9A /* CustomDotPageControl.m in Sources */,
 				5384D5C11B0C9321009B6CD3 /* main.m in Sources */,
 				53E5197F1B122BE400B85DDD /* SportInfo.m in Sources */,
 				538657C91B6656F20003A186 /* NSDate+Utilities.m in Sources */,
@@ -1158,6 +1152,7 @@
 				534B51571B20BCBA001FAD9A /* ChatTableViewCell.m in Sources */,
 				5390F1651B28968400B02775 /* NetManager.m in Sources */,
 				53E519821B122C7400B85DDD /* SportItemUI.m in Sources */,
+				53781D761B97069F00FE5869 /* NSLayoutConstraint+Helper.m in Sources */,
 				5367C9521B724CAC00FF74AA /* UIView+Utility.m in Sources */,
 				5390F1731B289C3E00B02775 /* NewGame.m in Sources */,
 				53E519851B12472700B85DDD /* NewEvenViewController.m in Sources */,
@@ -1165,7 +1160,6 @@
 				5390F1681B2896AA00B02775 /* Reachability.m in Sources */,
 				5367C94F1B72034000FF74AA /* UIImage+Utilities.m in Sources */,
 				534B51641B219DCD001FAD9A /* ChatRightTableViewCell.m in Sources */,
-				53E4AC401B39CC50001AE01C /* NSLayoutConstraint+Helper.m in Sources */,
 				53E4AC4A1B3AC911001AE01C /* FoursquareResponse.m in Sources */,
 				53E519C51B15B74000B85DDD /* NSString+Common.m in Sources */,
 				531180341B2AD3A00076A7D6 /* MemberSettings.m in Sources */,

@@ -231,29 +231,13 @@
 #pragma mark -
 - (void) setupButtonInParentView:(UIView*)container {
     _btnExit = [self createExitButton];
-    
-    /*
-    _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect]
-    _btnSave.translatesAutoresizingMaskIntoConstraints = NO;
-    //[_btnSave addTarget:self action:@selector(btnSaveClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnSave setTitle:@"Выход" forState:UIControlStateNormal];
-    [_btnSave setTintColor:[UIColor whiteColor]];
-    _btnSave.titleLabel.font = [UIFont systemFontOfSize:13.0f];
-    _btnSave.layer.borderWidth = 0.0;
-    _btnSave.layer.cornerRadius = 6.0;
-    _btnSave.layer.backgroundColor = [[UIColor colorWithRGBA:BG_BUTTON_COLOR] CGColor];
-    */
-    
     _btnExit.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:_btnExit];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:-PADDING_H]];
+    [NSLayoutConstraint setHeight:40 forView:_btnExit];
+    [NSLayoutConstraint setLeftPadding:PADDING_H forView:_btnExit inContainer:container];
+    [NSLayoutConstraint setRightPadding:PADDING_H forView:_btnExit inContainer:container];
+    [NSLayoutConstraint setBottomPadding:PADDING_H forView:_btnExit inContainer:container];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeTop
@@ -262,30 +246,6 @@
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
                                                            constant:-8]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:-PADDING_H]];
-    
-    [_btnExit addConstraint: [NSLayoutConstraint constraintWithItem:_btnExit
-                                                          attribute:NSLayoutAttributeHeight
-                                                          relatedBy:0
-                                                             toItem:nil
-                                                          attribute:0
-                                                         multiplier:1
-                                                           constant:40]];
 }
 
 - (void) setupContainerScroll {
@@ -302,47 +262,7 @@
     _containerScrollView.contentSize = CGSizeMake(self.view.bounds.size.width, mainScrollHeight);
     [self.view addSubview:_containerScrollView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    /*
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_containerScrollView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:_btnSave
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:-8]];
-    */
+    [NSLayoutConstraint stretch:_containerScrollView inContainer:self.view withPadding:0];
 }
 
 - (void) setupContainerView {
@@ -362,37 +282,9 @@
     _sportsGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [container addSubview:_sportsGroupView];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:7.5f]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [_sportsGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_sportsGroupView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:0
-                                                                    toItem:nil
-                                                                 attribute:0
-                                                                multiplier:1
-                                                                  constant:155]];
+    [NSLayoutConstraint setHeight:155 forView:_sportsGroupView];
+    [NSLayoutConstraint setTopPadding:7.5f forView:_sportsGroupView inContainer:container];
+    [NSLayoutConstraint stretchHorizontal:_sportsGroupView inContainer:container withPadding:PADDING_H];
     
     // subviews
     _lbTitleSportsGrpup = [UILabel new];
@@ -404,20 +296,6 @@
 }
 
 - (void) setupSportsPageControl {
-    /*
-    _sportsPageControl = [CustomDotPageControl new];
-    [_sportsPageControl setDotImageActive:[UIImage imageNamed:@"ic_page_active.png"]];
-    [_sportsPageControl setDotImageInactive:[UIImage imageNamed:@"ic_page.png"]];
-    _sportsPageControl.translatesAutoresizingMaskIntoConstraints = NO;
-    _sportsPageControl.pageIndicatorTintColor = [UIColor groupTableViewBackgroundColor];
-    _sportsPageControl.currentPageIndicatorTintColor = [UIColor blackColor];
-    _sportsPageControl.userInteractionEnabled = NO;
-    _sportsPageControl.numberOfPages = _sportInfoItems.count / 3;
-    _sportsPageControl.currentPage = 0;
-    [_sportsGroupView addSubview:_sportsPageControl];
-    //_sportsPageControl.backgroundColor = [UIColor greenColor];
-    */
-    
     _sportsPageControl = [DDPageControl new];
     [_sportsPageControl setType: DDPageControlTypeOnFullOffEmpty];
     [_sportsPageControl setOnColor: [UIColor colorWithRGBA:PAGE_INDICATOR_ACTIVE_COLOR]];
@@ -430,38 +308,9 @@
     _sportsPageControl.currentPage = 0;
     [_sportsGroupView addSubview:_sportsPageControl];
     
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:-8.0f]];
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:8]];
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsPageControl
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:-8]];
-    
-    [_sportsPageControl addConstraint: [NSLayoutConstraint constraintWithItem:_sportsPageControl
-                                                                  attribute:NSLayoutAttributeHeight
-                                                                  relatedBy:0
-                                                                     toItem:nil
-                                                                  attribute:0
-                                                                 multiplier:1
-                                                                   constant:10]];
+    [NSLayoutConstraint setHeight:10 forView:_sportsPageControl];
+    [NSLayoutConstraint stretchHorizontal:_sportsPageControl inContainer:_sportsGroupView withPadding:8];
+    [NSLayoutConstraint setBottomPadding:8.0f forView:_sportsPageControl inContainer:_sportsGroupView];
 }
 
 - (void) setupSportsScroll {
@@ -474,40 +323,11 @@
     _sportsScrollView.showsHorizontalScrollIndicator = NO;
     _sportsScrollView.pagingEnabled = YES;
     _sportsScrollView.contentSize = CGSizeMake(kScrollItemWidht * childrenCount, SCROLL_ITEM_HEIGHT);
-    
     [_sportsGroupView addSubview:_sportsScrollView];
     
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsScrollView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsScrollView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsScrollView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_lbTitleSportsGrpup
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [_sportsGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_sportsScrollView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:0
-                                                             toItem:_sportsPageControl
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint stretchHorizontal:_sportsScrollView inContainer:_sportsGroupView withPadding:0];
+    [NSLayoutConstraint setTopDistance:0 fromView:_sportsScrollView toView:_lbTitleSportsGrpup inContainer:_sportsGroupView];
+    [NSLayoutConstraint setBottomDistance:0 fromView:_sportsScrollView toView:_sportsPageControl inContainer:_sportsGroupView];
 }
 
 - (void) setupSportItemViews {
@@ -624,63 +444,24 @@
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:icon];
     [NSLayoutConstraint setWidht:50 height:48 forView:icon];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:20]];
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:28.5]];
+    [NSLayoutConstraint setTopPadding:20 forView:icon inContainer:container];
+    [NSLayoutConstraint setLeftPadding:28.5f forView:icon inContainer:container];
 }
 
 - (void) layoutSportCenterIcon:(UIImageView*)icon intoContainer:(UIView*)container {
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:icon];
     [NSLayoutConstraint setWidht:50 height:48 forView:icon];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:20]];
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint setTopPadding:20 forView:icon inContainer:container];
+    [NSLayoutConstraint centerHorizontal:icon withView:container inContainer:container];
 }
 
 - (void) layoutSportRightIcon:(UIImageView*)icon intoContainer:(UIView*)container {
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [container addSubview:icon];
     [NSLayoutConstraint setWidht:50 height:48 forView:icon];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:20]];
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:icon
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:-28.5]];
+    [NSLayoutConstraint setTopPadding:20 forView:icon inContainer:container];
+    [NSLayoutConstraint setRightPadding:28.5f forView:icon inContainer:container];
 }
 
 #pragma mark -
@@ -689,22 +470,8 @@
     [container addSubview:lable];
     lable.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:60 height:10 forView:lable];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:icon
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:15.0f]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:icon
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint setTopDistance:15.0f fromView:lable toView:icon inContainer:container];
+    [NSLayoutConstraint centerHorizontal:lable withView:icon inContainer:container];
 }
 
 #pragma mark -
@@ -719,37 +486,10 @@
     _levelGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [container addSubview:_levelGroupView];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_sportsGroupView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:7.5f]];
+    [NSLayoutConstraint setHeight:105 forView:_levelGroupView];
+    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:container withPadding:PADDING_H];
+    [NSLayoutConstraint setTopDistance:7.5f fromView:_levelGroupView toView:_sportsGroupView inContainer:container];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_levelGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [_levelGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_levelGroupView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:0
-                                                                    toItem:nil
-                                                                 attribute:0
-                                                                multiplier:1
-                                                                  constant:105]];
     // title
     _lbTitleLevelGrpup = [UILabel new];
     [self setupTitle:_lbTitleLevelGrpup forGroup:_levelGroupView withText:@"Мой уровень:" andWidht:106];
@@ -785,22 +525,10 @@
     _ivTwoStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
     _ivTwoStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivTwoStarLevel];
-    [NSLayoutConstraint setWidht:27 height:25 forView:_ivTwoStarLevel];
     
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeTop
-                                                                relatedBy:0
-                                                                   toItem:_lbTitleLevelGrpup
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:20]];
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeCenterX
-                                                                relatedBy:0
-                                                                   toItem:_lbTitleLevelGrpup
-                                                                attribute:NSLayoutAttributeCenterX
-                                                               multiplier:1
-                                                                 constant:0]];
+    [NSLayoutConstraint setWidht:27 height:25 forView:_ivTwoStarLevel];
+    [NSLayoutConstraint setTopDistance:20 fromView:_ivTwoStarLevel toView:_lbTitleLevelGrpup inContainer:_levelGroupView];
+    [NSLayoutConstraint centerHorizontal:_ivTwoStarLevel withView:_lbTitleLevelGrpup inContainer:_levelGroupView];
 }
 
 - (void) setupIconOneStar:(BOOL)active {
@@ -808,24 +536,10 @@
     _ivOneStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
     _ivOneStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivOneStarLevel];
+    
     [NSLayoutConstraint setWidht:27 height:25 forView:_ivOneStarLevel];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
-                                                                attribute:NSLayoutAttributeCenterY
-                                                                relatedBy:0
-                                                                   toItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeCenterY
-                                                               multiplier:1
-                                                                 constant:0]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneStarLevel
-                                                                attribute:NSLayoutAttributeRight
-                                                                relatedBy:0
-                                                                   toItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeLeft
-                                                               multiplier:1
-                                                                 constant:-23]];
-    
+    [NSLayoutConstraint setRightDistance:23 fromView:_ivOneStarLevel toView:_ivTwoStarLevel inContainer:_levelGroupView];
+    [NSLayoutConstraint centerVertical:_ivOneStarLevel withView:_ivTwoStarLevel inContainer:_levelGroupView];
 }
 
 - (void) setupIconThreeStar:(BOOL)active {
@@ -833,23 +547,10 @@
     _ivThreeStarLevel.translatesAutoresizingMaskIntoConstraints = NO;
     _ivThreeStarLevel.image = (active) ? activeStarImage : grayStarImage;
     [_levelGroupView addSubview:_ivThreeStarLevel];
+    
     [NSLayoutConstraint setWidht:27 height:25 forView:_ivThreeStarLevel];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
-                                                                attribute:NSLayoutAttributeCenterY
-                                                                relatedBy:0
-                                                                   toItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeCenterY
-                                                               multiplier:1
-                                                                 constant:0]];
-    
-    [_levelGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeStarLevel
-                                                                attribute:NSLayoutAttributeLeft
-                                                                relatedBy:0
-                                                                   toItem:_ivTwoStarLevel
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1
-                                                                 constant:23]];
+    [NSLayoutConstraint setLeftDistance:23 fromView:_ivThreeStarLevel toView:_ivTwoStarLevel inContainer:_levelGroupView];
+    [NSLayoutConstraint centerVertical:_ivThreeStarLevel withView:_ivTwoStarLevel inContainer:_levelGroupView];
 }
 
 #pragma mark -
@@ -864,37 +565,9 @@
     _ageGroupView.layer.borderColor = [[UIColor colorWithRGBA:BORDER_COLOR] CGColor];
     [container addSubview:_ageGroupView];
     
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:_levelGroupView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:7.5f]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:0
-                                                             toItem:container
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [container addConstraint:[NSLayoutConstraint constraintWithItem:container
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:0
-                                                             toItem:_ageGroupView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1
-                                                           constant:PADDING_H]];
-    
-    [_ageGroupView addConstraint: [NSLayoutConstraint constraintWithItem:_ageGroupView
-                                                                 attribute:NSLayoutAttributeHeight
-                                                                 relatedBy:0
-                                                                    toItem:nil
-                                                                 attribute:0
-                                                                multiplier:1
-                                                                  constant:126]];
+    [NSLayoutConstraint setHeight:126 forView:_ageGroupView];
+    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:container withPadding:PADDING_H];
+    [NSLayoutConstraint setTopDistance:7.5f fromView:_ageGroupView toView:_levelGroupView inContainer:container];
 
     // subviews
     _lbTitleAgeGrpup = [UILabel new];
@@ -942,22 +615,10 @@
     _ivOneAge.translatesAutoresizingMaskIntoConstraints = NO;
     _ivOneAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivOneAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivOneAge];
     
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:21]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivOneAge
-                                                              attribute:NSLayoutAttributeRight
-                                                              relatedBy:0
-                                                                 toItem:_ivTwoAge
-                                                              attribute:NSLayoutAttributeLeft
-                                                             multiplier:1
-                                                               constant:-33.5]];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivOneAge];
+    [NSLayoutConstraint setTopDistance:21 fromView:_ivOneAge toView:_lbTitleAgeGrpup inContainer:_ageGroupView];
+    [NSLayoutConstraint setRightDistance:33.5 fromView:_ivOneAge toView:_ivTwoAge inContainer:_ageGroupView];
 }
 
 - (void) setupIconAgeTwo:(BOOL)active {
@@ -965,15 +626,10 @@
     _ivTwoAge.translatesAutoresizingMaskIntoConstraints = NO;
     _ivTwoAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivTwoAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivTwoAge];
     
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
-                                                                attribute:NSLayoutAttributeTop
-                                                                relatedBy:0
-                                                                   toItem:_lbTitleAgeGrpup
-                                                                attribute:NSLayoutAttributeBottom
-                                                               multiplier:1
-                                                                 constant:21]];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivTwoAge];
+    [NSLayoutConstraint setTopDistance:21 fromView:_ivTwoAge toView:_lbTitleAgeGrpup inContainer:_ageGroupView];
+    
     [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivTwoAge
                                                                 attribute:NSLayoutAttributeRight
                                                                 relatedBy:0
@@ -988,15 +644,10 @@
     _ivThreeAge.translatesAutoresizingMaskIntoConstraints = NO;
     _ivThreeAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivThreeAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivThreeAge];
     
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:21]];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivThreeAge];
+    [NSLayoutConstraint setTopDistance:21 fromView:_ivThreeAge toView:_lbTitleAgeGrpup inContainer:_ageGroupView];
+    
     [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivThreeAge
                                                               attribute:NSLayoutAttributeLeft
                                                               relatedBy:0
@@ -1011,22 +662,10 @@
     _ivFourAge.translatesAutoresizingMaskIntoConstraints = NO;
     _ivFourAge.image = (active) ? activeAgeImage : grayAgeImage;
     [_ageGroupView addSubview:_ivFourAge];
-    [NSLayoutConstraint setWidht:36 height:35 forView:_ivFourAge];
     
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
-                                                              attribute:NSLayoutAttributeTop
-                                                              relatedBy:0
-                                                                 toItem:_lbTitleAgeGrpup
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1
-                                                               constant:21]];
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:_ivFourAge
-                                                                attribute:NSLayoutAttributeLeft
-                                                                relatedBy:0
-                                                                   toItem:_ivThreeAge
-                                                                attribute:NSLayoutAttributeRight
-                                                               multiplier:1
-                                                                 constant:33.5f]];
+    [NSLayoutConstraint setWidht:36 height:35 forView:_ivFourAge];
+    [NSLayoutConstraint setTopDistance:21 fromView:_ivFourAge toView:_lbTitleAgeGrpup inContainer:_ageGroupView];
+    [NSLayoutConstraint setLeftDistance:33.5f fromView:_ivFourAge toView:_ivThreeAge inContainer:_ageGroupView];
 }
 
 #pragma mark -
@@ -1040,22 +679,8 @@
     lable.font = [UIFont systemFontOfSize:9.0f];
     
     [NSLayoutConstraint setWidht:47 height:21 forView:lable];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:view
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:4]];
-    
-    [_ageGroupView addConstraint:[NSLayoutConstraint constraintWithItem:lable
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:view
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
+    [NSLayoutConstraint setTopDistance:4 fromView:lable toView:view inContainer:_ageGroupView];
+    [NSLayoutConstraint centerHorizontal:lable withView:view inContainer:_ageGroupView];
 }
 
 #pragma mark -
@@ -1106,37 +731,9 @@
     label.layer.backgroundColor = [[UIColor colorWithRGBA:BG_GROUP_LABLE_COLOR] CGColor];
     [groupView addSubview:label];
     
-    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:label
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:0
-                                                             toItem:groupView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:13.5f]];
-    
-    [groupView addConstraint:[NSLayoutConstraint constraintWithItem:label
-                                                          attribute:NSLayoutAttributeCenterX
-                                                          relatedBy:0
-                                                             toItem:groupView
-                                                          attribute:NSLayoutAttributeCenterX
-                                                         multiplier:1
-                                                           constant:0]];
-    
-    [label addConstraint: [NSLayoutConstraint constraintWithItem:label
-                                                       attribute:NSLayoutAttributeWidth
-                                                       relatedBy:0
-                                                          toItem:nil
-                                                       attribute:0
-                                                      multiplier:1
-                                                        constant:widht]];
-    
-    [label addConstraint: [NSLayoutConstraint constraintWithItem:label
-                                                       attribute:NSLayoutAttributeHeight
-                                                       relatedBy:0
-                                                          toItem:nil
-                                                       attribute:0
-                                                      multiplier:1
-                                                        constant:24]];
+    [NSLayoutConstraint setWidht:widht height:24.0f forView:label];
+    [NSLayoutConstraint setTopPadding:13.5f forView:label inContainer:groupView];
+    [NSLayoutConstraint centerHorizontal:label withView:groupView inContainer:groupView];
 }
 
 #pragma mark -

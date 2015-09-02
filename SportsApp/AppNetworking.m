@@ -12,9 +12,25 @@
 #import "NSDate+Utilities.h"
 #import "NSDate+Formater.h"
 
-#define API_URL_CREATE_GAME @"http://sportsapp.com"
-#define API_URL_GAMES_FOR_USER @"http://sportsapp.com"
-#define API_URL_SETTINGS_FOR_USER @"http://sportsapp.com"
+#define API_KEY @"JqwR7ncB-jss5vot23eaFQ"
+#define API_SCHEME @"https"
+#define API_HOST @"start-sport.herokuapp.com"
+#define API_PORT @"443"
+#define API_VERSION @"/api/v1/"
+
+#define API_PATH_LOGIN @"users/authentication.json"
+#define API_PATH_FIND_USER @"users/find_by_name.json"
+#define API_PATH_INVITE_USER_WITH_ID @"invitations.json"
+#define API_PATH_INVITE_USER_WITH_EMAIL @"mail_invitations.json"
+#define API_PATH_SET_USER_STATUS_FOR_GAME @"invitations.json"
+#define API_PATH_SETTINGS_FOR_USER @"users/settings.json"
+#define API_PATH_SAVE_SETTINGS_FOR_USER @"users/settings.json"
+#define API_PATH_MEMBERS_FOR_GAME @"games/%lu/members.json"
+#define API_PATH_GAMES_IN_CITY @"games.json"
+#define API_PATH_CREATE_NEW_GAME @"games.json"
+#define API_PATH_EDIT_GAME @"games/%lu.json"
+#define API_PATH_GAME_BY_ID @"games/%lu.json"
+#define API_PATH_CITIES @"games/cityes.json"
 
 #define URL_YANDEX_GEOCODE_REVERS @"https://geocode-maps.yandex.ru/1.x/?sco=longlat&format=json&kind=locality&geocode=%f,%f"
 #define URL_YANDEX_GEOCODE @"https://geocode-maps.yandex.ru/1.x/?format=json&kind=locality&geocode=%@"
@@ -23,11 +39,21 @@
 
 @implementation AppNetworking {
     NSString *userToken;
+    
+    NSString *urlLoginUser;
+    NSString *urlFindUser;
+    NSString *urlInviteUserWithId;
+    NSString *urlInviteUserWithEmail;
+    NSString *urlSetUserStatusForGame;
+    NSString *urlSettingsForUser;
+    NSString *urlSaveSettingsForUser;
+    NSString *urlMembersForGame_Format;
+    NSString *urlGamesInCity;
+    NSString *urlCreateNewGame;
+    NSString *urlEditGame_Format;
+    NSString *urlGameById_Format;
+    NSString *urlCities;
 }
-
-// {error:0, data:{...} }
-// {error:0, data:[...] }
-// {error:3, data:null }
 
 + (instancetype)sharedInstance {
     static AppNetworking *sharedInstance = nil;
@@ -38,6 +64,28 @@
     return sharedInstance;
 }
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        NSString *url = [NSString stringWithFormat:@"%@://%@:%@", API_SCHEME, API_HOST, API_PORT];
+        
+        urlLoginUser = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_LOGIN, API_KEY];
+        urlFindUser = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_FIND_USER, API_KEY];
+        urlInviteUserWithId = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_INVITE_USER_WITH_ID, API_KEY];
+        urlInviteUserWithEmail = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_INVITE_USER_WITH_EMAIL, API_KEY];
+        urlSetUserStatusForGame = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_SET_USER_STATUS_FOR_GAME, API_KEY];
+        urlSettingsForUser = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_SETTINGS_FOR_USER, API_KEY];
+        urlSaveSettingsForUser = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_SAVE_SETTINGS_FOR_USER, API_KEY];
+        urlMembersForGame_Format = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_MEMBERS_FOR_GAME, API_KEY];
+        urlGamesInCity = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_GAMES_IN_CITY, API_KEY];
+        urlCreateNewGame = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_CREATE_NEW_GAME, API_KEY];
+        urlEditGame_Format = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_EDIT_GAME, API_KEY];
+        urlGameById_Format = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_GAME_BY_ID, API_KEY];
+        urlCities = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_CITIES, API_KEY];
+    }
+    return self;
+}
+
 - (void) setUserToken:(NSString *)token {
     userToken = token;
 }
@@ -45,10 +93,8 @@
 #pragma mark -
 #pragma mark Login
 - (void) loginUser:(NSDictionary *)params completionHandler:(void(^)(AppUser *user, NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/authentication.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
-    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    [NetManager sendPostMultipartFormData:urlLoginUser withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
         NSString *errorMessage;
@@ -58,9 +104,6 @@
             id resultJson = nil;
             hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
-            /*
-             {"user":{"id":16,"provider":"vk","avatar":null,"provider_id":"244648174","email":null,"name":null,"age":null,"token":"yYo---X0u78hDXYwB-bpMQ","chat_password":"tVTY97LQvGc="},"new":false}
-             */
             if(!hasError){
                 user = [AppUser new];
                 
@@ -87,9 +130,6 @@
                 
                 user.chatLogin = [NSString stringWithFormat:@"AppChatLoginName_%lu", (unsigned long)user.uid];
                 user.chatPassword = userDic[@"chat_password"];
-                
-                //user.chatLogin = @"TestUser2";
-                //user.chatPassword = @"ahtrahtrahtr2";
             }
         }
         else {
@@ -107,17 +147,13 @@
 #pragma mark -
 #pragma mark Players
 - (void) findUser:(NSString *)username completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
-    // GET
-    // IN: username
-    // OUT: JSON data - [{userId, avatar, name}, {}, ...]
-    
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/find_by_name.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/find_by_name.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:username forKey:@"name"];
     
-    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendGet:urlFindUser withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         BOOL hasError = YES;
         NSString *errorMessage;
         NSMutableArray *members = [NSMutableArray new];
@@ -136,9 +172,6 @@
                     
                     if(![dic[@"avatar"] isKindOfClass:[NSNull class]])
                         member.icon = dic[@"avatar"];
-                        
-                    //member.icon = ; //@"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-                    //member.invited = YES;
                     
                     [members addObject:member];
                 }
@@ -157,14 +190,14 @@
 }
 
 - (void) inviteUserWithId:(NSUInteger)userId forGame:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)userId] forKey:@"user_id"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)gameId] forKey:@"game_id"];
     
-    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendPostMultipartFormData:urlInviteUserWithId withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         BOOL hasError = YES;
         NSString *errorMessage;
         
@@ -193,13 +226,13 @@
 }
 
 - (void) inviteUserWithEmail:(NSString *)email completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/mail_invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/mail_invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:email forKey:@"email"];
     
-    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendPostMultipartFormData:urlInviteUserWithEmail withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         BOOL hasError = YES;
         NSString *errorMessage;
         
@@ -228,7 +261,7 @@
 }
 
 - (void) setUserStatusForGame:(NSUInteger)gameId status:(NSUInteger)status completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -245,7 +278,7 @@
     [params setValue:participateStatus forKey:@"state"];
     
     
-    [NetManager sendPatch:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendPatch:urlSetUserStatusForGame withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         BOOL hasError = YES;
         NSString *errorMessage;
         
@@ -276,18 +309,13 @@
 #pragma mark - 
 #pragma mark Settings
 - (void) settingsForCurrentUserCompletionHandler:(void(^)(MemberSettings *settings, NSString *errorMessage))blockHandler {
-    // GET
-    // IN: userId
-    // OUT: JSON data - {age, level, football, squash, tennis, basketball, volleyball, hockey, handball}
-    
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
-    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        // {"age":null,"level":null,"sport_types":[1,2,3,4,5,6,7]}
+    [NetManager sendGet:urlSettingsForUser withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
         NSString *errorMessage;
@@ -346,13 +374,7 @@
 }
 
 - (void) saveSettingsForCurrentUser:(MemberSettings *)settings completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    // POST
-    // IN: userId, age, level, football, squash, tennis, basketball, volleyball, hockey, handball
-    // OUT: JSON data - null
-    
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
-    // {"age":null,"level":null,"sport_types":[1,2,3,4,5,6,7]}
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -386,8 +408,8 @@
     if(sports.count > 0)
         [params setObject:sports forKey:@"sport_type_ids"];
     
-    [NetManager sendPatch:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    [NetManager sendPatch:urlSaveSettingsForUser withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
         NSString *errorMessage;
@@ -395,9 +417,6 @@
         if(!error){
             id resultJson = nil;
             hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
-            
-            if(!hasError){
-            }
         }
         else {
             NSLog(@"error: %@", error.debugDescription);
@@ -414,20 +433,13 @@
 #pragma mark -
 #pragma mark Game
 - (void) membersForGame:(NSUInteger)gameId completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
-    // GET
-    // IN: gameId
-    // OUT: JSON data - [{userId, avatar, name}, {}, ...]
-    
-    
-    //get /api/v1/games/{id}/members.json
-    
-    NSString *url = [NSString stringWithFormat:@"https://start-sport.herokuapp.com:443/api/v1/games/%lu/members.json?api_key=JqwR7ncB-jss5vot23eaFQ", (unsigned long)gameId];
+    NSString *url = [NSString stringWithFormat:urlMembersForGame_Format, (unsigned long)gameId];
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
     [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
         NSString *errorMessage;
@@ -437,6 +449,7 @@
             id resultJson = nil;
             hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
+            /*
             if(!hasError){
                 NSMutableArray *arr = (NSMutableArray *)resultJson;
                 
@@ -450,6 +463,7 @@
                     [members addObject:member];
                 }
             }
+            */
         }
         else {
             NSLog(@"error: %@", error.debugDescription);
@@ -463,37 +477,8 @@
     }];
 }
 
-- (BOOL) handleResponse:(NSURLResponse *)response data:(NSData *)data resultObject:(id*)jsonObj errorMessage:(NSString **)msg {
-    BOOL hasError = YES;
-    
-    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-    NSInteger statusCode = [httpResponse statusCode];
-    NSLog(@"statusCode: %lu", (unsigned long)statusCode);
-    
-    NSError *error = nil;
-    if(statusCode >= 200 && statusCode < 300){
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-        
-        *jsonObj = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-        hasError = NO;
-    }
-    else{
-        NSLog(@"Something wrong!");
-        NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
-                                                                   options:NSJSONReadingMutableContainers
-                                                                     error:&error];
-        *msg = dic[@"error"];
-    }
-    
-    return hasError;
-}
-
 - (void) gamesInCity:(NSString *)city completionHandler:(void(^)(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage))blockHandler {
-    // GET
-    // IN: userId
-    // OUT: JSON data - [{gameName, address, addressName, date, time, adminId, participateStatus}, {...}, ...]
-    
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -501,7 +486,7 @@
     if(city)
         [params setValue:city forKey:@"city"];
     
-    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendGet:urlGamesInCity withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
@@ -511,18 +496,15 @@
         NSMutableArray *publicGames = [NSMutableArray new];
         
         if(!error){
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-            NSInteger statusCode = [httpResponse statusCode];
-            NSLog(@"statusCode: %lu", (long)statusCode);
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
-            if(statusCode >= 200 && statusCode < 300){
-                NSMutableDictionary *resultDic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-                
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
                 NSMutableArray *myG = resultDic[@"my"];
                 NSMutableArray *publicG = resultDic[@"public"];
                 
-                // "id":5,"user_id":4,"sport_type_id":2,"start_at":"2015-08-10T10:00:41.000Z","age":4,"numbers":8,"level":3,"title":"Большой спорт зал школы №163","address":"Ул. Тикоцкого,9","participate_status":"possible"
-                
+                // my
                 if([myG count] > 0){
                     for(NSMutableDictionary *gdic in myG){
                         GameInfo* game = [GameInfo new];
@@ -563,6 +545,7 @@
                     }
                 }
                 
+                // public
                 if([publicG count] > 0){
                     for(NSMutableDictionary *gdic in publicG){
                         GameInfo* game = [GameInfo new];
@@ -593,16 +576,6 @@
                         [publicGames addObject:game];
                     }
                 }
-                
-                hasError = NO;
-            }
-            else{
-                NSLog(@"Something wrong!");
-                
-                NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
-                                                                           options:NSJSONReadingMutableContainers
-                                                                             error:&error];
-                errorMessage = dic[@"error"];
             }
         }
         else {
@@ -618,7 +591,7 @@
 }
 
 - (void) createNewGame:(NewGame *)game completionHandler:(void(^)(NSUInteger gameId, NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -652,27 +625,20 @@
     [params setValue:[NSString stringWithFormat:@"%f", game.latitude] forKey:@"latitude"];
     [params setValue:[NSString stringWithFormat:@"%f", game.longitude] forKey:@"longitude"];
     
-    [NetManager sendPostMultipartFormData:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+    [NetManager sendPostMultipartFormData:urlCreateNewGame withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
         NSString *errorMessage;
-        NSMutableDictionary *dic = nil;
         NSUInteger gameId = 0;
         
         if(!error){
-            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *) response;
-            NSInteger statusCode = [httpResponse statusCode];
-            NSLog(@"statusCode: %lu", (long)statusCode);
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
-            if(statusCode >= 200 && statusCode < 300){
-                dic = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
-                gameId = [dic[@"id"] integerValue];
-                hasError = NO;
-            }
-            else{
-                NSLog(@"Something wrong!");
-                errorMessage = dic[@"error"];
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
+                gameId = [resultDic[@"id"] integerValue];
             }
         }
         else {
@@ -688,7 +654,7 @@
 }
 
 - (void) editGame:(NewGame *)game withId:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-     NSString *url = [NSString stringWithFormat:@"https://start-sport.herokuapp.com:443/api/v1/games/%lu.json?api_key=JqwR7ncB-jss5vot23eaFQ", (unsigned long)gameId];
+     NSString *url = [NSString stringWithFormat:urlEditGame_Format, (unsigned long)gameId];
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -748,7 +714,7 @@
 }
 
 - (void) gameById:(NSUInteger)gameId completionHandler:(void(^)(GameInfo *gameInfo, NSString *errorMessage))blockHandler {
-    NSString *url = [NSString stringWithFormat:@"https://start-sport.herokuapp.com:443/api/v1/games/%lu.json?api_key=JqwR7ncB-jss5vot23eaFQ", (unsigned long)gameId];
+    NSString *url = [NSString stringWithFormat:urlGameById_Format, (unsigned long)gameId];
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
@@ -839,12 +805,12 @@
 }
 
 - (void) citiesCompletionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
-    NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games/cityes.json?api_key=JqwR7ncB-jss5vot23eaFQ";
+    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games/cityes.json?api_key=JqwR7ncB-jss5vot23eaFQ";
     
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
-    [NetManager sendGet:url withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    [NetManager sendGet:urlCities withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         BOOL hasError = YES;
@@ -857,7 +823,6 @@
             
             if(!hasError){
                 NSMutableArray *arr = (NSMutableArray *)resultJson;
-                
                 cities = arr;
             }
         }
@@ -929,7 +894,7 @@
     NSString *url = [NSString stringWithFormat:URL_YANDEX_GEOCODE, query];
     
     [NetManager sendGet:url withParams:nil completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-        NSLog(@"Yandex response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        //NSLog(@"Yandex response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
         
         if(blockHandler != nil){
             if(error){
@@ -1061,21 +1026,37 @@
             place.lat = [location[@"lat"] floatValue];
             place.lng = [location[@"lng"] floatValue];
             
-            /*
-            NSMutableArray *categories = item[@"categories"];
-            if(categories.count > 0){
-                NSMutableDictionary *icon = categories[0][@"icon"];
-                
-                if(icon)
-                    place.icon = [NSString stringWithFormat:@"%@88%@", icon[@"prefix"], icon[@"suffix"]];
-            }
-             */
-            
             [results addObject:place];
         }
     }
     
     return results;
+}
+
+#pragma mark -
+- (BOOL) handleResponse:(NSURLResponse *)response data:(NSData *)data resultObject:(id*)jsonObj errorMessage:(NSString **)msg {
+    BOOL hasError = YES;
+    
+    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+    NSInteger statusCode = [httpResponse statusCode];
+    NSLog(@"statusCode: %lu", (unsigned long)statusCode);
+    
+    NSError *error = nil;
+    if(statusCode >= 200 && statusCode < 300){
+        NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
+        
+        *jsonObj = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&error];
+        hasError = NO;
+    }
+    else{
+        NSLog(@"Something wrong!");
+        NSMutableDictionary *dic = [NSJSONSerialization JSONObjectWithData:data
+                                                                   options:NSJSONReadingMutableContainers
+                                                                     error:&error];
+        *msg = dic[@"error"];
+    }
+    
+    return hasError;
 }
 
 #pragma mark -

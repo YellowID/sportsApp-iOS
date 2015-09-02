@@ -158,11 +158,7 @@ static NSArray* SCOPE = nil;
 }
 
 - (void) goToNextScreen {
-    //[AppDelegate instance].currentUserId = 1; // TEMP
-    //[[self navigationController] setNavigationBarHidden:NO animated:YES];
-    
     userWasLogged = YES;
-     
     GamesListViewController *controller = [[GamesListViewController alloc] init];
     [self.navigationController pushViewController:controller animated:YES];
 }

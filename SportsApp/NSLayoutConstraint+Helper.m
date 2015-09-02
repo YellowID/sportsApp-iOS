@@ -2,7 +2,7 @@
 //  NSLayoutConstraint+Helper.m
 //  SportsApp
 //
-//  Created by sergeyZ on 27.05.15.
+//  Created by sergeyZ on 17.06.15.
 //
 //
 
@@ -142,6 +142,56 @@
                                                                   attribute:NSLayoutAttributeRight
                                                                  multiplier:1
                                                                    constant:-padding];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
+#pragma mark -
+#pragma mark Distance
++ (NSLayoutConstraint *) setTopDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1
+                                                                   constant:distance];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setBottomDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1
+                                                                   constant:-distance];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setLeftDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1
+                                                                   constant:distance];
+    [container addConstraint: constraint];
+    return constraint;
+}
+
++ (NSLayoutConstraint *) setRightDistance:(CGFloat)distance fromView:(UIView*)view toView:(UIView*)anchorView inContainer:(UIView*)container {
+    NSLayoutConstraint* constraint = [NSLayoutConstraint constraintWithItem:view
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:0
+                                                                     toItem:anchorView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1
+                                                                   constant:-distance];
     [container addConstraint: constraint];
     return constraint;
 }

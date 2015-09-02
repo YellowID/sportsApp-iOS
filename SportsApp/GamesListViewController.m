@@ -193,16 +193,13 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    
     BOOL isFirstRowInSection = (indexPath.row == 0);
     BOOL isLastRowInSection = NO;
     
-    if(indexPath.section == SECTION_MY_GAMES){
+    if(indexPath.section == SECTION_MY_GAMES)
         isLastRowInSection = (indexPath.row == _myGames.count - 1);
-    }
-    else if(indexPath.section == SECTION_PUBLIC_GAMES){
+    else if(indexPath.section == SECTION_PUBLIC_GAMES)
         isLastRowInSection = (indexPath.row == _publicGames.count - 1);
-    }
     
     if(isFirstRowInSection && isLastRowInSection)
         return 100 + CELL_PADDING_FIRST; //105.5f;

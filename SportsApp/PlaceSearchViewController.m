@@ -101,13 +101,10 @@
     [NSLayoutConstraint setLeftPadding:10 forView:btnClose inContainer:_fakeNavBarView];
 }
 
-
 #pragma mark -
 #pragma mark Search Views
 - (void) setupSearchViews {
     UIView *searchContainer = [UIView new];
-    searchContainer.frame = CGRectZero;
-    //searchContainer.backgroundColor = [UIColor redColor];
     searchContainer.translatesAutoresizingMaskIntoConstraints = NO;
     [_fakeNavBarView addSubview:searchContainer];
     
@@ -115,8 +112,6 @@
     [NSLayoutConstraint setTopPadding:30 forView:searchContainer inContainer:_fakeNavBarView];
     [NSLayoutConstraint setRightPadding:14 forView:searchContainer inContainer:_fakeNavBarView];
     [NSLayoutConstraint setLeftPadding:48 forView:searchContainer inContainer:_fakeNavBarView];
-    //[NSLayoutConstraint stretchHorizontal:searchContainer inContainer:_fakeNavBarView withPadding:44];
-    
     
     // children
     _searchPlacesField = [[UITextField alloc] initWithFrame:CGRectZero];
@@ -125,7 +120,6 @@
     _searchPlacesField.delegate = self;
     _searchPlacesField.placeholder = @"Название места";
     [_searchPlacesField setBorderStyle:UITextBorderStyleRoundedRect];
-    //_searchPlacesField.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR];
     _searchPlacesField.backgroundColor = [UIColor whiteColor];
     _searchPlacesField.textAlignment = NSTextAlignmentLeft;
     _searchPlacesField.font = [UIFont systemFontOfSize:12.0f];
@@ -169,7 +163,6 @@
     [searchContainer addConstraints:vConstraints];
 }
 
-
 #pragma mark -
 #pragma mark UITableView delegate methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -188,19 +181,13 @@
 }
 
 -(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Remove seperator inset
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)]) {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
         [cell setSeparatorInset:UIEdgeInsetsZero];
-    }
     
-    // Prevent the cell from inheriting the Table View's margin settings
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
         [cell setPreservesSuperviewLayoutMargins:NO];
-    }
     
-    // Explictly set your cell's layout margins
     if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        //[cell setLayoutMargins:UIEdgeInsetsZero];
         [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
         [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
     }
@@ -209,7 +196,6 @@
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 100.0f)];
     view.clipsToBounds = YES;
-    //view.backgroundColor = [UIColor redColor];
     
     UILabel *label = [UILabel new];
     label.text = @"Нет нужного места?";
@@ -248,14 +234,7 @@
     btnChooseAddress.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setWidht:110 height:36 forView:btnChooseAddress];
     [NSLayoutConstraint centerHorizontal:btnChooseAddress withView:view inContainer:view];
-    
-    [view addConstraint: [NSLayoutConstraint constraintWithItem:btnChooseAddress
-                                                           attribute:NSLayoutAttributeTop
-                                                           relatedBy:0
-                                                              toItem:label
-                                                           attribute:NSLayoutAttributeBottom
-                                                          multiplier:1
-                                                            constant:8]];
+    [NSLayoutConstraint setTopDistance:8 fromView:btnChooseAddress toView:label inContainer:view];
     
     return view;
 }
@@ -279,18 +258,17 @@
     if(itemsForDisplay == DISPLAY_PLACES){
         FoursquareResponse *placemark = places[indexPath.row];
         cell.textLabel.text = placemark.name;
+        
         if(placemark.address)
             cell.detailTextLabel.text = placemark.address;
     }
     else if(itemsForDisplay == DISPLAY_ADDRESSES){
-        cell.textLabel.text = @"Address";
-        
         YandexGeoResponse *placemark = addresses[indexPath.row];
         cell.textLabel.text = placemark.name;
+        
         if(placemark.descr)
             cell.detailTextLabel.text = placemark.descr;
     }
-    
     
     return cell;
 }
@@ -313,7 +291,6 @@
         searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:self selector:@selector(startSearchFoursquare:) userInfo:_searchPlacesField.text repeats:NO];
     }
     
-    //[_tableView reloadData];
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
@@ -525,9 +502,6 @@
                 }
                 else{
                     yandexGeoResponse = resp;
-                    
-                    //NSString *userLocationName = [NSString stringWithFormat:@"%@, %@", yandexGeoResponse.name, yandexGeoResponse.descr];
-                    //_searchAddressField.text = userLocationName;
                     _searchAddressField.text = yandexGeoResponse.name;
                 }
             });
@@ -579,12 +553,9 @@
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if(alertView.tag == GEO_DENY_ALERT){
         if(buttonIndex == 1){
-            //[[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=LOCATION_SERVICES"]];
-            
             NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
+            if ([[UIApplication sharedApplication] canOpenURL:url])
                 [[UIApplication sharedApplication] openURL:url];
-            }
         }
     }
 }
@@ -606,8 +577,6 @@
     
     CGRect fullRect = CGRectMake(0, NAVBAR_HRIGHT, self.view.bounds.size.width, self.view.bounds.size.height - NAVBAR_HRIGHT);
     _tableView.frame = fullRect;
-    
-    //[self.view layoutIfNeeded];
 }
 
 @end
