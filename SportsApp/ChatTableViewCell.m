@@ -9,26 +9,26 @@
 #import "ChatTableViewCell.h"
 #import "NSLayoutConstraint+Helper.h"
 
-#define PADDING_TOP 8
-#define PADDING_BOTTOM 8
-#define PADDING_LEFT 6
-#define PADDING_RIGHT 60
+static const CGFloat kPaddingTop = 8.0f;
+static const CGFloat kPaddingBottom = 8.0f;
+static const CGFloat kPaddingLeft = 6.0f;
+static const CGFloat kPaddingRight = 60.0f;
 
-#define CONTENT_PADDING_TOP 3
-#define CONTENT_PADDING_BOTTOM 6
-#define CONTENT_PADDING_LEFT 14
-#define CONTENT_PADDING_RIGHT 9
+static const CGFloat kPaddingContentTop = 3.0f;
+static const CGFloat kPaddingContentBottom = 6.0f;
+static const CGFloat kPaddingContentLeft = 14.0f;
+static const CGFloat kPaddingContentRight = 9.0f;
 
-#define NAME_FONT_SIZE 12.0f
-#define MSG_FONT_SIZE 14.0f
-#define TIME_FONT_SIZE 10.0f
+static const CGFloat kPaddingMessageTop = 6.0f;
 
-#define USERNAME_LABLE_HEIGHT 13
-#define TIME_LABLE_HEIGHT 10
+static const CGFloat kUsernameLableHeight = 13.0f;
+static const CGFloat kTimeLableHeight = 10.0f;
+static const CGFloat kPhotoSize = 40.0f;
 
-#define USERNAME_MESSAGE_PADDING 6
+static const CGFloat kFontSizeName = 12.0f;
+static const CGFloat kFontSizeMessage = 14.0f;
+static const CGFloat kFontSizeTime = 10.0f;
 
-#define PHOTO_SIZE 40
 
 @implementation ChatTableViewCell {
     NSLayoutConstraint *userNameHeightConstraint;
@@ -55,7 +55,7 @@
         [_messageView addSubview:_backgroundCallout];
         
         _userNameLabel = [UILabel new];
-        _userNameLabel.font = [UIFont boldSystemFontOfSize:NAME_FONT_SIZE];
+        _userNameLabel.font = [UIFont boldSystemFontOfSize:kFontSizeName];
         _userNameLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_userNameLabel];
         //_userNameLabel.backgroundColor = [UIColor greenColor];
@@ -69,13 +69,13 @@
         _userMessage.textContainer.lineFragmentPadding = 0;
         _userMessage.dataDetectorTypes = UIDataDetectorTypeAll;
         [_userMessage setBackgroundColor:[UIColor clearColor]];
-        [_userMessage setFont:[UIFont systemFontOfSize:MSG_FONT_SIZE]];
+        [_userMessage setFont:[UIFont systemFontOfSize:kFontSizeMessage]];
         [_messageView addSubview:_userMessage];
         //[_messageView sizeToFit];
         //_userMessage.backgroundColor = [UIColor greenColor];
         
         _timeLabel = [UILabel new];
-        _timeLabel.font = [UIFont systemFontOfSize:TIME_FONT_SIZE];
+        _timeLabel.font = [UIFont systemFontOfSize:kFontSizeTime];
         _timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [_messageView addSubview:_timeLabel];
         //_timeLabel.backgroundColor = [UIColor greenColor];
@@ -96,20 +96,20 @@
 + (CGFloat) heightRowForMessage:(NSString*)message andWidth:(CGFloat)cellWidth showUserName:(BOOL)showUserName {
     UITextView *tv = [UITextView new];
     tv.textAlignment = NSTextAlignmentLeft;
-    [tv setFont:[UIFont systemFontOfSize:MSG_FONT_SIZE + 1]];
+    [tv setFont:[UIFont systemFontOfSize:kFontSizeMessage + 1]];
     tv.textContainerInset = UIEdgeInsetsZero;
     tv.textContainer.lineFragmentPadding = 0;
     tv.text = message;
     
-    CGFloat contentWidth = cellWidth - PADDING_LEFT - PHOTO_SIZE - PADDING_RIGHT;
+    CGFloat contentWidth = cellWidth - kPaddingLeft - kPhotoSize - kPaddingRight;
     CGSize newSize = [tv sizeThatFits:CGSizeMake(contentWidth, MAXFLOAT)];
     
     CGFloat cellHeight = 0;
     if(showUserName){
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + USERNAME_LABLE_HEIGHT + TIME_LABLE_HEIGHT + USERNAME_MESSAGE_PADDING + 2;
+        cellHeight = newSize.height + kPaddingTop + kPaddingBottom + kPaddingContentTop + kPaddingContentBottom + kUsernameLableHeight + kTimeLableHeight + kPaddingMessageTop + 2;
     }
     else{
-        cellHeight = newSize.height + PADDING_TOP + PADDING_BOTTOM + CONTENT_PADDING_TOP + CONTENT_PADDING_BOTTOM + TIME_LABLE_HEIGHT + 2;
+        cellHeight = newSize.height + kPaddingTop + kPaddingBottom + kPaddingContentTop + kPaddingContentBottom + kTimeLableHeight + 2;
     }
     
     return cellHeight;
@@ -122,14 +122,14 @@
 
 #pragma mark -
 - (void) layoutPhoto {
-    [NSLayoutConstraint setWidht:PHOTO_SIZE height:PHOTO_SIZE forView:_ivPhoto];
-    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_ivPhoto inContainer:self];
-    [NSLayoutConstraint setLeftPadding:PADDING_LEFT forView:_ivPhoto inContainer:self];
+    [NSLayoutConstraint setWidht:kPhotoSize height:kPhotoSize forView:_ivPhoto];
+    [NSLayoutConstraint setTopPadding:kPaddingTop forView:_ivPhoto inContainer:self];
+    [NSLayoutConstraint setLeftPadding:kPaddingLeft forView:_ivPhoto inContainer:self];
 }
 
 - (void) layoutMessageView {
-    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_messageView inContainer:self];
-    [NSLayoutConstraint setBottomPadding:PADDING_BOTTOM forView:_messageView inContainer:self];
+    [NSLayoutConstraint setTopPadding:kPaddingTop forView:_messageView inContainer:self];
+    [NSLayoutConstraint setBottomPadding:kPaddingBottom forView:_messageView inContainer:self];
     [NSLayoutConstraint setLeftDistance:0 fromView:_messageView toView:_ivPhoto inContainer:self];
     
     [self addConstraint:[NSLayoutConstraint constraintWithItem:_messageView
@@ -138,7 +138,7 @@
                                                                toItem:self
                                                             attribute:NSLayoutAttributeRight
                                                            multiplier:1
-                                                             constant:-PADDING_RIGHT]];
+                                                             constant:-kPaddingRight]];
     
     [self layoutBackgoundImage];
     [self layoutUserNameLabel];
@@ -151,8 +151,8 @@
 }
 
 - (void) layoutUserNameLabel {
-    [NSLayoutConstraint setTopPadding:CONTENT_PADDING_TOP forView:_userNameLabel inContainer:_messageView];
-    [NSLayoutConstraint setLeftPadding:CONTENT_PADDING_LEFT forView:_userNameLabel inContainer:_messageView];
+    [NSLayoutConstraint setTopPadding:kPaddingContentTop forView:_userNameLabel inContainer:_messageView];
+    [NSLayoutConstraint setLeftPadding:kPaddingContentLeft forView:_userNameLabel inContainer:_messageView];
     
     [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userNameLabel
                                                              attribute:NSLayoutAttributeRight
@@ -160,11 +160,11 @@
                                                                 toItem:_messageView
                                                              attribute:NSLayoutAttributeRight
                                                             multiplier:1
-                                                              constant:-CONTENT_PADDING_RIGHT]];
+                                                              constant:-kPaddingContentRight]];
     
     CGFloat userNameHeight = 0;
     if(self.showUserName){
-        userNameHeight = USERNAME_LABLE_HEIGHT;
+        userNameHeight = kUsernameLableHeight;
     }
     else{
         _userNameLabel.text = @"";
@@ -176,11 +176,11 @@
 - (void) layoutMessageLabel {
     CGFloat userNamePadding = 0;
     if(self.showUserName)
-        userNamePadding = USERNAME_MESSAGE_PADDING;
+        userNamePadding = kPaddingMessageTop;
     
     userNamePaddingConstraint = [NSLayoutConstraint setTopDistance:userNamePadding fromView:_userMessage toView:_userNameLabel inContainer:_messageView];
     
-    [NSLayoutConstraint setLeftPadding:CONTENT_PADDING_LEFT forView:_userMessage inContainer:_messageView];
+    [NSLayoutConstraint setLeftPadding:kPaddingContentLeft forView:_userMessage inContainer:_messageView];
     
     [_messageView addConstraint:[NSLayoutConstraint constraintWithItem:_userMessage
                                                             attribute:NSLayoutAttributeRight
@@ -188,22 +188,22 @@
                                                                toItem:_messageView
                                                             attribute:NSLayoutAttributeRight
                                                            multiplier:1
-                                                             constant:-CONTENT_PADDING_RIGHT]];
+                                                             constant:-kPaddingContentRight]];
     
 }
 
 - (void) layoutTimeLabel {
-    [NSLayoutConstraint setHeight:TIME_LABLE_HEIGHT forView:_timeLabel];
-    [NSLayoutConstraint setBottomPadding:CONTENT_PADDING_BOTTOM forView:_timeLabel inContainer:_messageView];
-    [NSLayoutConstraint setRightPadding:CONTENT_PADDING_RIGHT forView:_timeLabel inContainer:_messageView];
+    [NSLayoutConstraint setHeight:kTimeLableHeight forView:_timeLabel];
+    [NSLayoutConstraint setBottomPadding:kPaddingContentBottom forView:_timeLabel inContainer:_messageView];
+    [NSLayoutConstraint setRightPadding:kPaddingContentRight forView:_timeLabel inContainer:_messageView];
     [NSLayoutConstraint setTopDistance:1 fromView:_timeLabel toView:_userMessage inContainer:_messageView];
 }
 
 #pragma mark -
 - (void) updateNameLabelConstraintsIfNeeded {
     if(self.showUserName){
-        userNameHeightConstraint.constant = USERNAME_LABLE_HEIGHT;
-        userNamePaddingConstraint.constant = USERNAME_MESSAGE_PADDING;
+        userNameHeightConstraint.constant = kUsernameLableHeight;
+        userNamePaddingConstraint.constant = kPaddingMessageTop;
     }
     else{
         userNameHeightConstraint.constant = 0;

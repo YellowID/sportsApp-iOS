@@ -16,7 +16,7 @@
 #import "MBProgressHUD.h"
 #import "UIImage+Utilities.h"
 
-#define PHOTO_SIZE 40
+static const CGFloat kPhotoSize = 40.0f;
 
 @interface MemberViewController () <UITableViewDataSource, UITableViewDelegate>
 
@@ -132,7 +132,7 @@
     cell.imageView.contentMode = UIViewContentModeCenter;
     
     cell.imageView.layer.borderWidth = 0.0;
-    cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
+    cell.imageView.layer.cornerRadius = kPhotoSize / 2;
     cell.imageView.layer.masksToBounds = YES;
     
     if(member.name)

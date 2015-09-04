@@ -7,23 +7,19 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Constants.h"
 
-#define GAME_TYPE_FOOTBALL 1
-#define GAME_TYPE_BASKETBALL 2
-#define GAME_TYPE_VOLLEYBALL 3
-#define GAME_TYPE_HANDBALL 4
-#define GAME_TYPE_TENNIS 5
-#define GAME_TYPE_HOCKEY 6
-#define GAME_TYPE_SQUASH 7
-
-#define PARTICIPATE_STATUS_NO 1
-#define PARTICIPATE_STATUS_YES 2
-#define PARTICIPATE_STATUS_POSSIBLE 3
+enum UserGameParticipateStatus : NSUInteger {
+    UserGameParticipateStatusNo = 1,
+    UserGameParticipateStatusYes,
+    UserGameParticipateStatusPossible
+};
+typedef enum UserGameParticipateStatus UserGameParticipateStatus;
 
 @interface GameInfo : NSObject
 
 @property (nonatomic) NSUInteger gameId;
-@property (nonatomic) NSUInteger gameType;
+@property (nonatomic) SportType sportType;
 @property (copy, nonatomic) NSString *gameName;
 @property (copy, nonatomic) NSString *address;
 @property (copy, nonatomic) NSString *addressName;
@@ -32,17 +28,13 @@
 @property (copy, nonatomic) NSString *date;
 @property (copy, nonatomic) NSString *time;
 
-@property (nonatomic) NSUInteger age;
-@property (nonatomic) NSUInteger level;
+@property (nonatomic) PlayerAge age;
+@property (nonatomic) PlayerLevel level;
 @property (nonatomic) NSUInteger numbers;
 
 @property (nonatomic) NSUInteger adminId;
-@property (nonatomic) NSUInteger participateStatus;
+@property (nonatomic) UserGameParticipateStatus participateStatus;
 
 @property (retain, nonatomic) NSMutableArray *members;
-
-//+ (NSString *) gameNameForTypeId:(NSUInteger)gameType;
-
-//- (void) setGameType:(NSUInteger)gameType;
 
 @end

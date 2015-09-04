@@ -23,12 +23,12 @@
 
 #import "CustomTextField.h"
 
-#define PADDING_H 12
-#define MAIN_SCROLL_CONTENT_HEIGHT 340
+static const NSUInteger kPickerPeopleNumber = 0;
+static const NSUInteger kPickerAge = 1;
+static const NSUInteger kPickerSport = 2;
 
-#define PEOPLE_NUM_PICKER 0
-#define AGE_PICKER 1
-#define SPORT_PICKER 2
+static const CGFloat kHorizontalPadding = 12.0f;
+static const CGFloat kScrollContentHeight = 340.0f;
 
 @interface NewEvenViewController () <UITextFieldDelegate, UIPickerViewDataSource, UIPickerViewDelegate, PlaceSearchViewControllerDelegate>
 
@@ -67,14 +67,14 @@
 @end
 
 @implementation NewEvenViewController{
-    UIImage* grayStarImage;
-    UIImage* activeStarImage;
+    UIImage *grayStarImage;
+    UIImage *activeStarImage;
     
     BOOL oneStarStatus, twoStarStatus, threeStarStatus;
     
-    NSMutableArray* sportItems;
-    NSMutableArray* ageItems;
-    NSMutableArray* peopleNumberItems;
+    NSArray *sportItems;
+    NSArray *ageItems;
+    NSMutableArray *peopleNumberItems;
     
     NewGame *newGame;
     GameInfo *editGameInfo;
@@ -98,32 +98,21 @@
     _peopleNumberPicker = [[UIPickerView alloc] init];
     _peopleNumberPicker.dataSource = self;
     _peopleNumberPicker.delegate = self;
-    _peopleNumberPicker.tag = PEOPLE_NUM_PICKER;
+    _peopleNumberPicker.tag = kPickerPeopleNumber;
     _peopleNumberPicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
-    ageItems = [NSMutableArray new];
-    [ageItems addObject:@"до 20"];
-    [ageItems addObject:@"20-28"];
-    [ageItems addObject:@"28-35"];
-    [ageItems addObject:@"после 35"];
+    ageItems = @[@"до 20", @"20-28", @"28-35", @"после 35"];
     _agePicker = [[UIPickerView alloc] init];
     _agePicker.dataSource = self;
     _agePicker.delegate = self;
-    _agePicker.tag = AGE_PICKER;
+    _agePicker.tag = kPickerAge;
     _agePicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
-    sportItems = [NSMutableArray new];
-    [sportItems addObject:@"Футбол"];
-    [sportItems addObject:@"Баскетбол"];
-    [sportItems addObject:@"Волейбол"];
-    [sportItems addObject:@"Гандбол"];
-    [sportItems addObject:@"Теннис"];
-    [sportItems addObject:@"Хоккей"];
-    [sportItems addObject:@"Сквош"];
+    sportItems = @[@"Футбол", @"Баскетбол", @"Волейбол", @"Гандбол", @"Теннис", @"Хоккей", @"Сквош"];
     _sportPicker = [[UIPickerView alloc] init];
     _sportPicker.dataSource = self;
     _sportPicker.delegate = self;
-    _sportPicker.tag = SPORT_PICKER;
+    _sportPicker.tag = kPickerSport;
     _sportPicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
     // UIDatePicker
@@ -134,8 +123,7 @@
     [_dateTimePicker setDate:todayDate];
     [_dateTimePicker addTarget:self action:@selector(datePickerDateChanged:) forControlEvents:UIControlEventValueChanged];
     
-    NSTimeInterval oneYearTime = 365 * 24 * 60 * 60;
-    NSDate *twoYearsFromToday = [todayDate dateByAddingTimeInterval:2 * oneYearTime];
+    NSDate *twoYearsFromToday = [todayDate dateByAddingYears:2];
     _dateTimePicker.minimumDate = todayDate;
     _dateTimePicker.maximumDate = twoYearsFromToday;
     
@@ -166,7 +154,7 @@
                 }
                 else{
                     editGameInfo = gameInfo;
-                    newGame.sport = editGameInfo.gameType;
+                    newGame.sportType = editGameInfo.sportType;
                     newGame.time = editGameInfo.startAt;
                     
                     newGame.age = editGameInfo.age;
@@ -188,15 +176,15 @@
                     NSDate *editDate = [NSDate dateWithJsonString:editGameInfo.startAt];
                     [_dateTimePicker setDate:editDate];
                     
-                    [_sportPicker selectRow:editGameInfo.gameType-1 inComponent:0 animated:NO];
+                    [_sportPicker selectRow:editGameInfo.sportType-1 inComponent:0 animated:NO];
                     [_peopleNumberPicker selectRow:editGameInfo.numbers-1 inComponent:0 animated:NO];
                     [_agePicker selectRow:editGameInfo.age-1 inComponent:0 animated:NO];
                     
-                    if(editGameInfo.level == LEVEL_1)
+                    if(editGameInfo.level == PlayerLevelBeginner)
                         [self oneStarClick];
-                    else if(editGameInfo.level == LEVEL_2)
+                    else if(editGameInfo.level == PlayerLevelMiddling)
                         [self twoStarClick];
-                    else if(editGameInfo.level == LEVEL_3)
+                    else if(editGameInfo.level == PlayerLevelMaster)
                         [self threeStarClick];
                 }
             });
@@ -269,7 +257,7 @@
     //_scrollView.backgroundColor = [UIColor blueColor];
     [self.view addSubview:_scrollView];
     
-    _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, MAIN_SCROLL_CONTENT_HEIGHT)];
+    _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, kScrollContentHeight)];
     //_containerView.backgroundColor = [UIColor greenColor];
     [_scrollView addSubview:_containerView];
 }
@@ -287,7 +275,7 @@
     
     [NSLayoutConstraint setHeight:77 forView:_fieldsGroupView];
     [NSLayoutConstraint setTopPadding:8 forView:_fieldsGroupView inContainer:_containerView];
-    [NSLayoutConstraint stretchHorizontal:_fieldsGroupView inContainer:_containerView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_fieldsGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_fieldsGroupView];
@@ -316,7 +304,7 @@
     
     [NSLayoutConstraint setHeight:30 forView:_tfKindOfSport];
     [NSLayoutConstraint setTopPadding:4 forView:_tfKindOfSport inContainer:_fieldsGroupView];
-    [NSLayoutConstraint stretchHorizontal:_tfKindOfSport inContainer:_fieldsGroupView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_tfKindOfSport inContainer:_fieldsGroupView withPadding:kHorizontalPadding];
 }
 
 - (void) setupLocationField {
@@ -333,7 +321,7 @@
     
     [NSLayoutConstraint setHeight:30 forView:_tfLocation];
     [NSLayoutConstraint setBottomPadding:4 forView:_tfLocation inContainer:_fieldsGroupView];
-    [NSLayoutConstraint stretchHorizontal:_tfLocation inContainer:_fieldsGroupView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_tfLocation inContainer:_fieldsGroupView withPadding:kHorizontalPadding];
 }
 
 #pragma mark -
@@ -349,7 +337,7 @@
     
     [NSLayoutConstraint setHeight:38 forView:_ageGroupView];
     [NSLayoutConstraint setTopDistance:8 fromView:_ageGroupView toView:_timeGroupView inContainer:_containerView];
-    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:_containerView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     [self setupTitleForAgeGroup];
     [self setupLableAge];
@@ -364,7 +352,7 @@
     [_ageGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:60 height:21 forView:title];
-    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_ageGroupView];
+    [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:title inContainer:_ageGroupView];
     [NSLayoutConstraint centerVertical:title withView:_ageGroupView inContainer:_ageGroupView];
 }
 
@@ -387,7 +375,7 @@
     [_ageGroupView addSubview:_tfAge];
     
     [NSLayoutConstraint setWidht:160 height:30 forView:_tfAge];
-    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfAge inContainer:_ageGroupView];
+    [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_tfAge inContainer:_ageGroupView];
     [NSLayoutConstraint centerVertical:_tfAge withView:_ageGroupView inContainer:_ageGroupView];
 }
 
@@ -404,7 +392,7 @@
     
     [NSLayoutConstraint setHeight:38 forView:_timeGroupView];
     [NSLayoutConstraint setTopDistance:8 fromView:_timeGroupView toView:_fieldsGroupView inContainer:_containerView];
-    [NSLayoutConstraint stretchHorizontal:_timeGroupView inContainer:_containerView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_timeGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     [self setupTitleForTimeGroup];
     [self setupLableTime];
@@ -419,7 +407,7 @@
     [_timeGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:60 height:21 forView:title];
-    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_timeGroupView];
+    [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:title inContainer:_timeGroupView];
     [NSLayoutConstraint centerVertical:title withView:_timeGroupView inContainer:_timeGroupView];
 }
 
@@ -445,7 +433,7 @@
     [_timeGroupView addSubview:_tfTime];
     
     [NSLayoutConstraint setWidht:200 height:30 forView:_tfTime];
-    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfTime inContainer:_timeGroupView];
+    [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_tfTime inContainer:_timeGroupView];
     [NSLayoutConstraint centerVertical:_tfTime withView:_timeGroupView inContainer:_timeGroupView];
 }
 
@@ -462,7 +450,7 @@
     
     [NSLayoutConstraint setHeight:77 forView:_levelGroupView];
     [NSLayoutConstraint setTopDistance:8 fromView:_levelGroupView toView:_ageGroupView inContainer:_containerView];
-    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:_containerView withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     UIView* separator = [UIView new];
     [self setupSeparator:separator intoGroup:_levelGroupView];
@@ -491,7 +479,7 @@
     
     [NSLayoutConstraint setWidht:152 height:30 forView:title];
     [NSLayoutConstraint setTopPadding:5 forView:title inContainer:_levelGroupView];
-    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_levelGroupView];
+    [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:title inContainer:_levelGroupView];
 }
 
 - (void) setupTitleForLevelRow {
@@ -503,7 +491,7 @@
     [_levelGroupView addSubview:title];
     
     [NSLayoutConstraint setWidht:152 height:30 forView:title];
-    [NSLayoutConstraint setLeftPadding:PADDING_H forView:title inContainer:_levelGroupView];
+    [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:title inContainer:_levelGroupView];
     [NSLayoutConstraint setBottomPadding:5 forView:title inContainer:_levelGroupView];
 }
 
@@ -523,7 +511,7 @@
     [_levelGroupView addSubview:_tfPeopleNumber];
     
     [NSLayoutConstraint setWidht:140 height:30 forView:_tfPeopleNumber];
-    [NSLayoutConstraint setRightPadding:PADDING_H forView:_tfPeopleNumber inContainer:_levelGroupView];
+    [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_tfPeopleNumber inContainer:_levelGroupView];
     [NSLayoutConstraint setTopPadding:5 forView:_tfPeopleNumber inContainer:_levelGroupView];
 }
 
@@ -559,7 +547,7 @@
     
     [NSLayoutConstraint setWidht:18 height:17 forView:_ivThreeStar];
     [NSLayoutConstraint setBottomPadding:12 forView:_ivThreeStar inContainer:_levelGroupView];
-    [NSLayoutConstraint setRightPadding:PADDING_H forView:_ivThreeStar inContainer:_levelGroupView];
+    [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_ivThreeStar inContainer:_levelGroupView];
 }
 
 - (void) setLevelImagesGestureRecognizers {
@@ -584,7 +572,7 @@
     [group addSubview:separator];
     
     [NSLayoutConstraint setHeight:0.5f forView:separator];
-    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:kHorizontalPadding];
     [NSLayoutConstraint centerVertical:separator withView:group inContainer:group];
 }
 
@@ -625,8 +613,8 @@
                 else{
                     if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
                         [self.delegate gameWasSavedWithController:self gameId:_gameId];
-                    else
-                        [self dismissViewControllerAnimated:YES completion:nil];
+                    
+                    [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
@@ -650,8 +638,8 @@
                 else{
                     if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
                         [self.delegate gameWasSavedWithController:self gameId:_gameId];
-                    else
-                        [self dismissViewControllerAnimated:YES completion:nil];
+                    
+                    [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
@@ -691,7 +679,7 @@
     
     oneStarStatus = YES;
     _ivOneStar.image = activeStarImage;
-    newGame.level = LEVEL_1;
+    newGame.level = PlayerLevelBeginner;
     
     /*
     if(oneStarStatus){
@@ -718,7 +706,7 @@
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = grayStarImage;
     
-    newGame.level = LEVEL_2;
+    newGame.level = PlayerLevelMiddling;
     [self changeCreateButtonIfNeeded];
 }
 
@@ -729,7 +717,7 @@
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = activeStarImage;
     
-    newGame.level = LEVEL_3;
+    newGame.level = PlayerLevelMaster;
     [self changeCreateButtonIfNeeded];
 }
 
@@ -746,43 +734,41 @@
 }
 
 -(NSInteger) pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    if(pickerView.tag == PEOPLE_NUM_PICKER)
+    if(pickerView.tag == kPickerPeopleNumber)
         return [peopleNumberItems count];
-    else if(pickerView.tag == AGE_PICKER)
+    else if(pickerView.tag == kPickerAge)
         return [ageItems count];
-    else if(pickerView.tag == SPORT_PICKER)
+    else if(pickerView.tag == kPickerSport)
         return [sportItems count];
     
     return 0;
 }
 
 - (NSString *) pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    //return peopleNumberItems[row];
-    
-    if(pickerView.tag == PEOPLE_NUM_PICKER)
+    if(pickerView.tag == kPickerPeopleNumber)
         return peopleNumberItems[row];
-    else if(pickerView.tag == AGE_PICKER)
+    else if(pickerView.tag == kPickerAge)
         return ageItems[row];
-    else if(pickerView.tag == SPORT_PICKER)
+    else if(pickerView.tag == kPickerSport)
         return sportItems[row];
     
     return nil;
 }
 
 - (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    if(pickerView.tag == PEOPLE_NUM_PICKER){
+    if(pickerView.tag == kPickerPeopleNumber){
         _tfPeopleNumber.text = peopleNumberItems[row];
         newGame.players = row + 1;
         [self changeCreateButtonIfNeeded];
     }
-    else if(pickerView.tag == AGE_PICKER){
+    else if(pickerView.tag == kPickerAge){
         _tfAge.text = ageItems[row];
         newGame.age = row + 1;
         [self changeCreateButtonIfNeeded];
     }
-    else if(pickerView.tag == SPORT_PICKER){
+    else if(pickerView.tag == kPickerSport){
         _tfKindOfSport.text = sportItems[row];
-        newGame.sport = row + 1;
+        newGame.sportType = row + 1;
         [self changeCreateButtonIfNeeded];
     }
 }
@@ -831,7 +817,7 @@
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     UIEdgeInsets contentInsets = UIEdgeInsetsMake(_scrollView.contentInset.top, 0.0, kbSize.height, 0.0);
-    _scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, MAIN_SCROLL_CONTENT_HEIGHT);
+    _scrollView.contentSize = CGSizeMake(_scrollView.frame.size.width, kScrollContentHeight);
     _scrollView.contentInset = contentInsets;
     _scrollView.scrollIndicatorInsets = contentInsets;
 }
@@ -844,7 +830,7 @@
 #pragma mark -
 #pragma mark Other methods
 - (void) changeCreateButtonIfNeeded {
-    if(newGame.sport <= 0)
+    if(newGame.sportType <= 0)
         return;
     
     if(newGame.time == nil)
@@ -878,7 +864,7 @@
 
 - (GameInfo *) gameInfoFromNewGame:(NewGame *)game {
     GameInfo *gi = [GameInfo new];
-    gi.gameType = game.sport;
+    gi.sportType = game.sportType;
     gi.addressName = game.placeName;
     gi.address = game.address;
     gi.startAt = game.time;

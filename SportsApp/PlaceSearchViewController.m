@@ -22,14 +22,15 @@
 
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
-//@import MapKit;
 
-#define NAVBAR_HRIGHT 108
+static const CGFloat kNavbarHeight = 108.0f;
 
-#define GEO_DENY_ALERT 1
+static const NSUInteger kAlertGeoDeny = 1;
 
-#define DISPLAY_PLACES 1
-#define DISPLAY_ADDRESSES 2
+static const NSUInteger kDisplayPlaces = 1;
+static const NSUInteger kDisplayAddresses = 2;
+
+static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 
 @interface PlaceSearchViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, CLLocationManagerDelegate, AddressSearchViewControllerDelegate>
 
@@ -67,9 +68,9 @@
     
     [self setupFakeNavigationBar];
     
-    itemsForDisplay = DISPLAY_PLACES;
+    itemsForDisplay = kDisplayPlaces;
     
-    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, NAVBAR_HRIGHT, self.view.bounds.size.width, self.view.bounds.size.height - NAVBAR_HRIGHT) style:UITableViewStyleGrouped];
+    _tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, kNavbarHeight, self.view.bounds.size.width, self.view.bounds.size.height - kNavbarHeight) style:UITableViewStyleGrouped];
     [_tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     [_tableView setDelegate:self];
     [_tableView setDataSource:self];
@@ -81,7 +82,7 @@
 #pragma mark NavigationBar View
 - (void) setupFakeNavigationBar {
     _fakeNavBarView = [UIView new];
-    _fakeNavBarView.frame = CGRectMake(0, 0, self.view.bounds.size.width, NAVBAR_HRIGHT);
+    _fakeNavBarView.frame = CGRectMake(0, 0, self.view.bounds.size.width, kNavbarHeight);
     _fakeNavBarView.backgroundColor = [UIColor colorWithRGBA:BG_SEARCH_NAVBAR_COLOR];
     [self.view addSubview:_fakeNavBarView];
     
@@ -169,28 +170,24 @@
     return 1;
 }
 
+- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    if(itemsForDisplay == kDisplayPlaces)
+        return places.count;
+    else if(itemsForDisplay == kDisplayAddresses)
+        return addresses.count;
+    
+    return 0;
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
     return 0.01f;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
-    if(itemsForDisplay == DISPLAY_PLACES)
+    if(itemsForDisplay == kDisplayPlaces)
         return 100.0f;
     else
         return 0.01f;
-}
-
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
-        [cell setSeparatorInset:UIEdgeInsetsZero];
-    
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
-        [cell setPreservesSuperviewLayoutMargins:NO];
-    
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
-        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
-    }
 }
 
 -(UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section {
@@ -239,53 +236,55 @@
     return view;
 }
 
-- (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if(itemsForDisplay == DISPLAY_PLACES)
-        return places.count;
-    else if(itemsForDisplay == DISPLAY_ADDRESSES)
-        return addresses.count;
+- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kSimpleTableIdentifier];
+    if(cell == nil)
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:kSimpleTableIdentifier];
     
-    return 0;
+    return cell;
 }
 
-- (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
+        [cell setSeparatorInset:UIEdgeInsetsZero];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
-    if(cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:SimpleTableIdentifier];
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
+        [cell setPreservesSuperviewLayoutMargins:NO];
     
-    if(itemsForDisplay == DISPLAY_PLACES){
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
+    }
+    
+    if(itemsForDisplay == kDisplayPlaces){
         FoursquareResponse *placemark = places[indexPath.row];
         cell.textLabel.text = placemark.name;
         
         if(placemark.address)
             cell.detailTextLabel.text = placemark.address;
     }
-    else if(itemsForDisplay == DISPLAY_ADDRESSES){
+    else if(itemsForDisplay == kDisplayAddresses){
         YandexGeoResponse *placemark = addresses[indexPath.row];
         cell.textLabel.text = placemark.name;
         
         if(placemark.descr)
             cell.detailTextLabel.text = placemark.descr;
     }
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    if(itemsForDisplay == DISPLAY_PLACES){
+    if(itemsForDisplay == kDisplayPlaces){
         FoursquareResponse *placemark = places[indexPath.row];
         [self.delegate gamePlaceDidChanged:self place:placemark];
         
         [self.navigationController popViewControllerAnimated:YES];
     }
-    else if(itemsForDisplay == DISPLAY_ADDRESSES){
+    else if(itemsForDisplay == kDisplayAddresses){
         YandexGeoResponse *placemark = addresses[indexPath.row];
         _searchAddressField.text = placemark.name;
         
         [_searchPlacesField becomeFirstResponder];
-        itemsForDisplay = DISPLAY_PLACES;
+        itemsForDisplay = kDisplayPlaces;
         
         [searchTimer invalidate];
         searchTimer = [NSTimer scheduledTimerWithTimeInterval:0.0 target:self selector:@selector(startSearchFoursquare:) userInfo:_searchPlacesField.text repeats:NO];
@@ -298,10 +297,10 @@
 #pragma mark Search
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField {
     if (textField == _searchPlacesField){
-        itemsForDisplay = DISPLAY_PLACES;
+        itemsForDisplay = kDisplayPlaces;
     }
     else if(textField == _searchAddressField){
-        itemsForDisplay = DISPLAY_ADDRESSES;
+        itemsForDisplay = kDisplayAddresses;
     }
     [_tableView reloadData];
     
@@ -450,7 +449,7 @@
                                                            delegate:self
                                                   cancelButtonTitle:@"OK"
                                                   otherButtonTitles:@"Настройки", nil];
-            alert.tag = GEO_DENY_ALERT;
+            alert.tag = kAlertGeoDeny;
             [alert show];
         }
         else {
@@ -473,7 +472,7 @@
                               delegate:self
                               cancelButtonTitle:@"Ok"
                               otherButtonTitles:@"Настройки", nil];
-        alert.tag = GEO_DENY_ALERT;
+        alert.tag = kAlertGeoDeny;
         [alert show];
     }
 }
@@ -534,7 +533,7 @@
                  delegate:self
                  cancelButtonTitle:@"Ок"
                  otherButtonTitles:@"Настройки", nil];
-        alert.tag = GEO_DENY_ALERT;
+        alert.tag = kAlertGeoDeny;
     }
     else{
         alert = [[UIAlertView alloc]
@@ -551,7 +550,7 @@
 #pragma mark -
 #pragma mark Alerts handler
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if(alertView.tag == GEO_DENY_ALERT){
+    if(alertView.tag == kAlertGeoDeny){
         if(buttonIndex == 1){
             NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
             if ([[UIApplication sharedApplication] canOpenURL:url])
@@ -567,7 +566,7 @@
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
     CGRect frame = _tableView.frame;
-    frame.size.height = self.view.frame.size.height - kbSize.height - NAVBAR_HRIGHT;
+    frame.size.height = self.view.frame.size.height - kbSize.height - kNavbarHeight;
     _tableView.frame = frame;
 }
 
@@ -575,7 +574,7 @@
     _tableView.contentInset = UIEdgeInsetsZero;
     _tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
     
-    CGRect fullRect = CGRectMake(0, NAVBAR_HRIGHT, self.view.bounds.size.width, self.view.bounds.size.height - NAVBAR_HRIGHT);
+    CGRect fullRect = CGRectMake(0, kNavbarHeight, self.view.bounds.size.width, self.view.bounds.size.height - kNavbarHeight);
     _tableView.frame = fullRect;
 }
 

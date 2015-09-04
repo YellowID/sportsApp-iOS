@@ -12,7 +12,6 @@
 
 @property (copy, nonatomic) NSString *avatarLink;
 @property (copy, nonatomic) NSString *message;
-//@property (copy, nonatomic) NSString *day;
 @property (copy, nonatomic) NSString *time;
 
 @property (copy, nonatomic) NSString *userName;

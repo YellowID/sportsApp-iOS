@@ -147,8 +147,6 @@
 #pragma mark -
 #pragma mark Players
 - (void) findUser:(NSString *)username completionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/find_by_name.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:username forKey:@"name"];
@@ -190,8 +188,6 @@
 }
 
 - (void) inviteUserWithId:(NSUInteger)userId forGame:(NSUInteger)gameId completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)userId] forKey:@"user_id"];
@@ -226,8 +222,6 @@
 }
 
 - (void) inviteUserWithEmail:(NSString *)email completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/mail_invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:email forKey:@"email"];
@@ -261,16 +255,14 @@
 }
 
 - (void) setUserStatusForGame:(NSUInteger)gameId status:(NSUInteger)status completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/invitations.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)gameId] forKey:@"game_id"];
     
     NSString *participateStatus;
-    if(status == PARTICIPATE_STATUS_YES)
+    if(status == UserGameParticipateStatusYes)
         participateStatus = @"confirmed";
-    else if(status == PARTICIPATE_STATUS_NO)
+    else if(status == UserGameParticipateStatusNo)
         participateStatus = @"rejected";
     else
         participateStatus = @"possible";
@@ -309,8 +301,6 @@
 #pragma mark - 
 #pragma mark Settings
 - (void) settingsForCurrentUserCompletionHandler:(void(^)(MemberSettings *settings, NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
@@ -333,30 +323,30 @@
                 if(![resultDic[@"age"] isKindOfClass:[NSNull class]])
                     settings.age = [resultDic[@"age"] integerValue];
                 else
-                    settings.age = AGE_UNKNOWN;
+                    settings.age = PlayerAgeUnknown;
                 
                 if(![resultDic[@"level"] isKindOfClass:[NSNull class]])
                     settings.level = [resultDic[@"level"] integerValue];
                 else
-                    settings.level = LEVEL_UNKNOWN;
+                    settings.level = PlayerLevelUnknown;
                 
                 NSMutableArray *sportTypes = resultDic[@"sport_types"];
                 for(int i = 0; i < sportTypes.count; ++i){
                     NSUInteger sportTypeId = [sportTypes[i] integerValue];
                     
-                    if(sportTypeId == GAME_TYPE_FOOTBALL)
+                    if(sportTypeId == SportTypeFootball)
                         settings.football = YES;
-                    else if(sportTypeId == GAME_TYPE_BASKETBALL)
+                    else if(sportTypeId == SportTypeBasketball)
                         settings.basketball = YES;
-                    else if(sportTypeId == GAME_TYPE_VOLLEYBALL)
+                    else if(sportTypeId == SportTypeVolleyball)
                         settings.volleyball = YES;
-                    else if(sportTypeId == GAME_TYPE_HANDBALL)
+                    else if(sportTypeId == SportTypeHandball)
                         settings.handball = YES;
-                    else if(sportTypeId == GAME_TYPE_TENNIS)
+                    else if(sportTypeId == SportTypeTennis)
                         settings.tennis = YES;
-                    else if(sportTypeId == GAME_TYPE_HOCKEY)
+                    else if(sportTypeId == SportTypeHockey)
                         settings.hockey = YES;
-                    else if(sportTypeId == GAME_TYPE_SQUASH)
+                    else if(sportTypeId == SportTypeSquash)
                         settings.squash = YES;
                 }
             }
@@ -374,8 +364,6 @@
 }
 
 - (void) saveSettingsForCurrentUser:(MemberSettings *)settings completionHandler:(void(^)(NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/users/settings.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
@@ -385,28 +373,27 @@
     NSMutableArray *sports = [NSMutableArray new];
     
     if(settings.football)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_FOOTBALL]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeFootball]];
     
     if(settings.basketball)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_BASKETBALL]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeBasketball]];
     
     if(settings.volleyball)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_VOLLEYBALL]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeVolleyball]];
     
     if(settings.handball)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_HANDBALL]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeHandball]];
     
     if(settings.tennis)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_TENNIS]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeTennis]];
     
     if(settings.hockey)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_HOCKEY]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeHockey]];
     
     if(settings.squash)
-        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)GAME_TYPE_SQUASH]];
+        [sports addObject:[NSString stringWithFormat:@"%lu", (unsigned long)SportTypeSquash]];
     
-    if(sports.count > 0)
-        [params setObject:sports forKey:@"sport_type_ids"];
+    [params setObject:sports forKey:@"sport_type_ids"];
     
     [NetManager sendPatch:urlSaveSettingsForUser withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         //NSLog(@"response: %@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
@@ -478,8 +465,6 @@
 }
 
 - (void) gamesInCity:(NSString *)city completionHandler:(void(^)(NSMutableArray *myGames, NSMutableArray *publicGames, NSString *errorMessage))blockHandler {
-    //NSString *url = @"https://start-sport.herokuapp.com:443/api/v1/games.json?api_key=JqwR7ncB-jss5vot23eaFQ";
-    
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
@@ -509,7 +494,7 @@
                     for(NSMutableDictionary *gdic in myG){
                         GameInfo* game = [GameInfo new];
                         game.gameId = [gdic[@"id"] integerValue];
-                        game.gameType = [gdic[@"sport_type_id"] integerValue];
+                        game.sportType = [gdic[@"sport_type_id"] integerValue];
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
                         game.addressName = gdic[@"title"];
@@ -532,14 +517,14 @@
                         
                         if(![gdic[@"participate_status"] isKindOfClass:[NSNull class]]){
                             if([gdic[@"participate_status"] isEqualToString:@"confirmed"])
-                                game.participateStatus = PARTICIPATE_STATUS_YES;
+                                game.participateStatus = UserGameParticipateStatusYes;
                             else if([gdic[@"participate_status"] isEqualToString:@"rejected"])
-                                game.participateStatus = PARTICIPATE_STATUS_NO;
+                                game.participateStatus = UserGameParticipateStatusNo;
                             else
-                                game.participateStatus = PARTICIPATE_STATUS_POSSIBLE; //possible
+                                game.participateStatus = UserGameParticipateStatusPossible; //possible
                         }
                         else
-                            game.participateStatus = PARTICIPATE_STATUS_POSSIBLE;
+                            game.participateStatus = UserGameParticipateStatusPossible;
                         
                         [myGames addObject:game];
                     }
@@ -550,7 +535,7 @@
                     for(NSMutableDictionary *gdic in publicG){
                         GameInfo* game = [GameInfo new];
                         game.gameId = [gdic[@"id"] integerValue];
-                        game.gameType = [gdic[@"sport_type_id"] integerValue];
+                        game.sportType = [gdic[@"sport_type_id"] integerValue];
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
                         game.addressName = gdic[@"title"];
@@ -571,7 +556,7 @@
                                 game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
                         }
                         
-                        game.participateStatus = PARTICIPATE_STATUS_POSSIBLE;
+                        game.participateStatus = UserGameParticipateStatusPossible;
                         
                         [publicGames addObject:game];
                     }
@@ -596,7 +581,7 @@
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setValue:userToken forKey:@"user_token"];
     
-    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.sport] forKey:@"sport_type_id"];
+    [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.sportType] forKey:@"sport_type_id"];
     [params setValue:game.time forKey:@"start_at"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.age] forKey:@"age"];
     [params setValue:[NSString stringWithFormat:@"%lu", (unsigned long)game.players] forKey:@"numbers"];
@@ -734,19 +719,19 @@
                 NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
                 
                 game.gameId = [resultDic[@"id"] integerValue];
-                game.gameType = [resultDic[@"sport_type_id"] integerValue];
+                game.sportType = [resultDic[@"sport_type_id"] integerValue];
                 game.adminId = [resultDic[@"user_id"] integerValue];
                 
                 if(![resultDic[@"participate_status"] isKindOfClass:[NSNull class]]){
                     if([resultDic[@"participate_status"] isEqualToString:@"confirmed"])
-                        game.participateStatus = PARTICIPATE_STATUS_YES;
+                        game.participateStatus = UserGameParticipateStatusYes;
                     else if([resultDic[@"participate_status"] isEqualToString:@"rejected"])
-                        game.participateStatus = PARTICIPATE_STATUS_NO;
+                        game.participateStatus = UserGameParticipateStatusNo;
                     else
-                        game.participateStatus = PARTICIPATE_STATUS_POSSIBLE; //possible
+                        game.participateStatus = UserGameParticipateStatusPossible;
                 }
                 else
-                    game.participateStatus = PARTICIPATE_STATUS_POSSIBLE;
+                    game.participateStatus = UserGameParticipateStatusPossible;
                 
                 if(![resultDic[@"title"] isKindOfClass:[NSNull class]])
                     game.addressName = resultDic[@"title"];

@@ -19,13 +19,14 @@
 #import "MBProgressHUD.h"
 #import "UIImage+Utilities.h"
 
-#define PHOTO_SIZE 40
-#define PADDING_H 12
-#define SEARCH_HEIGHT 38
+static const CGFloat kPhotoSize = 40.0f;
+static const CGFloat kHorizontalPadding = 12.0f;
+static const CGFloat kSearchHeight = 38.0f;
 
-#define ALERT_ERROR 1
-#define ALERT_INVITE_USER 2
-#define ALERT_INVITE_SENT 3
+static const NSUInteger kAlertError = 1;
+static const NSUInteger kAlertInviteUser = 2;
+static const NSUInteger kAlertInviteSent = 3;
+
 
 @interface InviteUserViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
@@ -95,7 +96,7 @@
     _tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
     
-    tableHeigtContraint = [NSLayoutConstraint setHeight:self.view.bounds.size.height - SEARCH_HEIGHT forView:_tableView];
+    tableHeigtContraint = [NSLayoutConstraint setHeight:self.view.bounds.size.height - kSearchHeight forView:_tableView];
     [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
     [NSLayoutConstraint setTopDistance:0 fromView:_tableView toView:_searchFieldContainer inContainer:self.view];
     
@@ -109,7 +110,7 @@
     sbContaiter.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     [self.view addSubview:sbContaiter];
     
-    [NSLayoutConstraint setHeight:SEARCH_HEIGHT forView:sbContaiter];
+    [NSLayoutConstraint setHeight:kSearchHeight forView:sbContaiter];
     [NSLayoutConstraint stretchHorizontal:sbContaiter inContainer:self.view withPadding:0];
     [NSLayoutConstraint setTopPadding:12 forView:sbContaiter inContainer:self.view];
     
@@ -141,7 +142,7 @@
     [self.view addSubview:_inviteFromEmailViewGroup];
     
     [NSLayoutConstraint setHeight:100 forView:_inviteFromEmailViewGroup];
-    [NSLayoutConstraint stretchHorizontal:_inviteFromEmailViewGroup inContainer:self.view withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_inviteFromEmailViewGroup inContainer:self.view withPadding:kHorizontalPadding];
     [NSLayoutConstraint setTopDistance:28 fromView:_inviteFromEmailViewGroup toView:_searchFieldContainer inContainer:self.view];
     
     [self setupTitleInviteFromEmailViewGroup];
@@ -266,7 +267,7 @@
     cell.imageView.contentMode = UIViewContentModeCenter;
     
     cell.imageView.layer.borderWidth = 0.0;
-    cell.imageView.layer.cornerRadius = PHOTO_SIZE / 2;
+    cell.imageView.layer.cornerRadius = kPhotoSize / 2;
     cell.imageView.layer.masksToBounds = YES;
     
     cell.textLabel.text = member.name;
@@ -286,7 +287,7 @@
                           delegate:self
                           cancelButtonTitle:@"Отмена"
                           otherButtonTitles:@"Да", nil];
-    alert.tag = ALERT_INVITE_USER;
+    alert.tag = kAlertInviteUser;
     [alert show];
     
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -408,7 +409,7 @@
 # pragma mark -
 # pragma mark Alerts buttons
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if(alertView.tag == ALERT_INVITE_USER){
+    if(alertView.tag == kAlertInviteUser){
         if(buttonIndex == 1){
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
             [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -464,7 +465,7 @@
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
-    CGFloat bottom = _searchFieldContainer.frame.origin.y + SEARCH_HEIGHT;
+    CGFloat bottom = _searchFieldContainer.frame.origin.y + kSearchHeight;
     tableHeigtContraint.constant = self.view.frame.size.height - kbSize.height - bottom;
     [self.view layoutIfNeeded];
 }
@@ -473,7 +474,7 @@
     _tableView.contentInset = UIEdgeInsetsZero;
     _tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
     
-    tableHeigtContraint.constant = self.view.bounds.size.height - SEARCH_HEIGHT;
+    tableHeigtContraint.constant = self.view.bounds.size.height - kSearchHeight;
 }
 
 @end

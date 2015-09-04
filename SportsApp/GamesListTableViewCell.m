@@ -13,16 +13,16 @@
 
 #include <QuartzCore/QuartzCore.h>
 
-#define PADDING_TOP 7
-#define PADDING_BOTTOM 10
-#define PADDING_LEFT 7
-#define PADDING_RIGHT 7
+static const CGFloat kPaddingTop = 7.0f;
+static const CGFloat kPaddingBottom = 10.0f;
+static const CGFloat kPaddingLeft = 7.0f;
+static const CGFloat kPaddingRight = 7.0f;
 
-#define STATUS_ICON_SIZE 19.5
+static const CGFloat kPaddingSecondRowTop = 13.0f;
+static const CGFloat kSmallLableHeight = 13.0f;
 
-#define PADDING_SECOND_ROW_TOP 13
+static const CGFloat kIconStatusSize = 19.5f;
 
-#define SMALL_LABLE_HEIGHT 13
 
 @implementation GamesListTableViewCell {
     UIColor* bgColorNormal;
@@ -208,44 +208,44 @@
 }
 
 - (void) layoutGameNameLabel {
-    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_gameNameLabel inContainer:container];
-    [NSLayoutConstraint setLeftPadding:PADDING_LEFT forView:_gameNameLabel inContainer:container];
+    [NSLayoutConstraint setTopPadding:kPaddingTop forView:_gameNameLabel inContainer:container];
+    [NSLayoutConstraint setLeftPadding:kPaddingLeft forView:_gameNameLabel inContainer:container];
     [NSLayoutConstraint setHeight:18 forView:_gameNameLabel];
 }
 
 - (void) layoutStatusIcon {
-    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_ivStatus inContainer:container];
-    [NSLayoutConstraint setRightPadding:PADDING_RIGHT forView:_ivStatus inContainer:container];
-    [NSLayoutConstraint setWidht:STATUS_ICON_SIZE height:STATUS_ICON_SIZE forView:_ivStatus];
+    [NSLayoutConstraint setTopPadding:kPaddingTop forView:_ivStatus inContainer:container];
+    [NSLayoutConstraint setRightPadding:kPaddingRight forView:_ivStatus inContainer:container];
+    [NSLayoutConstraint setWidht:kIconStatusSize height:kIconStatusSize forView:_ivStatus];
 }
 
 - (void) layoutAdminIcon {
-    [NSLayoutConstraint setWidht:STATUS_ICON_SIZE height:STATUS_ICON_SIZE forView:_ivAdmin];
-    [NSLayoutConstraint setTopPadding:PADDING_TOP forView:_ivAdmin inContainer:container];
-    [NSLayoutConstraint setRightDistance:PADDING_RIGHT fromView:_ivAdmin toView:_ivStatus inContainer:container];
+    [NSLayoutConstraint setWidht:kIconStatusSize height:kIconStatusSize forView:_ivAdmin];
+    [NSLayoutConstraint setTopPadding:kPaddingTop forView:_ivAdmin inContainer:container];
+    [NSLayoutConstraint setRightDistance:kPaddingRight fromView:_ivAdmin toView:_ivStatus inContainer:container];
 }
 
 - (void) layoutLocationIcon {
     [NSLayoutConstraint setWidht:13.5 height:14 forView:_ivLocation];
-    [NSLayoutConstraint setLeftPadding:PADDING_LEFT forView:_ivLocation inContainer:container];
-    [NSLayoutConstraint setBottomPadding:PADDING_BOTTOM forView:_ivLocation inContainer:container];
+    [NSLayoutConstraint setLeftPadding:kPaddingLeft forView:_ivLocation inContainer:container];
+    [NSLayoutConstraint setBottomPadding:kPaddingBottom forView:_ivLocation inContainer:container];
 }
 
 - (void) layoutAddressLabel {
-    [NSLayoutConstraint setHeight:SMALL_LABLE_HEIGHT forView:_addressLabel];
-    [NSLayoutConstraint setRightPadding:PADDING_LEFT forView:_addressLabel inContainer:container];
+    [NSLayoutConstraint setHeight:kSmallLableHeight forView:_addressLabel];
+    [NSLayoutConstraint setRightPadding:kPaddingLeft forView:_addressLabel inContainer:container];
     [NSLayoutConstraint setLeftDistance:8 fromView:_addressLabel toView:_ivLocation inContainer:container];
     [NSLayoutConstraint centerVertical:_addressLabel withView:_ivLocation inContainer:container];
 }
 
 - (void) layoutDateIcon {
     [NSLayoutConstraint setWidht:13.5 height:14 forView:_ivDate];
-    [NSLayoutConstraint setLeftPadding:PADDING_LEFT forView:_ivDate inContainer:container];
-    [NSLayoutConstraint setTopDistance:PADDING_SECOND_ROW_TOP fromView:_ivDate toView:_gameNameLabel inContainer:container];
+    [NSLayoutConstraint setLeftPadding:kPaddingLeft forView:_ivDate inContainer:container];
+    [NSLayoutConstraint setTopDistance:kPaddingSecondRowTop fromView:_ivDate toView:_gameNameLabel inContainer:container];
 }
 
 - (void) layoutDateLabel {
-    [NSLayoutConstraint setHeight:SMALL_LABLE_HEIGHT forView:_dateLabel];
+    [NSLayoutConstraint setHeight:kSmallLableHeight forView:_dateLabel];
     [NSLayoutConstraint setLeftDistance:8 fromView:_dateLabel toView:_ivDate inContainer:container];
     [NSLayoutConstraint centerVertical:_dateLabel withView:_ivDate inContainer:container];
 }
@@ -257,13 +257,13 @@
     [container addSubview:separator];
     
     [NSLayoutConstraint setHeight:0.5f forView:separator];
-    [NSLayoutConstraint stretchHorizontal:separator inContainer:container withPadding:PADDING_LEFT];
+    [NSLayoutConstraint stretchHorizontal:separator inContainer:container withPadding:kPaddingLeft];
     [NSLayoutConstraint setTopDistance:9.0f fromView:separator toView:_ivDate inContainer:container];
 }
 
 - (void) layoutTimeLabel {
-    [NSLayoutConstraint setHeight:SMALL_LABLE_HEIGHT forView:_timeLabel];
-    [NSLayoutConstraint setRightPadding:PADDING_RIGHT forView:_timeLabel inContainer:container];
+    [NSLayoutConstraint setHeight:kSmallLableHeight forView:_timeLabel];
+    [NSLayoutConstraint setRightPadding:kPaddingRight forView:_timeLabel inContainer:container];
     [NSLayoutConstraint centerVertical:_timeLabel withView:_ivDate inContainer:container];
 }
 

@@ -21,7 +21,7 @@
 #import <VKSdk/VKSdk.h>
 #import <Quickblox/Quickblox.h>
 
-#define VK_APP_ID 4932732
+static const NSUInteger kVkAppId = 4932732;
 
 static NSArray* SCOPE = nil;
 
@@ -253,7 +253,7 @@ static NSArray* SCOPE = nil;
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.labelText = @"Авторизация...";
     
-    [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)VK_APP_ID]];
+    [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)kVkAppId]];
     if ([VKSdk wakeUpSession]){
         NSLog(@"VK: %@", [VKSdk getAccessToken].accessToken);
         NSLog(@"userId: %@", [VKSdk getAccessToken].userId);

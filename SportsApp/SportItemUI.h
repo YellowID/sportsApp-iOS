@@ -11,8 +11,8 @@
 
 @interface SportItemUI : NSObject
 
-@property (strong, nonatomic) UIImageView* icon;
-@property (strong, nonatomic) UILabel* lable;
+@property (strong, nonatomic) UIImageView *icon;
+@property (strong, nonatomic) UILabel *lable;
 @property (nonatomic) BOOL active;
 
 @end

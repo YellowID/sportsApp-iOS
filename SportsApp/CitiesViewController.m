@@ -18,6 +18,8 @@
 
 #define PHOTO_SIZE 40
 
+static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
+
 @interface CitiesViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
@@ -81,21 +83,21 @@
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
-    if(cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier];
-    
-    [cell setBackgroundColor:[UIColor clearColor]];
-    
-    NSString *city = _cities[indexPath.row];
-    
-    cell.textLabel.text = city;
-    cell.textLabel.textColor = [UIColor blackColor];
-    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kSimpleTableIdentifier];
+    if(cell == nil){
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kSimpleTableIdentifier];
+        
+        [cell setBackgroundColor:[UIColor clearColor]];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.font = [UIFont systemFontOfSize:15];
+    }
     
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    NSString *city = _cities[indexPath.row];
+    cell.textLabel.text = city;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

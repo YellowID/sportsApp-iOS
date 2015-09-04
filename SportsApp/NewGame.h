@@ -12,10 +12,11 @@
 
 @interface NewGame : NSObject
 
-@property (nonatomic) NSUInteger sport;
+@property (nonatomic) SportType sportType;
+@property (nonatomic) PlayerAge age;
+@property (nonatomic) PlayerLevel level;
 @property (copy, nonatomic) NSString *time;
-@property (nonatomic) NSUInteger age;
-@property (nonatomic) NSUInteger level;
+
 @property (nonatomic) NSUInteger players;
 
 @property (copy, nonatomic) NSString *placeName; //title

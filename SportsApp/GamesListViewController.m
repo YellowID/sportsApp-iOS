@@ -24,12 +24,12 @@
 #import "UIView+Utility.h"
 #import "NSLayoutConstraint+Helper.h"
 
-#define SECTION_MY_GAMES 0
-#define SECTION_PUBLIC_GAMES 1
-#define SECTION_HEIGHT 28.5f
+static const NSUInteger kSectionMyGames = 0;
+static const NSUInteger kSectionPublicGames = 1;
 
-#define CELL_PADDING_FIRST 5.5f
-#define CELL_PADDING_NORMAL 2.5f
+static const CGFloat kSectionHeaderHeight = 28.5f;
+static const CGFloat kCellPaddingNormal = 2.5f;
+static const CGFloat kCellPaddingFirst = 5.5f;
 
 @interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate, CitiesViewControllerDelegate, NewEvenViewControllerDelegate>
 
@@ -46,7 +46,7 @@
     UILabel *navTitleLabel;
 }
 
-static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
+static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -184,9 +184,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (NSInteger) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if(section == SECTION_MY_GAMES)
+    if(section == kSectionMyGames)
         return _myGames.count;
-    else if(section == SECTION_PUBLIC_GAMES)
+    else if(section == kSectionPublicGames)
         return _publicGames.count;
     else
         return 0;
@@ -196,24 +196,21 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     BOOL isFirstRowInSection = (indexPath.row == 0);
     BOOL isLastRowInSection = NO;
     
-    if(indexPath.section == SECTION_MY_GAMES)
+    if(indexPath.section == kSectionMyGames)
         isLastRowInSection = (indexPath.row == _myGames.count - 1);
-    else if(indexPath.section == SECTION_PUBLIC_GAMES)
+    else if(indexPath.section == kSectionPublicGames)
         isLastRowInSection = (indexPath.row == _publicGames.count - 1);
     
     if(isFirstRowInSection && isLastRowInSection)
-        return 100 + CELL_PADDING_FIRST; //105.5f;
+        return 100 + kCellPaddingFirst; //105.5f;
     else if(isFirstRowInSection || isLastRowInSection)
-        return 100 + CELL_PADDING_NORMAL; //102.75f;
+        return 100 + kCellPaddingNormal; //102.75f;
     else
         return 100;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
-    if(section == SECTION_PUBLIC_GAMES)
-        return SECTION_HEIGHT;
-    else
-        return SECTION_HEIGHT;
+    return kSectionHeaderHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
@@ -223,21 +220,21 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 -(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
     UIView* view = nil;
     
-    if(section == SECTION_PUBLIC_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SECTION_HEIGHT)];
+    if(section == kSectionPublicGames){
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_blue.png"]];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, SECTION_HEIGHT)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Публичные игры";
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
     }
-    else if(section == SECTION_MY_GAMES){
-        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, SECTION_HEIGHT)];
+    else if(section == kSectionMyGames){
+        view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_tbl_section_orange.png"]];
         
-        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, SECTION_HEIGHT)];
+        UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         [label setFont:[UIFont systemFontOfSize:13]];
         label.text = @"Мои игры";
         label.textColor = [UIColor whiteColor];
@@ -248,9 +245,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:GamesListCellTableIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kGamesListCellTableIdentifier];
     if(cell == nil){
-        cell = [[GamesListTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:GamesListCellTableIdentifier];
+        cell = [[GamesListTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kGamesListCellTableIdentifier];
         
         GamesListTableViewCell *gameCell = (GamesListTableViewCell *)cell;
         gameCell.addressLabel.textColor = [UIColor colorWithRGBA:TXT_LITTLE_COLOR];
@@ -276,7 +273,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     
     BOOL isLastRowInSection = NO;
     GameInfo* game = nil;
-    if(indexPath.section == SECTION_MY_GAMES){
+    if(indexPath.section == kSectionMyGames){
         game = _myGames[indexPath.row];
         gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:MY_GAMES_SECTION_COLOR];
         
@@ -286,7 +283,7 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
         
         isLastRowInSection = (indexPath.row == _myGames.count - 1);
     }
-    else if(indexPath.section == SECTION_PUBLIC_GAMES){
+    else if(indexPath.section == kSectionPublicGames){
         game = _publicGames[indexPath.row];
         gameCell.gameNameLabel.textColor = [UIColor colorWithRGBA:PUBLIC_GAMES_SECTION_COLOR];
         
@@ -299,14 +296,14 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     BOOL isFirstRowInSection = (indexPath.row == 0);
     
     if(isFirstRowInSection)
-        [gameCell setTopPadding:CELL_PADDING_FIRST];
+        [gameCell setTopPadding:kCellPaddingFirst];
     else
-        [gameCell setTopPadding:CELL_PADDING_NORMAL];
+        [gameCell setTopPadding:kCellPaddingNormal];
     
     if(isLastRowInSection)
-        [gameCell setBottomPadding:-CELL_PADDING_FIRST];
+        [gameCell setBottomPadding:-kCellPaddingFirst];
     else
-        [gameCell setBottomPadding:-CELL_PADDING_NORMAL];
+        [gameCell setBottomPadding:-kCellPaddingNormal];
     
     gameCell.gameNameLabel.text = game.gameName;
     
@@ -327,9 +324,9 @@ static NSString *GamesListCellTableIdentifier = @"GamesListCellTableIdentifier";
     else
         gameCell.ivAdmin.image = nil;
     
-    if(game.participateStatus == PARTICIPATE_STATUS_NO)
+    if(game.participateStatus == UserGameParticipateStatusNo)
         gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_no.png"];
-    else if(game.participateStatus == PARTICIPATE_STATUS_YES)
+    else if(game.participateStatus == UserGameParticipateStatusYes)
         gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_go.png"];
     else
         gameCell.ivStatus.image = [UIImage imageNamed:@"icon_status_q.png"];

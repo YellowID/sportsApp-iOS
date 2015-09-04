@@ -10,48 +10,38 @@
 
 @implementation GameInfo
 
-@synthesize gameType = _gameType;
+@synthesize sportType = _sportType;
 
-/*
-- (NSString *) gameName {
-    NSString *name = @"Игра";
+- (void) setSportType:(SportType)type {
+    _sportType = type;
     
-    if(_gameType == GAME_TYPE_FOOTBALL)
-        name = @"Футбол";
-    else if(_gameType == GAME_TYPE_BASKETBALL)
-        name = @"Баскетбол";
-    else if(_gameType == GAME_TYPE_VOLLEYBALL)
-        name = @"Волейбол";
-    else if(_gameType == GAME_TYPE_HANDBALL)
-        name = @"Гандбол";
-    else if(_gameType == GAME_TYPE_TENNIS)
-        name = @"Тенис";
-    else if(_gameType == GAME_TYPE_HOCKEY)
-        name = @"Хоккей";
-    else if(_gameType == GAME_TYPE_SQUASH)
-        name = @"Сквош";
-    
-    return name;
-}
-*/
-
-- (void) setGameType:(NSUInteger)type {
-    _gameType = type;
-    
-    if(type == GAME_TYPE_FOOTBALL)
-        self.gameName = @"Футбол";
-    else if(type == GAME_TYPE_BASKETBALL)
-        self.gameName = @"Баскетбол";
-    else if(type == GAME_TYPE_VOLLEYBALL)
-        self.gameName = @"Волейбол";
-    else if(type == GAME_TYPE_HANDBALL)
-        self.gameName = @"Гандбол";
-    else if(type == GAME_TYPE_TENNIS)
-        self.gameName = @"Тенис";
-    else if(type == GAME_TYPE_HOCKEY)
-        self.gameName = @"Хоккей";
-    else if(type == GAME_TYPE_SQUASH)
-        self.gameName = @"Сквош";
+    switch(type){
+        case SportTypeFootball:
+            self.gameName = @"Футбол";
+            break;
+        case SportTypeBasketball:
+            self.gameName = @"Баскетбол";
+            break;
+        case SportTypeVolleyball:
+            self.gameName = @"Волейбол";
+            break;
+        case SportTypeHandball:
+            self.gameName = @"Гандбол";
+            break;
+        case SportTypeTennis:
+            self.gameName = @"Тенис";
+            break;
+        case SportTypeHockey:
+            self.gameName = @"Хоккей";
+            break;
+        case SportTypeSquash:
+            self.gameName = @"Сквош";
+            break;
+            
+        default:
+            self.gameName = nil;
+            break;
+    }
 }
 
 @end

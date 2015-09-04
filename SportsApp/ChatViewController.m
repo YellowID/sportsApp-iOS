@@ -29,13 +29,13 @@
 
 #import <Quickblox/Quickblox.h>
 
-#define PHOTO_SIZE 40
-#define CURTAIN_HEIGHT 174
-#define PADDING_H 12
+static const CGFloat kPhotoSize = 40.0f;
+static const CGFloat kCurtainHeight = 174.0f;
+static const CGFloat kHorizontalPadding = 12.0f;
 
-#define FOOTER_NORMAL_HEIGHT 50
-#define MSG_INPUT_NORMAL_HEIGHT 30
-#define MAX_MSG_INPUT_HEIGHT 120
+static const CGFloat kFooterHeightNormal = 50.0f;
+static const CGFloat kMsgInputHeightNormal = 30.0f;
+static const CGFloat kMsgInputHeightMax = 120.0f;
 
 @interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate, AppChatDelegate, NewEvenViewControllerDelegate>
 
@@ -391,7 +391,7 @@
         chatCell.ivPhoto.contentMode = UIViewContentModeCenter;
         
         chatCell.ivPhoto.layer.borderWidth = 0.0;
-        chatCell.ivPhoto.layer.cornerRadius = PHOTO_SIZE / 2;
+        chatCell.ivPhoto.layer.cornerRadius = kPhotoSize / 2;
         chatCell.ivPhoto.layer.masksToBounds = YES;
     }
     else{
@@ -468,7 +468,7 @@
     
     [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView withPadding:0];
     [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView withPadding:0];
-    footerViewHeightConstraint = [NSLayoutConstraint setHeight:FOOTER_NORMAL_HEIGHT forView:_chatFooterView];
+    footerViewHeightConstraint = [NSLayoutConstraint setHeight:kFooterHeightNormal forView:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tableView, _chatFooterView);
     
@@ -494,7 +494,7 @@
     [NSLayoutConstraint setWidht:30 height:30 forView:_btnSend];
     [NSLayoutConstraint setBottomPadding:10 forView:_btnSend inContainer:_chatFooterView];
     
-    messageHeightConstraint = [NSLayoutConstraint setHeight:MSG_INPUT_NORMAL_HEIGHT forView:_tfMessage];
+    messageHeightConstraint = [NSLayoutConstraint setHeight:kMsgInputHeightNormal forView:_tfMessage];
     [NSLayoutConstraint setBottomPadding:10 forView:_tfMessage inContainer:_chatFooterView];
     
     NSDictionary* views = NSDictionaryOfVariableBindings(_tfMessage, _btnSend);
@@ -538,7 +538,7 @@
     
     [NSLayoutConstraint setTopPadding:0 forView:_curtainView inContainer:self.view];
     [NSLayoutConstraint stretchHorizontal:_curtainView inContainer:self.view withPadding:0];
-    curtainHeigtContraint = [NSLayoutConstraint setHeight:CURTAIN_HEIGHT forView:_curtainView];
+    curtainHeigtContraint = [NSLayoutConstraint setHeight:kCurtainHeight forView:_curtainView];
     
     isCurtainOpen = YES;
     
@@ -637,7 +637,7 @@
     [group addSubview:separator];
     
     [NSLayoutConstraint setHeight:0.5f forView:separator];
-    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:separator inContainer:group withPadding:kHorizontalPadding];
     [NSLayoutConstraint centerVertical:separator withView:group inContainer:group];
 }
 
@@ -877,13 +877,12 @@
         return;
     
     NSUInteger desireStatus = 0;
-    
     if(button == _btnAnswerYes)
-        desireStatus = PARTICIPATE_STATUS_YES;
+        desireStatus = UserGameParticipateStatusYes;
     else if(button == _btnAnswerPerhaps)
-        desireStatus = PARTICIPATE_STATUS_POSSIBLE;
+        desireStatus = UserGameParticipateStatusPossible;
     else if(button == _btnAnswerNo)
-        desireStatus = PARTICIPATE_STATUS_NO;
+        desireStatus = UserGameParticipateStatusNo;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     [MBProgressHUD showHUDAddedTo:self.view animated:YES];
@@ -911,17 +910,17 @@
 }
 
 - (void) changeStatusButtons:(NSUInteger)desireStatus {
-    if(desireStatus == PARTICIPATE_STATUS_YES){
+    if(desireStatus == UserGameParticipateStatusYes){
         _btnAnswerYes.selected = YES;
         _btnAnswerPerhaps.selected = NO;
         _btnAnswerNo.selected = NO;
     }
-    else if(desireStatus == PARTICIPATE_STATUS_POSSIBLE){
+    else if(desireStatus == UserGameParticipateStatusPossible){
         _btnAnswerYes.selected = NO;
         _btnAnswerPerhaps.selected = YES;
         _btnAnswerNo.selected = NO;
     }
-    else if(desireStatus == PARTICIPATE_STATUS_NO){
+    else if(desireStatus == UserGameParticipateStatusNo){
         _btnAnswerYes.selected = NO;
         _btnAnswerPerhaps.selected = NO;
         _btnAnswerNo.selected = YES;
@@ -966,8 +965,8 @@
             if(isSent){
                 _btnSend.enabled = NO;
                 _tfMessage.text = @"";
-                messageHeightConstraint.constant = MSG_INPUT_NORMAL_HEIGHT;
-                footerViewHeightConstraint.constant = FOOTER_NORMAL_HEIGHT;
+                messageHeightConstraint.constant = kMsgInputHeightNormal;
+                footerViewHeightConstraint.constant = kFooterHeightNormal;
             }
             else{
                 _btnSend.enabled = YES;
@@ -992,8 +991,7 @@
 
 #pragma mark -
 - (void)gameWasSavedWithController:(NewEvenViewController *)controller gameId:(NSUInteger)gameID {
-    [controller dismissViewControllerAnimated:YES completion:nil];
-    
+    //[controller dismissViewControllerAnimated:YES completion:nil];
     [self updateGame:gameID];
     
     UIAlertView *alert = [[UIAlertView alloc]
@@ -1066,7 +1064,7 @@
 
 - (void) openCurtainView {
     [UIView animateWithDuration:0.4 animations:^{
-        curtainHeigtContraint.constant = CURTAIN_HEIGHT;
+        curtainHeigtContraint.constant = kCurtainHeight;
         [self.view layoutIfNeeded];
     }];
 }
@@ -1094,16 +1092,16 @@
                     newHeight = curtainHeigtContraint.constant + delta.y;
             }
             
-            if(newHeight < CURTAIN_HEIGHT && newHeight > 0){
+            if(newHeight < kCurtainHeight && newHeight > 0){
                 curtainHeigtContraint.constant = newHeight;
             }
         }
     }
     else if(recognizer.state == UIGestureRecognizerStateEnded){
-        if(curtainHeigtContraint.constant < CURTAIN_HEIGHT/2)
+        if(curtainHeigtContraint.constant < kCurtainHeight/2)
             curtainHeigtContraint.constant = 0;
         else
-            curtainHeigtContraint.constant = CURTAIN_HEIGHT;
+            curtainHeigtContraint.constant = kCurtainHeight;
     }
 }
 
@@ -1141,8 +1139,8 @@
         if(newSize.height == textField.frame.size.height)
             return;
         
-        if(newSize.height < MAX_MSG_INPUT_HEIGHT){
-            int diffH = FOOTER_NORMAL_HEIGHT - MSG_INPUT_NORMAL_HEIGHT;
+        if(newSize.height < kMsgInputHeightMax){
+            int diffH = kFooterHeightNormal - kMsgInputHeightNormal;
             messageHeightConstraint.constant = newSize.height;
             footerViewHeightConstraint.constant = newSize.height + diffH;
             

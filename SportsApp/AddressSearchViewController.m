@@ -13,6 +13,8 @@
 #import "AppNetworking.h"
 #import "AppDelegate.h"
 
+static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
+
 @interface AddressSearchViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) UITextField* searchField;
@@ -69,18 +71,18 @@
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kSimpleTableIdentifier];
     if(cell == nil)
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:SimpleTableIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kSimpleTableIdentifier];
     
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
     YandexGeoResponse *placemark = items[indexPath.row];
     cell.textLabel.text = placemark.name;
     if(placemark.descr)
         cell.detailTextLabel.text = placemark.descr;
-    
-    return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

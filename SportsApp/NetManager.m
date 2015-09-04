@@ -137,10 +137,18 @@
         }
         else if([value isKindOfClass:[NSArray class]]){
             NSArray *arr = (NSArray *)value;
-            for(NSString *arr_value in arr){
+            
+            if(arr.count > 0){
+                for(NSString *arr_value in arr){
+                    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@[]\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
+                    [body appendData:[[NSString stringWithFormat:@"%@\r\n", arr_value] dataUsingEncoding:NSUTF8StringEncoding]];
+                }
+            }
+            else{
                 [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
                 [body appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@[]\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
-                [body appendData:[[NSString stringWithFormat:@"%@\r\n", arr_value] dataUsingEncoding:NSUTF8StringEncoding]];
+                [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
             }
         }
         else {

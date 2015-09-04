@@ -11,8 +11,8 @@
 
 @interface MemberSettings : NSObject
 
-@property (nonatomic) NSUInteger age;
-@property (nonatomic) NSUInteger level;
+@property (nonatomic) PlayerAge age;
+@property (nonatomic) PlayerLevel level;
 
 @property (nonatomic) BOOL football;
 @property (nonatomic) BOOL basketball;

@@ -20,9 +20,20 @@
 #import "MBProgressHUD.h"
 #import "CustomButton.h"
 
-#define PADDING_H 12.5
-#define MAIN_SCROLL_CONTENT_HEIGHT 464
-#define SCROLL_ITEM_HEIGHT 99
+enum SportTypeIndex : NSUInteger {
+    SportTypeIndexFootball,
+    SportTypeIndexBasketball,
+    SportTypeIndexVolleyball,
+    SportTypeIndexHandball,
+    SportTypeIndexTennis,
+    SportTypeIndexHockey,
+    SportTypeIndexSquash,
+};
+typedef enum SportTypeIndex SportTypeIndex;
+
+static const CGFloat kHorizontalPadding = 12.5f;
+static const CGFloat kScrollContentHeight = 464.0f;
+static const CGFloat kScrollItemHeight = 99.0f;
 
 @interface MemberSettingViewController () <UIScrollViewDelegate>
 
@@ -89,7 +100,7 @@
     
     BOOL oneStarStatus, twoStarStatus, threeStarStatus;
     
-    CGFloat kScrollItemWidht;
+    CGFloat scrollItemWidht;
     CGFloat mainScrollHeight;
 }
 
@@ -100,7 +111,7 @@
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     [self setNavigationItems];
     
-    kScrollItemWidht = self.view.bounds.size.width - PADDING_H * 2;
+    scrollItemWidht = self.view.bounds.size.width - kHorizontalPadding * 2;
     
     _sportInfoItems = [[NSMutableArray alloc] initWithCapacity:7];
     
@@ -235,9 +246,9 @@
     [container addSubview:_btnExit];
     
     [NSLayoutConstraint setHeight:40 forView:_btnExit];
-    [NSLayoutConstraint setLeftPadding:PADDING_H forView:_btnExit inContainer:container];
-    [NSLayoutConstraint setRightPadding:PADDING_H forView:_btnExit inContainer:container];
-    [NSLayoutConstraint setBottomPadding:PADDING_H forView:_btnExit inContainer:container];
+    [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:_btnExit inContainer:container];
+    [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_btnExit inContainer:container];
+    [NSLayoutConstraint setBottomPadding:kHorizontalPadding forView:_btnExit inContainer:container];
     
     [container addConstraint:[NSLayoutConstraint constraintWithItem:_btnExit
                                                           attribute:NSLayoutAttributeTop
@@ -252,12 +263,10 @@
     _containerScrollView = [UIScrollView new];
     _containerScrollView.translatesAutoresizingMaskIntoConstraints = NO;
     
-    if(self.view.bounds.size.height > MAIN_SCROLL_CONTENT_HEIGHT){
+    if(self.view.bounds.size.height > kScrollContentHeight)
         mainScrollHeight = self.view.bounds.size.height;
-    }
-    else{
-        mainScrollHeight = MAIN_SCROLL_CONTENT_HEIGHT;
-    }
+    else
+        mainScrollHeight = kScrollContentHeight;
     
     _containerScrollView.contentSize = CGSizeMake(self.view.bounds.size.width, mainScrollHeight);
     [self.view addSubview:_containerScrollView];
@@ -284,7 +293,7 @@
     
     [NSLayoutConstraint setHeight:155 forView:_sportsGroupView];
     [NSLayoutConstraint setTopPadding:7.5f forView:_sportsGroupView inContainer:container];
-    [NSLayoutConstraint stretchHorizontal:_sportsGroupView inContainer:container withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_sportsGroupView inContainer:container withPadding:kHorizontalPadding];
     
     // subviews
     _lbTitleSportsGrpup = [UILabel new];
@@ -322,7 +331,7 @@
     _sportsScrollView.delegate = self;
     _sportsScrollView.showsHorizontalScrollIndicator = NO;
     _sportsScrollView.pagingEnabled = YES;
-    _sportsScrollView.contentSize = CGSizeMake(kScrollItemWidht * childrenCount, SCROLL_ITEM_HEIGHT);
+    _sportsScrollView.contentSize = CGSizeMake(scrollItemWidht * childrenCount, kScrollItemHeight);
     [_sportsGroupView addSubview:_sportsScrollView];
     
     [NSLayoutConstraint stretchHorizontal:_sportsScrollView inContainer:_sportsGroupView withPadding:0];
@@ -358,25 +367,25 @@
         
         BOOL active = NO;
         switch(i){
-            case IND_FOOTBALL:
+            case SportTypeIndexFootball:
                 active = memberSettings.football;
                 break;
-            case IND_BASKETBALL:
+            case SportTypeIndexBasketball:
                 active = memberSettings.basketball;
                 break;
-            case IND_VOLLEYBALL:
+            case SportTypeIndexVolleyball:
                 active = memberSettings.volleyball;
                 break;
-            case IND_HANDBALL:
+            case SportTypeIndexHandball:
                 active = memberSettings.handball;
                 break;
-            case IND_TENNIS:
+            case SportTypeIndexTennis:
                 active = memberSettings.tennis;
                 break;
-            case IND_HOCKEY:
+            case SportTypeIndexHockey:
                 active = memberSettings.hockey;
                 break;
-            case IND_SQUASH:
+            case SportTypeIndexSquash:
                 active = memberSettings.squash;
                 break;
                 
@@ -435,7 +444,7 @@
 }
 
 - (UIView*) createSportItemView:(CGFloat)offset {
-    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(kScrollItemWidht * offset, 0, kScrollItemWidht, SCROLL_ITEM_HEIGHT)];
+    UIView* view = [[UIView alloc] initWithFrame:CGRectMake(scrollItemWidht * offset, 0, scrollItemWidht, kScrollItemHeight)];
     return view;
 }
 
@@ -487,7 +496,7 @@
     [container addSubview:_levelGroupView];
     
     [NSLayoutConstraint setHeight:105 forView:_levelGroupView];
-    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:container withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_levelGroupView inContainer:container withPadding:kHorizontalPadding];
     [NSLayoutConstraint setTopDistance:7.5f fromView:_levelGroupView toView:_sportsGroupView inContainer:container];
     
     // title
@@ -495,17 +504,17 @@
     [self setupTitle:_lbTitleLevelGrpup forGroup:_levelGroupView withText:@"Мой уровень:" andWidht:106];
     
     BOOL isLevelOne, isLevelTwo, isLevelThree;
-    if(memberSettings.level == LEVEL_1){
+    if(memberSettings.level == PlayerLevelBeginner){
         isLevelOne = YES;
         isLevelTwo = NO;
         isLevelThree = NO;
     }
-    else if(memberSettings.level == LEVEL_2){
+    else if(memberSettings.level == PlayerLevelMiddling){
         isLevelOne = YES;
         isLevelTwo = YES;
         isLevelThree = NO;
     }
-    else if(memberSettings.level == LEVEL_3){
+    else if(memberSettings.level == PlayerLevelMaster){
         isLevelOne = YES;
         isLevelTwo = YES;
         isLevelThree = YES;
@@ -566,17 +575,17 @@
     [container addSubview:_ageGroupView];
     
     [NSLayoutConstraint setHeight:126 forView:_ageGroupView];
-    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:container withPadding:PADDING_H];
+    [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:container withPadding:kHorizontalPadding];
     [NSLayoutConstraint setTopDistance:7.5f fromView:_ageGroupView toView:_levelGroupView inContainer:container];
 
     // subviews
     _lbTitleAgeGrpup = [UILabel new];
     [self setupTitle:_lbTitleAgeGrpup forGroup:_ageGroupView withText:@"Мой возраст:" andWidht:106];
     
-    BOOL isAgeOne = (memberSettings.age == AGE_20) ? YES : NO;
-    BOOL isAgeTwo = (memberSettings.age == AGE_20_28) ? YES : NO;
-    BOOL isAgeThree = (memberSettings.age == AGE_28_35) ? YES : NO;
-    BOOL isAgeFour = (memberSettings.age == AGE_35) ? YES : NO;
+    BOOL isAgeOne = (memberSettings.age == PlayerAge_20) ? YES : NO;
+    BOOL isAgeTwo = (memberSettings.age == PlayerAge_20_28) ? YES : NO;
+    BOOL isAgeThree = (memberSettings.age == PlayerAge_28_35) ? YES : NO;
+    BOOL isAgeFour = (memberSettings.age == PlayerAge_35) ? YES : NO;
     
     // icons !! order is important
     [self setupIconAgeTwo:isAgeTwo];
@@ -752,31 +761,31 @@
         
         BOOL active = NO;
         switch(sportIndex){
-            case IND_FOOTBALL:
+            case SportTypeIndexFootball:
                 memberSettings.football = !memberSettings.football;
                 active = memberSettings.football;
                 break;
-            case IND_BASKETBALL:
+            case SportTypeIndexBasketball:
                 memberSettings.basketball = !memberSettings.basketball;
                 active = memberSettings.basketball;
                 break;
-            case IND_VOLLEYBALL:
+            case SportTypeIndexVolleyball:
                 memberSettings.volleyball = !memberSettings.volleyball;
                 active = memberSettings.volleyball;
                 break;
-            case IND_HANDBALL:
+            case SportTypeIndexHandball:
                 memberSettings.handball = !memberSettings.handball;
                 active = memberSettings.handball;
                 break;
-            case IND_TENNIS:
+            case SportTypeIndexTennis:
                 memberSettings.tennis = !memberSettings.tennis;
                 active = memberSettings.tennis;
                 break;
-            case IND_HOCKEY:
+            case SportTypeIndexHockey:
                 memberSettings.hockey = !memberSettings.hockey;
                 active = memberSettings.hockey;
                 break;
-            case IND_SQUASH:
+            case SportTypeIndexSquash:
                 memberSettings.squash = !memberSettings.squash;
                 active = memberSettings.squash;
                 break;
@@ -809,7 +818,7 @@
     
     oneStarStatus = YES;
     _ivOneStarLevel.image = activeStarImage;
-    memberSettings.level = LEVEL_1;
+    memberSettings.level = PlayerLevelBeginner;
     
     /*
     if(oneStarStatus){
@@ -836,7 +845,7 @@
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = grayStarImage;
     
-    memberSettings.level = LEVEL_2;
+    memberSettings.level = PlayerLevelMiddling;
 }
 
 - (void) threeStarClick {
@@ -848,7 +857,7 @@
     _ivTwoStarLevel.image = activeStarImage;
     _ivThreeStarLevel.image = activeStarImage;
     
-    memberSettings.level = LEVEL_3;
+    memberSettings.level = PlayerLevelMaster;
 }
 
 #pragma mark -
@@ -866,7 +875,7 @@
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     
-    memberSettings.age = AGE_20;
+    memberSettings.age = PlayerAge_20;
 }
 
 - (void) twoAgeClick {
@@ -882,7 +891,7 @@
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     
-    memberSettings.age = AGE_20_28;
+    memberSettings.age = PlayerAge_20_28;
 }
 
 - (void) threeAgeClick {
@@ -898,7 +907,7 @@
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     
-    memberSettings.age = AGE_28_35;
+    memberSettings.age = PlayerAge_28_35;
 }
 
 - (void) fourAgeClick {
@@ -914,7 +923,7 @@
     _lbTitleThreeAge.textColor = [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
     _lbTitleFourAge.textColor = [UIColor colorWithRGBA:TXT_ACTIVE_COLOR];
     
-    memberSettings.age = AGE_35;
+    memberSettings.age = PlayerAge_35;
 }
 
 #pragma mark -

@@ -13,7 +13,7 @@
 - (instancetype) init {
     self = [super init];
     if(self){
-        self.sport = -1;
+        self.sportType = SportTypeUnknown;
         self.time = 0;
         self.age = 0;
         self.level = 0;
