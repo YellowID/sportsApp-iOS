@@ -1,0 +1,114 @@
+/*
+ Localizable.strings
+ SportsApp
+ 
+ Created by sergeyZ on 08.09.15.
+ 
+ */
+
+"APP_NAME" = "Start Sport";
+
+"TITLE_ALL_CITIES" = "All cities";
+"TITLE_MEMBERS" = "Members";
+"TITLE_MY_SETTINGS" = "My settings";
+"TITLE_NEW_EVENT" = "New event";
+"TITLE_GAMES" = "Games";
+"TITLE_INVITE_FRIEND" = "Invite a friend";
+"TITLE_CHOOSE_CITY" = "Choose a city";
+
+"TITLE_PUBLIC_GAMES" = "Public games";
+"TITLE_MY_GAMES" = "My games";
+
+"BTN_OK" = "Ок";
+"BTN_CANCEL_1" = "Cancel";
+"BTN_CANCEL_2" = "Cancel";
+"BTN_SAVE" = "Save";
+"BTN_CLOSE" = "Close";
+"BTN_CHANGE" = "Change";
+"BTN_CREATE" = "Create";
+"BTN_EXIT" = "Log out";
+"BTN_READY" = "Done";
+"BTN_GOING" = "Going";
+"BTN_MAYBE" = "Maybe";
+"BTN_NO" = "No";
+"BTN_YES" = "Yes";
+"BTN_SETTINGS" = "Settings";
+"BTN_INVITE" = "Invite";
+"BTN_CHOOSE_ADDRESS" = "Choose address";
+"BTN_LOGIN_WITH_FACEBOOK" = "Login with Facebook";
+"BTN_LOGIN_WITH_VKONTAKTE" = "Login with Vkontakte";
+
+"MSG_NO_INTERNET_CONNECTION" = "No internet connection";
+"MSG_UNABLE_TO_SEND_A_MESSAGE" = "Unable to send a message";
+"MSG_UNABLE_TO_INVITE_USER" = "Unable to invite user.";
+"MSG_SOMETHING_WRONG" = "Opps, something went wrong.";
+"MSG_GAME_WAS_CHANGED" = "The game has been changed";
+"MSG_INVITE_THIS_MEMBER" = "Invite this member?";
+"MSG_INVITATION_SENT" = "Invitation sent";
+"MSG_NOT_FOUND" = "Nothing has been found";
+
+"MSG_LOCATION_IS_UNKNOWN" = "The location data is not available.";
+"MSG_GEO_ACCESS_DEIED" = "The application was denied access to Location Services";
+"MSG_GEO_ALLOW_ACCESS" = "To allow, go to Settings and enable access for this application.";
+"MSG_GEOLOCATION_IS_DISABLED" = "Location Services are turned off";
+"MSG_GEOLOCATION_ENABLE" = "To turn on, go to Settings.";
+
+"TXT_AUTORIZATION" = "Authorization...";
+"TXT_GUEST" = "Guest";
+
+"TXT_SPORT_TYPE" = "Kind of sport";
+"TXT_PLACE" = "Place";
+"TXT_PLACE_UNKNOWN" = "Place unknown";
+"TXT_AGE" = "Age";
+"TXT_STARTING" = "At";
+"TXT_NUMBER_OF_PEOPLE" = "Number of people";
+"TXT_REQUIRED_LEVEL" = "Required skills";
+"TXT_TODAY" = "today";
+"TXT_GAME_OVER" = "Game over";
+"TXT_IN_DAYS" = "In %lu days";
+"TXT_GOTO_PEOPLE" = "%lu people are going";
+"TXT_NEED_MORE" = "Need %lu more";
+"TXT_INVITE" = "Invite";
+"TXT_FIND" = "Find";
+
+"TXT_ADDRESS" = "Address";
+"TXT_PLACE_NAME" = "Name of the place";
+"TXT_CITY" = "City";
+"TXT_PLACE_NOT_FOUND" = "There is no right place?";
+"TXT_LOCATING" = "Locationing...";
+"TXT_LOCATION" = "Location";
+
+"TXT_INVITE_NEW_USER" = "Invite a new user:";
+"TXT_ENTER_EMAIL" = "Enter email";
+
+"TXT_MY_SPORTS" = "My sports:";
+"TXT_MY_LEVEL" = "My skills:";
+"TXT_MY_AGE" = "My age:";
+"TXT_AGE_UNTIL_20" = "until 20";
+"TXT_AGE_20_28" = "20-28";
+"TXT_AGE_28_35" = "28-35";
+"TXT_AGE_AFTER_35" = "over 35";
+
+"STORT_FOOTBALL" = "Football";
+"STORT_BASKETBALL" = "Basketball";
+"STORT_VOLLEYBALL" = "Volleyball";
+"STORT_HANDBALL" = "Handball";
+"STORT_TENNIS" = "Tennis";
+"STORT_HOCKEY" = "Hockey";
+"STORT_SQUASH" = "Squash";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

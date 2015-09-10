@@ -166,6 +166,7 @@
 		53E519BF1B15B0FD00B85DDD /* InviteUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519BE1B15B0FD00B85DDD /* InviteUserViewController.m */; };
 		53E519C51B15B74000B85DDD /* NSString+Common.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519C41B15B74000B85DDD /* NSString+Common.m */; };
 		53E519C81B1604C700B85DDD /* CustomSearchBar.m in Sources */ = {isa = PBXBuildFile; fileRef = 53E519C71B1604C700B85DDD /* CustomSearchBar.m */; };
+		53E6C70E1B9F3495004C5479 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 53E6C7101B9F3495004C5479 /* Localizable.strings */; };
 		53F055C11B5F71A2000A9D92 /* ic_basketball_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F055B31B5F71A2000A9D92 /* ic_basketball_active@2x.png */; };
 		53F055C21B5F71A2000A9D92 /* ic_basketball@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F055B41B5F71A2000A9D92 /* ic_basketball@2x.png */; };
 		53F055C31B5F71A2000A9D92 /* ic_football_active@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 53F055B51B5F71A2000A9D92 /* ic_football_active@2x.png */; };
@@ -419,6 +420,8 @@
 		53E519C41B15B74000B85DDD /* NSString+Common.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Common.m"; sourceTree = "<group>"; };
 		53E519C61B1604C700B85DDD /* CustomSearchBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSearchBar.h; sourceTree = "<group>"; };
 		53E519C71B1604C700B85DDD /* CustomSearchBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSearchBar.m; sourceTree = "<group>"; };
+		53E6C70F1B9F3495004C5479 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		53E6C7111B9F34A6004C5479 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
 		53F055B31B5F71A2000A9D92 /* ic_basketball_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_basketball_active@2x.png"; sourceTree = "<group>"; };
 		53F055B41B5F71A2000A9D92 /* ic_basketball@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_basketball@2x.png"; sourceTree = "<group>"; };
 		53F055B51B5F71A2000A9D92 /* ic_football_active@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ic_football_active@2x.png"; sourceTree = "<group>"; };
@@ -703,6 +706,7 @@
 			children = (
 				53DCC1BD1B0E0DA0002EE36E /* photo@2x.png */,
 				53DCC1691B0DB23F002EE36E /* icons */,
+				53E6C7101B9F3495004C5479 /* Localizable.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -943,6 +947,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 5384D5B21B0C9321009B6CD3;
 			productRefGroup = 5384D5BC1B0C9321009B6CD3 /* Products */;
@@ -1058,6 +1063,7 @@
 				53F055E81B5F73CF000A9D92 /* ic_tennis@3x.png in Resources */,
 				53DCC18E1B0DB266002EE36E /* icon_settings_active@2x.png in Resources */,
 				538657F11B6BB2C60003A186 /* icon_time_orange@3x.png in Resources */,
+				53E6C70E1B9F3495004C5479 /* Localizable.strings in Resources */,
 				534B514C1B204457001FAD9A /* ic_back_arrow@3x.png in Resources */,
 				53F055E61B5F73CF000A9D92 /* ic_squash@3x.png in Resources */,
 				534A10F41B63B44500267F85 /* bg_btn_fb@3x.png in Resources */,
@@ -1185,6 +1191,18 @@
 			targetProxy = 5384D5CF1B0C9321009B6CD3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		53E6C7101B9F3495004C5479 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				53E6C70F1B9F3495004C5479 /* en */,
+				53E6C7111B9F34A6004C5479 /* ru */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5384D5D61B0C9321009B6CD3 /* Debug */ = {

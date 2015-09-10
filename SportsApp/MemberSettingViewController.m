@@ -118,43 +118,43 @@ static const CGFloat kScrollItemHeight = 99.0f;
     SportInfo* football = [SportInfo new];
     football.activeImage = [UIImage imageNamed:@"ic_football_active.png"];
     football.inactiveImage = [UIImage imageNamed:@"ic_football.png"];
-    football.title = @"Футбол";
+    football.title = NSLocalizedString(@"STORT_FOOTBALL", nil);
     [_sportInfoItems addObject:football];
     
     SportInfo* basketball = [SportInfo new];
     basketball.activeImage = [UIImage imageNamed:@"ic_basketball_active.png"];
     basketball.inactiveImage = [UIImage imageNamed:@"ic_basketball.png"];
-    basketball.title = @"Баскетбол";
+    basketball.title = NSLocalizedString(@"STORT_BASKETBALL", nil);
     [_sportInfoItems addObject:basketball];
     
     SportInfo* volleyball = [SportInfo new];
     volleyball.activeImage = [UIImage imageNamed:@"ic_volleyball_active.png"];
     volleyball.inactiveImage = [UIImage imageNamed:@"ic_volleyball.png"];
-    volleyball.title = @"Волейбол";
+    volleyball.title = NSLocalizedString(@"STORT_VOLLEYBALL", nil);
     [_sportInfoItems addObject:volleyball];
     
     SportInfo* handball = [SportInfo new];
     handball.activeImage = [UIImage imageNamed:@"ic_handball_active.png"];
     handball.inactiveImage = [UIImage imageNamed:@"ic_handball.png"];
-    handball.title = @"Гандбол";
+    handball.title = NSLocalizedString(@"STORT_HANDBALL", nil);
     [_sportInfoItems addObject:handball];
     
     SportInfo* tennis = [SportInfo new];
     tennis.activeImage = [UIImage imageNamed:@"ic_tennis_active.png"];
     tennis.inactiveImage = [UIImage imageNamed:@"ic_tennis.png"];
-    tennis.title = @"Тенис";
+    tennis.title = NSLocalizedString(@"STORT_TENNIS", nil);
     [_sportInfoItems addObject:tennis];
     
     SportInfo* hockey = [SportInfo new];
     hockey.activeImage = [UIImage imageNamed:@"ic_hockey_active.png"];
     hockey.inactiveImage = [UIImage imageNamed:@"ic_hockey.png"];
-    hockey.title = @"Хоккей";
+    hockey.title = NSLocalizedString(@"STORT_HOCKEY", nil);
     [_sportInfoItems addObject:hockey];
     
     SportInfo* squash = [SportInfo new];
     squash.activeImage = [UIImage imageNamed:@"ic_squash_active.png"];
     squash.inactiveImage = [UIImage imageNamed:@"ic_squash.png"];
-    squash.title = @"Сквош";
+    squash.title = NSLocalizedString(@"STORT_SQUASH", nil);
     [_sportInfoItems addObject:squash];
     
     
@@ -185,7 +185,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 
                 [alert show];
@@ -216,7 +216,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
     //[btnCancel setBackgroundColor:[UIColor grayColor]];
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnCancel setTitle:@"Отменить" forState:UIControlStateNormal];
+    [btnCancel setTitle:NSLocalizedString(@"BTN_CANCEL_2", nil) forState:UIControlStateNormal];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     btnCancel.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     btnCancel.titleLabel.textAlignment = NSTextAlignmentLeft;
@@ -226,7 +226,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
     _btnSave = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_btnSave setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [_btnSave addTarget:self action:@selector(btnAddClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnSave setTitle:@"Сохранить" forState:UIControlStateNormal];
+    [_btnSave setTitle:NSLocalizedString(@"BTN_SAVE", nil) forState:UIControlStateNormal];
     _btnSave.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [_btnSave setUserInteractionEnabled:NO];
     [_btnSave setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
@@ -297,7 +297,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
     
     // subviews
     _lbTitleSportsGrpup = [UILabel new];
-    [self setupTitle:_lbTitleSportsGrpup forGroup:_sportsGroupView withText:@"Мои виды спорта:" andWidht:124];
+    [self setupTitle:_lbTitleSportsGrpup forGroup:_sportsGroupView withText:NSLocalizedString(@"TXT_MY_SPORTS", nil) andWidht:124];
     
     [self setupSportsPageControl];
     [self setupSportsScroll];
@@ -501,7 +501,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
     
     // title
     _lbTitleLevelGrpup = [UILabel new];
-    [self setupTitle:_lbTitleLevelGrpup forGroup:_levelGroupView withText:@"Мой уровень:" andWidht:106];
+    [self setupTitle:_lbTitleLevelGrpup forGroup:_levelGroupView withText:NSLocalizedString(@"TXT_MY_LEVEL", nil) andWidht:106];
     
     BOOL isLevelOne, isLevelTwo, isLevelThree;
     if(memberSettings.level == PlayerLevelBeginner){
@@ -580,7 +580,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
 
     // subviews
     _lbTitleAgeGrpup = [UILabel new];
-    [self setupTitle:_lbTitleAgeGrpup forGroup:_ageGroupView withText:@"Мой возраст:" andWidht:106];
+    [self setupTitle:_lbTitleAgeGrpup forGroup:_ageGroupView withText:NSLocalizedString(@"TXT_MY_AGE", nil) andWidht:106];
     
     BOOL isAgeOne = (memberSettings.age == PlayerAge_20) ? YES : NO;
     BOOL isAgeTwo = (memberSettings.age == PlayerAge_20_28) ? YES : NO;
@@ -597,19 +597,19 @@ static const CGFloat kScrollItemHeight = 99.0f;
     // lables
     _lbTitleOneAge = [UILabel new];
     UIColor *oneAgeColor = (isAgeOne) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
-    [self setupAgeLable:_lbTitleOneAge forView:_ivOneAge withText:@"до 20" andColor:oneAgeColor];
+    [self setupAgeLable:_lbTitleOneAge forView:_ivOneAge withText:NSLocalizedString(@"TXT_AGE_UNTIL_20", nil) andColor:oneAgeColor];
     
     _lbTitleTwoAge = [UILabel new];
     UIColor *twoAgeColor = (isAgeTwo) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
-    [self setupAgeLable:_lbTitleTwoAge forView:_ivTwoAge withText:@"20-28" andColor:twoAgeColor];
+    [self setupAgeLable:_lbTitleTwoAge forView:_ivTwoAge withText:NSLocalizedString(@"TXT_AGE_20_28", nil) andColor:twoAgeColor];
     
     _lbTitleThreeAge = [UILabel new];
     UIColor *threeAgeColor = (isAgeThree) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
-    [self setupAgeLable:_lbTitleThreeAge forView:_ivThreeAge withText:@"28-35" andColor:threeAgeColor];
+    [self setupAgeLable:_lbTitleThreeAge forView:_ivThreeAge withText:NSLocalizedString(@"TXT_AGE_28_35", nil) andColor:threeAgeColor];
     
     _lbTitleFourAge = [UILabel new];
     UIColor *fourAgeColor = (isAgeFour) ? [UIColor colorWithRGBA:TXT_ACTIVE_COLOR] : [UIColor colorWithRGBA:TXT_INACTIVE_COLOR];
-    [self setupAgeLable:_lbTitleFourAge forView:_ivFourAge withText:@"после 35" andColor:fourAgeColor];
+    [self setupAgeLable:_lbTitleFourAge forView:_ivFourAge withText:NSLocalizedString(@"TXT_AGE_AFTER_35", nil) andColor:fourAgeColor];
 }
 
 - (void) setupTitleAge {
@@ -948,7 +948,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
 - (CustomButton *) createExitButton {
     CustomButton *btn = [CustomButton buttonWithType:UIButtonTypeCustom];
     [btn addTarget:self action:@selector(btnExitClick) forControlEvents:UIControlEventTouchUpInside];
-    [btn setTitle:@"Выход" forState:UIControlStateNormal];
+    [btn setTitle:NSLocalizedString(@"BTN_EXIT", nil) forState:UIControlStateNormal];
     btn.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [btn setTitleColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateNormal];
@@ -990,7 +990,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 
                 [alert show];

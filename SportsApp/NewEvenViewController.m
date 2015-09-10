@@ -101,14 +101,23 @@ static const CGFloat kScrollContentHeight = 340.0f;
     _peopleNumberPicker.tag = kPickerPeopleNumber;
     _peopleNumberPicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
-    ageItems = @[@"до 20", @"20-28", @"28-35", @"после 35"];
+    ageItems = @[NSLocalizedString(@"TXT_AGE_UNTIL_20", nil),
+                 NSLocalizedString(@"TXT_AGE_20_28", nil),
+                 NSLocalizedString(@"TXT_AGE_28_35", nil),
+                 NSLocalizedString(@"TXT_AGE_AFTER_35", nil)];
     _agePicker = [[UIPickerView alloc] init];
     _agePicker.dataSource = self;
     _agePicker.delegate = self;
     _agePicker.tag = kPickerAge;
     _agePicker.backgroundColor = [UIColor groupTableViewBackgroundColor];
     
-    sportItems = @[@"Футбол", @"Баскетбол", @"Волейбол", @"Гандбол", @"Теннис", @"Хоккей", @"Сквош"];
+    sportItems = @[NSLocalizedString(@"STORT_FOOTBALL", nil),
+                   NSLocalizedString(@"STORT_BASKETBALL", nil),
+                   NSLocalizedString(@"STORT_VOLLEYBALL", nil),
+                   NSLocalizedString(@"STORT_HANDBALL", nil),
+                   NSLocalizedString(@"STORT_TENNIS", nil),
+                   NSLocalizedString(@"STORT_HOCKEY", nil),
+                   NSLocalizedString(@"STORT_SQUASH", nil)];
     _sportPicker = [[UIPickerView alloc] init];
     _sportPicker.dataSource = self;
     _sportPicker.delegate = self;
@@ -147,7 +156,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
                                           initWithTitle:nil
                                           message:errorMessage
                                           delegate:nil
-                                          cancelButtonTitle:@"Ок"
+                                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                           otherButtonTitles:nil];
                     
                     [alert show];
@@ -164,7 +173,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
                     newGame.placeName = editGameInfo.addressName;
                     
                     // UI
-                    [self setNavTitle:@"Новое событие"];
+                    [self setNavTitle:NSLocalizedString(@"TITLE_NEW_EVENT", nil)];
                     [self setNavigationItems];
                     
                     [self setupContainers];
@@ -191,7 +200,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
         }];
     }
     else{
-        [self setNavTitle:@"Новое событие"];
+        [self setNavTitle:NSLocalizedString(@"TITLE_NEW_EVENT", nil)];
         [self setNavigationItems];
         
         [self setupContainers];
@@ -226,7 +235,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     UIButton *btnCancel = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnCancel setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
     [btnCancel addTarget:self action:@selector(btnCancelClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnCancel setTitle:@"Отмена" forState:UIControlStateNormal];
+    [btnCancel setTitle:NSLocalizedString(@"BTN_CANCEL_1", nil) forState:UIControlStateNormal];
     btnCancel.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnCancel setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnCancel sizeToFit];
@@ -237,9 +246,9 @@ static const CGFloat kScrollContentHeight = 340.0f;
     [_btnCreate addTarget:self action:@selector(btnCreateClick) forControlEvents:UIControlEventTouchUpInside];
     
     if(_isEditGameMode)
-        [_btnCreate setTitle:@"Изменить" forState:UIControlStateNormal];
+        [_btnCreate setTitle:NSLocalizedString(@"BTN_CHANGE", nil) forState:UIControlStateNormal];
     else
-        [_btnCreate setTitle:@"Создать" forState:UIControlStateNormal];
+        [_btnCreate setTitle:NSLocalizedString(@"BTN_CREATE", nil) forState:UIControlStateNormal];
     
     _btnCreate.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [_btnCreate setUserInteractionEnabled:NO];
@@ -288,7 +297,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     _tfKindOfSport = [UITextField new];
     _tfKindOfSport.translatesAutoresizingMaskIntoConstraints = NO;
     _tfKindOfSport.delegate = self;
-    _tfKindOfSport.placeholder = @"Вид спорта";
+    _tfKindOfSport.placeholder = NSLocalizedString(@"TXT_SPORT_TYPE", nil);
     
     [self setReadyButtonForTextField:_tfKindOfSport];
     
@@ -311,7 +320,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     _tfLocation = [UITextField new];
     _tfLocation.delegate = self;
     _tfLocation.translatesAutoresizingMaskIntoConstraints = NO;
-    _tfLocation.placeholder = @"Место";
+    _tfLocation.placeholder = NSLocalizedString(@"TXT_PLACE", nil);
     
     if(_isEditGameMode)
         _tfLocation.text = editGameInfo.addressName;
@@ -346,7 +355,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
 - (void) setupTitleForAgeGroup {
     UILabel* title = [UILabel new];
     title.translatesAutoresizingMaskIntoConstraints = NO;
-    title.text = @"Возраст";
+    title.text = NSLocalizedString(@"TXT_AGE", nil);
     title.textAlignment = NSTextAlignmentLeft;
     title.font = [UIFont systemFontOfSize:12.0f];
     [_ageGroupView addSubview:title];
@@ -360,7 +369,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     _tfAge = [UITextField new];
     _tfAge.translatesAutoresizingMaskIntoConstraints = NO;
     _tfAge.delegate = self;
-    _tfAge.placeholder = @"20-28";
+    _tfAge.placeholder = NSLocalizedString(@"TXT_AGE_20_28", nil);
     
     [self setReadyButtonForTextField:_tfAge];
     
@@ -401,7 +410,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
 - (void) setupTitleForTimeGroup {
     UILabel* title = [UILabel new];
     title.translatesAutoresizingMaskIntoConstraints = NO;
-    title.text = @"Начало";
+    title.text = NSLocalizedString(@"TXT_STARTING", nil);
     title.textAlignment = NSTextAlignmentLeft;
     title.font = [UIFont systemFontOfSize:12.0f];
     [_timeGroupView addSubview:title];
@@ -468,7 +477,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
 - (void) setupTitleForPeopleNumberRow {
     UILabel* title = [UILabel new];
     title.translatesAutoresizingMaskIntoConstraints = NO;
-    title.text = @"Количество людей";
+    title.text = NSLocalizedString(@"TXT_NUMBER_OF_PEOPLE", nil);
     title.textAlignment = NSTextAlignmentLeft;
     title.font = [UIFont systemFontOfSize:12.0f];
     [_levelGroupView addSubview:title];
@@ -485,7 +494,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
 - (void) setupTitleForLevelRow {
     UILabel* title = [UILabel new];
     title.translatesAutoresizingMaskIntoConstraints = NO;
-    title.text = @"Требуемый уровень";
+    title.text = NSLocalizedString(@"TXT_REQUIRED_LEVEL", nil);
     title.textAlignment = NSTextAlignmentLeft;
     title.font = [UIFont systemFontOfSize:12.0f];
     [_levelGroupView addSubview:title];
@@ -605,7 +614,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
                                           initWithTitle:nil
                                           message:errorMessage
                                           delegate:nil
-                                          cancelButtonTitle:@"Ок"
+                                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                           otherButtonTitles:nil];
                     
                     [alert show];
@@ -613,8 +622,8 @@ static const CGFloat kScrollContentHeight = 340.0f;
                 else{
                     if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
                         [self.delegate gameWasSavedWithController:self gameId:_gameId];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
+                    else
+                        [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
@@ -630,7 +639,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
                                           initWithTitle:nil
                                           message:errorMessage
                                           delegate:nil
-                                          cancelButtonTitle:@"Ок"
+                                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                           otherButtonTitles:nil];
                     
                     [alert show];
@@ -638,8 +647,8 @@ static const CGFloat kScrollContentHeight = 340.0f;
                 else{
                     if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
                         [self.delegate gameWasSavedWithController:self gameId:_gameId];
-                    
-                    [self dismissViewControllerAnimated:YES completion:nil];
+                    else
+                        [self dismissViewControllerAnimated:YES completion:nil];
                 }
             });
         }];
@@ -853,7 +862,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     UIButton *btnReady = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnReady setFrame:CGRectMake(0, 0.0f, 51.0f, 36.0f)];
     [btnReady addTarget:self action:@selector(btnReadyClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnReady setTitle:@"Готово" forState:UIControlStateNormal];
+    [btnReady setTitle:NSLocalizedString(@"BTN_READY", nil) forState:UIControlStateNormal];
     [btnReady setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
     btnReady.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     [btnReady setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
@@ -877,15 +886,15 @@ static const CGFloat kScrollContentHeight = 340.0f;
     gi.time = [gameDate toFormat:@"HH:mm"];
     
     if([gameDate isToday]){
-        gi.date = @"сегодня";
+        gi.date = NSLocalizedString(@"TXT_TODAY", nil);
     }
     else {
         NSInteger days = [gameDate daysAfterDate:[NSDate new]];
         
         if(days < 0)
-            gi.date = @"Игра окончена";
+            gi.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
         else
-            gi.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+            gi.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
     }
     
     return gi;

@@ -1,0 +1,114 @@
+/* 
+  Localizable.strings
+  SportsApp
+
+  Created by sergeyZ on 08.09.15.
+
+*/
+
+"APP_NAME" = "Start Sport";
+
+"TITLE_ALL_CITIES" = "Все города";
+"TITLE_MEMBERS" = "Участники";
+"TITLE_MY_SETTINGS" = "Мои настройки";
+"TITLE_NEW_EVENT" = "Новое событие";
+"TITLE_GAMES" = "Игры";
+"TITLE_INVITE_FRIEND" = "Позвать друга";
+"TITLE_CHOOSE_CITY" = "Выберите город";
+
+"TITLE_PUBLIC_GAMES" = "Публичные игры";
+"TITLE_MY_GAMES" = "Мои игры";
+
+"BTN_OK" = "Ок";
+"BTN_CANCEL_1" = "Отмена";
+"BTN_CANCEL_2" = "Отменить";
+"BTN_SAVE" = "Сохранить";
+"BTN_CLOSE" = "Закрыть";
+"BTN_CHANGE" = "Изменить";
+"BTN_CREATE" = "Создать";
+"BTN_EXIT" = "Выход";
+"BTN_READY" = "Готово";
+"BTN_GOING" = "Иду";
+"BTN_MAYBE" = "Возможно";
+"BTN_NO" = "Нет";
+"BTN_YES" = "Да";
+"BTN_SETTINGS" = "Настройки";
+"BTN_INVITE" = "Пригласить";
+"BTN_CHOOSE_ADDRESS" = "Указать адрес";
+"BTN_LOGIN_WITH_FACEBOOK" = "Войти через Facebook";
+"BTN_LOGIN_WITH_VKONTAKTE" = "Войти через Вконтакте";
+
+"MSG_NO_INTERNET_CONNECTION" = "Нет подключения к интернету";
+"MSG_UNABLE_TO_SEND_A_MESSAGE" = "Не удалось отправить сообщение";
+"MSG_UNABLE_TO_INVITE_USER" = "Не удалось пригласить пользователя.";
+"MSG_SOMETHING_WRONG" = "Не удалось, что-то пошло не так.";
+"MSG_GAME_WAS_CHANGED" = "Игра изменена";
+"MSG_INVITE_THIS_MEMBER" = "Пригласить этого участника?";
+"MSG_INVITATION_SENT" = "Приглашение отправлено";
+"MSG_NOT_FOUND" = "Ничего не найдено";
+
+"MSG_LOCATION_IS_UNKNOWN" = "Данные о местоположении недоступны.";
+"MSG_GEO_ACCESS_DEIED" = "Приложению запрещен доступ к Службам геолокации";
+"MSG_GEO_ALLOW_ACCESS" = "Чтобы разрешить, перейдите в Настройки и включите доступ для этого приложения.";
+"MSG_GEOLOCATION_IS_DISABLED" = "Службы геолокации выключены";
+"MSG_GEOLOCATION_ENABLE" = "Чтобы включить, перейдите в Настройки.";
+
+"TXT_AUTORIZATION" = "Авторизация...";
+"TXT_GUEST" = "Гость";
+
+"TXT_SPORT_TYPE" = "Вид спорта";
+"TXT_PLACE" = "Место";
+"TXT_PLACE_UNKNOWN" = "Место неизвестно";
+"TXT_AGE" = "Возраст";
+"TXT_STARTING" = "Начало";
+"TXT_NUMBER_OF_PEOPLE" = "Количество людей";
+"TXT_REQUIRED_LEVEL" = "Требуемый уровень";
+"TXT_TODAY" = "сегодня";
+"TXT_GAME_OVER" = "Игра окончена";
+"TXT_IN_DAYS" = "через %lu дня";
+"TXT_GOTO_PEOPLE" = "Идут %lu человек";
+"TXT_NEED_MORE" = "Нужно ещё %lu";
+"TXT_INVITE" = "Позвать";
+"TXT_FIND" = "Найти";
+
+"TXT_ADDRESS" = "Адрес";
+"TXT_PLACE_NAME" = "Название места";
+"TXT_CITY" = "Город";
+"TXT_PLACE_NOT_FOUND" = "Нет нужного места?";
+"TXT_LOCATING" = "Определение местоположения...";
+"TXT_LOCATION" = "Местоположение";
+
+"TXT_INVITE_NEW_USER" = "Пригласить нового пользователя:";
+"TXT_ENTER_EMAIL" = "Введите email";
+
+"TXT_MY_SPORTS" = "Мои виды спорта:";
+"TXT_MY_LEVEL" = "Мой уровень:";
+"TXT_MY_AGE" = "Мой возраст:";
+"TXT_AGE_UNTIL_20" = "до 20";
+"TXT_AGE_20_28" = "20-28";
+"TXT_AGE_28_35" = "28-35";
+"TXT_AGE_AFTER_35" = "после 35";
+
+"STORT_FOOTBALL" = "Футбол";
+"STORT_BASKETBALL" = "Баскетбол";
+"STORT_VOLLEYBALL" = "Волейбол";
+"STORT_HANDBALL" = "Гандбол";
+"STORT_TENNIS" = "Тенис";
+"STORT_HOCKEY" = "Хоккей";
+"STORT_SQUASH" = "Сквош";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

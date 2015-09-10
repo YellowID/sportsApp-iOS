@@ -115,7 +115,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 [alert show];
             }
@@ -285,7 +285,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     
     NSString *title;
     if([firstMsg.fullDate isToday])
-        title = @"сегодня";
+        title = NSLocalizedString(@"TXT_TODAY", nil);
     else
         title = [firstMsg.fullDate toFormat:@"LLLL d"];
     
@@ -316,8 +316,8 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *LeftChatCellIdentifier = @"LeftChatCellIdentifier";
-    static NSString *RightChatCellIdentifier = @"RightChatCellIdentifier";
+    static NSString *const LeftChatCellIdentifier = @"LeftChatCellIdentifier";
+    static NSString *const RightChatCellIdentifier = @"RightChatCellIdentifier";
     
     NSArray *rows = [_messages objectAtIndex:indexPath.section];
     ChatMessage *chatMessage = rows[indexPath.row];
@@ -401,7 +401,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     if(chatMessage.userName.length > 0)
         chatCell.userNameLabel.text = chatMessage.userName;
     else
-        chatCell.userNameLabel.text = @"Гость";
+        chatCell.userNameLabel.text = NSLocalizedString(@"TXT_GUEST", nil);
     
     chatCell.userNameLabel.textColor = [UIColor colorWithRGBA:CHAT_USERNAME_COLOR];
     
@@ -437,7 +437,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
         UIButton* btnChange = [UIButton buttonWithType:UIButtonTypeRoundedRect];
         [btnChange setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
         [btnChange addTarget:self action:@selector(btnChangeClick) forControlEvents:UIControlEventTouchUpInside];
-        [btnChange setTitle:@"Изменить" forState:UIControlStateNormal];
+        [btnChange setTitle:NSLocalizedString(@"BTN_CHANGE", nil) forState:UIControlStateNormal];
         btnChange.titleLabel.font = [UIFont systemFontOfSize:12.0f];
         [btnChange setUserInteractionEnabled:YES];
         [btnChange setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
@@ -670,7 +670,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 }
 
 - (NSString *) titleForLocationLable:(GameInfo *)gameInfo {
-    NSString *text = @"Место неизвестно";
+    NSString *text = NSLocalizedString(@"TXT_PLACE_UNKNOWN", nil);
     
     BOOL hasAddressName = (gameInfo.addressName.length > 0);
     BOOL hasAddress = (gameInfo.address.length > 0);
@@ -724,7 +724,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 
 - (void) createPeopleInGameLable {
     _peopleInGame = [UILabel new];
-    _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count];
+    _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)game.members.count];
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
@@ -743,7 +743,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
         needle = diff;
     
     _peopleNeed = [UILabel new];
-    _peopleNeed.text = [NSString stringWithFormat:@"Нужно ещё %lu", (unsigned long)needle]; //@"Нужно ещё 3";
+    _peopleNeed.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_NEED_MORE", nil), (unsigned long)needle]; //@"Нужно ещё 3";
     _peopleNeed.textAlignment = NSTextAlignmentLeft;
     _peopleNeed.font = [UIFont systemFontOfSize:12.0f];
     _peopleNeed.textColor = [UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR];
@@ -753,7 +753,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 - (void) createInviteUserButton {
     _btnInviteUser = [CustomButton buttonWithType:UIButtonTypeCustom];
     [_btnInviteUser addTarget:self action:@selector(btnInviteUserClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnInviteUser setTitle:@"Позвать" forState:UIControlStateNormal];
+    [_btnInviteUser setTitle:NSLocalizedString(@"TXT_INVITE", nil) forState:UIControlStateNormal];
     _btnInviteUser.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [_btnInviteUser setTitleColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateNormal];
@@ -813,7 +813,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 - (void) createYesButton {
     _btnAnswerYes = [CustomButton buttonWithType:UIButtonTypeCustom];
     [_btnAnswerYes addTarget:self action:@selector(btnUserDecisionClick:) forControlEvents:UIControlEventTouchUpInside];
-    [_btnAnswerYes setTitle:@"Иду" forState:UIControlStateNormal];
+    [_btnAnswerYes setTitle:NSLocalizedString(@"BTN_GOING", nil) forState:UIControlStateNormal];
     _btnAnswerYes.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     _btnAnswerYes.titleLabel.shadowColor = [UIColor blackColor];
@@ -835,7 +835,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 - (void) createPerhapsButton {
     _btnAnswerPerhaps = [CustomButton buttonWithType:UIButtonTypeCustom];
     [_btnAnswerPerhaps addTarget:self action:@selector(btnUserDecisionClick:) forControlEvents:UIControlEventTouchUpInside];
-    [_btnAnswerPerhaps setTitle:@"Возможно" forState:UIControlStateNormal];
+    [_btnAnswerPerhaps setTitle:NSLocalizedString(@"BTN_MAYBE", nil) forState:UIControlStateNormal];
     _btnAnswerPerhaps.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [_btnAnswerPerhaps setTitleColor:[UIColor colorWithRGBA:BTN_PERHAPS_COLOR] forState:UIControlStateNormal];
@@ -855,7 +855,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 - (void) createNoButton {
     _btnAnswerNo = [CustomButton buttonWithType:UIButtonTypeCustom];
     [_btnAnswerNo addTarget:self action:@selector(btnUserDecisionClick:) forControlEvents:UIControlEventTouchUpInside];
-    [_btnAnswerNo setTitle:@"Нет" forState:UIControlStateNormal];
+    [_btnAnswerNo setTitle:NSLocalizedString(@"BTN_NO", nil) forState:UIControlStateNormal];
     _btnAnswerNo.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [_btnAnswerNo setTitleColor:[UIColor colorWithRGBA:BTN_NO_COLOR] forState:UIControlStateNormal];
@@ -898,7 +898,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 [alert show];
             }
@@ -973,9 +973,9 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
                 
                 UIAlertView *alert = [[UIAlertView alloc]
                                       initWithTitle:nil
-                                      message:@"Не удалось отправить сообщение"
+                                      message:NSLocalizedString(@"MSG_UNABLE_TO_SEND_A_MESSAGE", nil)
                                       delegate:nil
-                                      cancelButtonTitle:@"Отмена"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_CANCEL_1", nil)
                                       otherButtonTitles: nil];
                 [alert show];
             }
@@ -991,17 +991,20 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 
 #pragma mark -
 - (void)gameWasSavedWithController:(NewEvenViewController *)controller gameId:(NSUInteger)gameID {
-    //[controller dismissViewControllerAnimated:YES completion:nil];
+    [controller dismissViewControllerAnimated:YES completion:nil];
     [self updateGame:gameID];
     
     UIAlertView *alert = [[UIAlertView alloc]
                           initWithTitle:nil
-                          message:@"Игра изменена"
+                          message:NSLocalizedString(@"MSG_GAME_WAS_CHANGED", nil)
                           delegate:nil
-                          cancelButtonTitle:@"Ок"
+                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                           otherButtonTitles:nil];
     
     [alert show];
+    
+    if([self.delegate respondsToSelector:@selector(needUpdateGamesWithController:)])
+        [self.delegate needUpdateGamesWithController:self];
 }
 
 - (void) updateGame:(NSUInteger)gID {
@@ -1019,14 +1022,14 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
                 locTitle.text = [self titleForLocationLable:game];
                 timeTitle.text = [self titleForTimeLable:game];
                 
-                _peopleInGame.text = [NSString stringWithFormat:@"Идут %lu человек", (unsigned long)game.members.count];
+                _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)game.members.count];
                 
                 NSInteger diff = game.numbers - game.members.count;
                 NSUInteger needle = 0;
                 if(diff > 0)
                     needle = diff;
                 
-                _peopleNeed.text = [NSString stringWithFormat:@"Нужно ещё %lu", (unsigned long)needle];
+                _peopleNeed.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_NEED_MORE", nil), (unsigned long)needle];
                 
                 [self changeStatusButtons:game.participateStatus];
             }

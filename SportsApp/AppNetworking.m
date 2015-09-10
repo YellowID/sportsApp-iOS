@@ -206,7 +206,7 @@
                 
                 NSString *result = resultDic[@"result"];
                 if(![result isEqualToString:@"success"])
-                    errorMessage = @"Не удалось пригласить пользователя.";
+                    errorMessage = NSLocalizedString(@"MSG_UNABLE_TO_INVITE_USER", nil);
             }
         }
         else {
@@ -239,7 +239,7 @@
                 
                 NSString *result = resultDic[@"result"];
                 if(![result isEqualToString:@"success"])
-                    errorMessage = @"Не удалось пригласить пользователя.";
+                    errorMessage = NSLocalizedString(@"MSG_UNABLE_TO_INVITE_USER", nil);
             }
         }
         else {
@@ -283,7 +283,7 @@
                 
                 NSString *result = resultDic[@"result"];
                 if(![result isEqualToString:@"success"])
-                    errorMessage = @"Не получилось, что-то пошло не так.";
+                    errorMessage = NSLocalizedString(@"MSG_SOMETHING_WRONG", nil);
             }
         }
         else {
@@ -504,15 +504,15 @@
                         game.time = [gameDate toFormat:@"HH:mm"];
                         
                         if([gameDate isToday]){
-                            game.date = @"сегодня";
+                            game.date = NSLocalizedString(@"TXT_TODAY", nil);
                         }
                         else {
                             NSInteger days = [gameDate daysAfterDate:[NSDate new]];
                             
                             if(days < 0)
-                                game.date = @"Игра окончена";
+                                game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
                             else
-                                game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+                                game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
                         }
                         
                         if(![gdic[@"participate_status"] isKindOfClass:[NSNull class]]){
@@ -545,15 +545,15 @@
                         game.time = [gameDate toFormat:@"HH:mm"];
                         
                         if([gameDate isToday]){
-                            game.date = @"сегодня";
+                            game.date = NSLocalizedString(@"TXT_TODAY", nil);
                         }
                         else {
                             NSInteger days = [gameDate daysAfterDate:[NSDate new]];
                             
                             if(days < 0)
-                                game.date = @"Игра окончена";
+                                game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
                             else
-                                game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+                                game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
                         }
                         
                         game.participateStatus = UserGameParticipateStatusPossible;
@@ -744,15 +744,15 @@
                 game.time = [gameDate toFormat:@"HH:mm"];
                 
                 if([gameDate isToday]){
-                    game.date = @"сегодня";
+                    game.date = NSLocalizedString(@"TXT_TODAY", nil);
                 }
                 else {
                     NSInteger days = [gameDate daysAfterDate:[NSDate new]];
                     
                     if(days < 0)
-                        game.date = @"Игра окончена";
+                        game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
                     else
-                        game.date = [NSString stringWithFormat:@"через %lu дня", (long)days];
+                        game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
                 }
                 
                 game.age = [resultDic[@"age"] integerValue];
@@ -836,7 +836,7 @@
             else{
                 YandexGeoResponse *yandexResp = [AppNetworking parceYandexAddressResponse:data];
                 if(!yandexResp)
-                    blockHandler(nil, @"Ничего не найдено");
+                    blockHandler(nil, NSLocalizedString(@"MSG_NOT_FOUND", nil));
                 else
                     blockHandler(yandexResp, nil);
             }
@@ -888,7 +888,7 @@
             else{
                 NSMutableArray *yandexResp = [AppNetworking parceYandexAddressListResponse:data];
                 if(!yandexResp)
-                    blockHandler(nil, @"Ничего не найдено");
+                    blockHandler(nil, NSLocalizedString(@"MSG_NOT_FOUND", nil));
                 else
                     blockHandler(yandexResp, nil);
             }
@@ -979,7 +979,7 @@
             else{
                 NSMutableArray *foursquareResp = [AppNetworking parceFoursquareResponse:data];
                 if(!foursquareResp)
-                    blockHandler(nil, @"Ничего не найдено");
+                    blockHandler(nil, NSLocalizedString(@"MSG_NOT_FOUND", nil));
                 else
                     blockHandler(foursquareResp, nil);
             }

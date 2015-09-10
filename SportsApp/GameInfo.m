@@ -17,25 +17,25 @@
     
     switch(type){
         case SportTypeFootball:
-            self.gameName = @"Футбол";
+            self.gameName = NSLocalizedString(@"STORT_FOOTBALL", nil);
             break;
         case SportTypeBasketball:
-            self.gameName = @"Баскетбол";
+            self.gameName = NSLocalizedString(@"STORT_BASKETBALL", nil);
             break;
         case SportTypeVolleyball:
-            self.gameName = @"Волейбол";
+            self.gameName = NSLocalizedString(@"STORT_VOLLEYBALL", nil);
             break;
         case SportTypeHandball:
-            self.gameName = @"Гандбол";
+            self.gameName = NSLocalizedString(@"STORT_HANDBALL", nil);
             break;
         case SportTypeTennis:
-            self.gameName = @"Тенис";
+            self.gameName = NSLocalizedString(@"STORT_TENNIS", nil);
             break;
         case SportTypeHockey:
-            self.gameName = @"Хоккей";
+            self.gameName = NSLocalizedString(@"STORT_HOCKEY", nil);
             break;
         case SportTypeSquash:
-            self.gameName = @"Сквош";
+            self.gameName =NSLocalizedString(@"STORT_SQUASH", nil);
             break;
             
         default:

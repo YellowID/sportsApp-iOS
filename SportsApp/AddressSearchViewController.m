@@ -42,7 +42,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     _searchField = [[UITextField alloc] initWithFrame:CGRectMake(0, 0, 490, 30)];
     [_searchField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _searchField.delegate = self;
-    _searchField.placeholder = @"Адрес";
+    _searchField.placeholder = NSLocalizedString(@"TXT_ADDRESS", nil);
     [_searchField setBorderStyle:UITextBorderStyleRoundedRect];
     _searchField.backgroundColor = [UIColor whiteColor];
     [_searchField setTintColor:[UIColor darkGrayColor]];

@@ -31,7 +31,7 @@ static const CGFloat kSectionHeaderHeight = 28.5f;
 static const CGFloat kCellPaddingNormal = 2.5f;
 static const CGFloat kCellPaddingFirst = 5.5f;
 
-@interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate, CitiesViewControllerDelegate, NewEvenViewControllerDelegate>
+@interface GamesListViewController () <UITableViewDataSource, UITableViewDelegate, CitiesViewControllerDelegate, NewEvenViewControllerDelegate, ChatViewControllerDelegate>
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *myGames;
@@ -64,7 +64,7 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
     [self.view addSubview:self.tableView];
     
     self.navigationItem.titleView = [self navigationItemTitleView:[UIImage imageNamed:@"icon_arrow_down.png"]
-                                                            title:@"Все города"
+                                                            title:NSLocalizedString(@"TITLE_ALL_CITIES", nil)
                                                             color:[UIColor blackColor]];
     [self updateGamesListForCity:nil];
 }
@@ -177,6 +177,10 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
+- (void)needUpdateGamesWithController:(ChatViewController *)controller {
+    [self updateGamesListForCity:selectedCity];
+}
+
 #pragma mark -
 #pragma mark UITableView delegate methods
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -226,7 +230,7 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         [label setFont:[UIFont systemFontOfSize:13]];
-        label.text = @"Публичные игры";
+        label.text = NSLocalizedString(@"TITLE_PUBLIC_GAMES", nil);
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
     }
@@ -236,7 +240,7 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
         
         UILabel* label = [[UILabel alloc] initWithFrame:CGRectMake(13.5, 0, tableView.frame.size.width, kSectionHeaderHeight)];
         [label setFont:[UIFont systemFontOfSize:13]];
-        label.text = @"Мои игры";
+        label.text = NSLocalizedString(@"TITLE_MY_GAMES", nil);
         label.textColor = [UIColor whiteColor];
         [view addSubview:label];
     }
@@ -338,6 +342,7 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
         
     ChatViewController *controller = [[ChatViewController alloc] init];
     controller.gameId = game.gameId;
+    controller.delegate = self;
     [self.navigationController pushViewController:controller animated:YES];
     
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -357,13 +362,13 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
             [MBProgressHUD hideHUDForView:self.view animated:YES];
             
             if(errorMessage){
-                [self setNavTitle:@"Игры"];
+                [self setNavTitle:NSLocalizedString(@"GAMES", nil)];
                 
                 UIAlertView *alert = [[UIAlertView alloc]
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 [alert show];
             }

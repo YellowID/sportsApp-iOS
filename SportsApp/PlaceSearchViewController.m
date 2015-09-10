@@ -62,8 +62,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"Место";
-    [self setNavTitle:@"Место"];
+    [self setNavTitle:NSLocalizedString(@"TXT_PLACE", nil)];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
     [self setupFakeNavigationBar];
@@ -119,7 +118,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     _searchPlacesField.translatesAutoresizingMaskIntoConstraints = NO;
     [_searchPlacesField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _searchPlacesField.delegate = self;
-    _searchPlacesField.placeholder = @"Название места";
+    _searchPlacesField.placeholder = NSLocalizedString(@"TXT_PLACE_NAME", nil);
     [_searchPlacesField setBorderStyle:UITextBorderStyleRoundedRect];
     _searchPlacesField.backgroundColor = [UIColor whiteColor];
     _searchPlacesField.textAlignment = NSTextAlignmentLeft;
@@ -137,7 +136,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     _searchAddressField.translatesAutoresizingMaskIntoConstraints = NO;
     [_searchAddressField addTarget:self action:@selector(textFieldDidChange:) forControlEvents:UIControlEventEditingChanged];
     _searchAddressField.delegate = self;
-    _searchAddressField.placeholder = @"Город";
+    _searchAddressField.placeholder = NSLocalizedString(@"TXT_CITY", nil);
     [_searchAddressField setBorderStyle:UITextBorderStyleRoundedRect];
     _searchAddressField.backgroundColor = [UIColor whiteColor];
     _searchAddressField.textAlignment = NSTextAlignmentLeft;
@@ -195,7 +194,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     view.clipsToBounds = YES;
     
     UILabel *label = [UILabel new];
-    label.text = @"Нет нужного места?";
+    label.text = NSLocalizedString(@"TXT_PLACE_NOT_FOUND", nil);
     label.textColor = [UIColor darkGrayColor];
     label.textAlignment = NSTextAlignmentCenter;
     label.font = [UIFont boldSystemFontOfSize:11.0f];
@@ -209,7 +208,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     //button
     CustomButton *btnChooseAddress = [CustomButton buttonWithType:UIButtonTypeCustom];
     [btnChooseAddress addTarget:self action:@selector(btnChooseAddressClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnChooseAddress setTitle:@"Указать адрес" forState:UIControlStateNormal];
+    [btnChooseAddress setTitle:NSLocalizedString(@"BTN_CHOOSE_ADDRESS", nil) forState:UIControlStateNormal];
     btnChooseAddress.titleLabel.font = [UIFont systemFontOfSize:12.0f];
     
     [btnChooseAddress setTitleColor:[UIColor colorWithRGBA:BTN_INVITE_COLOR] forState:UIControlStateNormal];
@@ -436,7 +435,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     [_locationManager startUpdatingLocation];
     
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Определение местоположения...";
+    hud.labelText = NSLocalizedString(@"TXT_LOCATING", nil);
 }
 
 - (void) setLocationManager {
@@ -444,11 +443,11 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
         CLAuthorizationStatus status = [CLLocationManager authorizationStatus];
         
         if(status == kCLAuthorizationStatusDenied){
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Приложению запрещен доступ к Службам геолокации"
-                                                            message:@"Чтобы разрешить, перейдите в Настройки и включите доступ для этого приложения."
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"MSG_GEO_ACCESS_DEIED", nil)
+                                                            message:NSLocalizedString(@"MSG_GEO_ALLOW_ACCESS", nil)
                                                            delegate:self
-                                                  cancelButtonTitle:@"OK"
-                                                  otherButtonTitles:@"Настройки", nil];
+                                                  cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
+                                                  otherButtonTitles:NSLocalizedString(@"BTN_SETTINGS", nil), nil];
             alert.tag = kAlertGeoDeny;
             [alert show];
         }
@@ -467,11 +466,11 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     }
     else{
         UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Службам геолокации выключены"
-                              message:@"Чтобы включить, перейдите в Настройки."
+                              initWithTitle:NSLocalizedString(@"MSG_GEOLOCATION_IS_DISABLED", nil)
+                              message:NSLocalizedString(@"MSG_GEOLOCATION_ENABLE", nil)
                               delegate:self
-                              cancelButtonTitle:@"Ok"
-                              otherButtonTitles:@"Настройки", nil];
+                              cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
+                              otherButtonTitles:NSLocalizedString(@"BTN_SETTINGS", nil), nil];
         alert.tag = kAlertGeoDeny;
         [alert show];
     }
@@ -494,7 +493,7 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
                                           initWithTitle:nil
                                           message:errorMessage
                                           delegate:nil
-                                          cancelButtonTitle:@"Ок"
+                                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                           otherButtonTitles:nil];
                     
                     [alert show];
@@ -515,32 +514,32 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     NSString *errorString;
     switch([error code]) {
         case kCLErrorDenied:
-            errorString = @"Доступ приложения к GPS запрещен пользователем.";
+            errorString = NSLocalizedString(@"MSG_GEO_ACCESS_DEIED", nil);
             break;
         case kCLErrorLocationUnknown:
-            errorString = @"Данные о местоположении недоступны.";
+            errorString = NSLocalizedString(@"MSG_LOCATION_IS_UNKNOWN", nil);
             break;
         default:
-            errorString = @"Не удалось определить местоположение.";
+            errorString = NSLocalizedString(@"MSG_LOCATION_IS_UNKNOWN", nil);
             break;
     }
     
     UIAlertView *alert = nil;
     if(kCLErrorDenied == [error code]){
         alert = [[UIAlertView alloc]
-                 initWithTitle:@"Местоположение"
+                 initWithTitle:NSLocalizedString(@"TXT_LOCATION", nil)
                  message:errorString
                  delegate:self
-                 cancelButtonTitle:@"Ок"
-                 otherButtonTitles:@"Настройки", nil];
+                 cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
+                 otherButtonTitles:NSLocalizedString(@"BTN_SETTINGS", nil), nil];
         alert.tag = kAlertGeoDeny;
     }
     else{
         alert = [[UIAlertView alloc]
-                 initWithTitle:@"Местоположение"
+                 initWithTitle:NSLocalizedString(@"TXT_LOCATION", nil)
                  message:errorString
                  delegate:nil
-                 cancelButtonTitle:@"Ок"
+                 cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                  otherButtonTitles:nil];
     }
     

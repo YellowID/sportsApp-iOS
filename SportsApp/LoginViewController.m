@@ -60,8 +60,7 @@ static NSArray* SCOPE = nil;
     lbAppName = [[UILabel alloc] initWithFrame:CGRectMake(10, 70, 100, 30)];
     lbAppName.translatesAutoresizingMaskIntoConstraints = NO;
     lbAppName.textAlignment = NSTextAlignmentCenter;
-    [lbAppName setText: @"Start Sport"];
-    //[lbAppName setTextColor:[UIColor whiteColor]];
+    [lbAppName setText: NSLocalizedString(@"APP_NAME", nil)];
     [lbAppName setTextColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
     [lbAppName setFont:[UIFont fontWithName: @"HelveticaNeue-Light" size: 24.0f]];
     [lbAppName sizeToFit];
@@ -120,7 +119,7 @@ static NSArray* SCOPE = nil;
 - (UIButton*) createButtonVK {
     btnVK = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnVK addTarget:self action:@selector(btnVKClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnVK setTitle:@"Войти через Вконтакте" forState:UIControlStateNormal];
+    [btnVK setTitle:NSLocalizedString(@"BTN_LOGIN_WITH_VKONTAKTE", nil) forState:UIControlStateNormal];
     btnVK.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnVK setBackgroundImage:[UIImage imageNamed:@"bg_btn_vk.png"] forState:UIControlStateNormal];
     [btnVK setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
@@ -132,7 +131,7 @@ static NSArray* SCOPE = nil;
 - (UIButton*) createButtonFB {
     btnFB = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnFB addTarget:self action:@selector(btnFBClick) forControlEvents:UIControlEventTouchUpInside];
-    [btnFB setTitle:@"Войти через Facebook" forState:UIControlStateNormal];
+    [btnFB setTitle:NSLocalizedString(@"BTN_LOGIN_WITH_FACEBOOK", nil) forState:UIControlStateNormal];
     btnFB.titleEdgeInsets = UIEdgeInsetsMake(0, 45, 0, 0);
     [btnFB setBackgroundImage:[UIImage imageNamed:@"bg_btn_fb.png"] forState:UIControlStateNormal];
     [btnFB setTintColor:[UIColor colorWithRGBA:APP_NAME_TEXT_COLOR]];
@@ -168,10 +167,10 @@ static NSArray* SCOPE = nil;
 - (void) loginWithFacebook {
     if(![AppNetworking isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Нет подключения к интернету"
+                              initWithTitle:NSLocalizedString(@"MSG_NO_INTERNET_CONNECTION", nil)
                               message:nil
                               delegate:nil
-                              cancelButtonTitle:@"Ок"
+                              cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                               otherButtonTitles: nil];
         [alert show];
         return;
@@ -179,7 +178,7 @@ static NSArray* SCOPE = nil;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Авторизация...";
+    hud.labelText = NSLocalizedString(@"TXT_AUTORIZATION", nil);
     //hud.color = [UIColor greenColor];
     
     FBSDKAccessToken* fbToken = [FBSDKAccessToken currentAccessToken];
@@ -200,7 +199,7 @@ static NSArray* SCOPE = nil;
                                           initWithTitle:nil
                                           message:error.description
                                           delegate:nil
-                                          cancelButtonTitle:@"Ок"
+                                          cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                           otherButtonTitles: nil];
                     [alert show];
                 });
@@ -240,10 +239,10 @@ static NSArray* SCOPE = nil;
 - (void) loginWithVkontakte {
     if(![AppNetworking isInternetAvaliable]){
         UIAlertView *alert = [[UIAlertView alloc]
-                              initWithTitle:@"Нет подключения к интернету"
+                              initWithTitle:NSLocalizedString(@"MSG_NO_INTERNET_CONNECTION", nil)
                               message:nil
                               delegate:self
-                              cancelButtonTitle:@"Отмена"
+                              cancelButtonTitle:NSLocalizedString(@"BTN_CANCEL", nil)
                               otherButtonTitles: nil];
         [alert show];
         return;
@@ -251,7 +250,7 @@ static NSArray* SCOPE = nil;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.labelText = @"Авторизация...";
+    hud.labelText = NSLocalizedString(@"TXT_AUTORIZATION", nil);
     
     [VKSdk initializeWithDelegate:self andAppId:[NSString stringWithFormat:@"%lu", (unsigned long)kVkAppId]];
     if ([VKSdk wakeUpSession]){
@@ -434,7 +433,7 @@ static NSArray* SCOPE = nil;
                                       initWithTitle:nil
                                       message:errorMessage
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles: nil];
                 [alert show];
             }

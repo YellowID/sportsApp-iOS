@@ -23,9 +23,9 @@ static const CGFloat kPhotoSize = 40.0f;
 static const CGFloat kHorizontalPadding = 12.0f;
 static const CGFloat kSearchHeight = 38.0f;
 
-static const NSUInteger kAlertError = 1;
+//static const NSUInteger kAlertError = 1;
 static const NSUInteger kAlertInviteUser = 2;
-static const NSUInteger kAlertInviteSent = 3;
+//static const NSUInteger kAlertInviteSent = 3;
 
 
 @interface InviteUserViewController () <UITextFieldDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
@@ -58,7 +58,7 @@ static const NSUInteger kAlertInviteSent = 3;
     [super viewDidLoad];
     
     //self.title = @"Позвать друга";
-    [self setNavTitle:@"Позвать друга"];
+    [self setNavTitle:NSLocalizedString(@"TITLE_INVITE_FRIEND", nil)];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
     [self setNavigationItems];
@@ -125,7 +125,7 @@ static const NSUInteger kAlertInviteSent = 3;
     
     _searchBar.barTintColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     
-    [_searchBar setPlaceholder:@"Найти"];
+    [_searchBar setPlaceholder:NSLocalizedString(@"TXT_FIND", nil)];
     [_searchBar setTextColorTF:[UIColor colorWithRGBA:TXT_SEARCH_FIELD_COLOR]];
     [_searchBar setBackgroundColorTF:[UIColor colorWithRGBA:BG_SEARCH_FIELD_COLOR]];
     [container addSubview:_searchBar];
@@ -153,7 +153,7 @@ static const NSUInteger kAlertInviteSent = 3;
 - (void) setupTitleInviteFromEmailViewGroup {
     _inviteGroupTitle = [UILabel new];
     _inviteGroupTitle.translatesAutoresizingMaskIntoConstraints = NO;
-    _inviteGroupTitle.text = @"Пригласить нового пользователя:";
+    _inviteGroupTitle.text = NSLocalizedString(@"TXT_INVITE_NEW_USER", nil);
     _inviteGroupTitle.textAlignment = NSTextAlignmentCenter;
     _inviteGroupTitle.font = [UIFont boldSystemFontOfSize:9.0f];
     [_inviteGroupTitle sizeToFit];
@@ -171,7 +171,7 @@ static const NSUInteger kAlertInviteSent = 3;
     _tfEmail.delegate = self;
     _tfEmail.keyboardType = UIKeyboardTypeEmailAddress;
     [_tfEmail setBorderStyle:UITextBorderStyleRoundedRect];
-    _tfEmail.placeholder = @"Введите email";
+    _tfEmail.placeholder = NSLocalizedString(@"TXT_ENTER_EMAIL", nil);
     _tfEmail.textColor = [UIColor colorWithRGBA:TXT_SEARCH_FIELD_COLOR];
     _tfEmail.backgroundColor = [UIColor whiteColor];
     _tfEmail.textAlignment = NSTextAlignmentCenter;
@@ -197,7 +197,7 @@ static const NSUInteger kAlertInviteSent = 3;
 - (UIButton*) createInviteButton {
     _btnInvite = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_btnInvite addTarget:self action:@selector(btnInviteClick) forControlEvents:UIControlEventTouchUpInside];
-    [_btnInvite setTitle:@"Пригласить" forState:UIControlStateNormal];
+    [_btnInvite setTitle:NSLocalizedString(@"BTN_INVITE", nil) forState:UIControlStateNormal];
     
     _btnInvite.enabled = NO;
     [_btnInvite setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateNormal];
@@ -235,7 +235,7 @@ static const NSUInteger kAlertInviteSent = 3;
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
-    static NSString *SimpleTableIdentifier = @"SimpleTableIdentifier";
+    static NSString *const SimpleTableIdentifier = @"SimpleTableIdentifier";
     
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if(cell == nil){
@@ -282,11 +282,11 @@ static const NSUInteger kAlertInviteSent = 3;
     selectedUserId = member.userId;
     
     UIAlertView *alert = [[UIAlertView alloc]
-                          initWithTitle:@"Пригласить этого участника?"
+                          initWithTitle:NSLocalizedString(@"MSG_INVITE_THIS_MEMBER", nil)
                           message:nil
                           delegate:self
-                          cancelButtonTitle:@"Отмена"
-                          otherButtonTitles:@"Да", nil];
+                          cancelButtonTitle:NSLocalizedString(@"BTN_CANCEL_1", nil)
+                          otherButtonTitles:NSLocalizedString(@"BTN_YES", nil), nil];
     alert.tag = kAlertInviteUser;
     [alert show];
     
@@ -343,9 +343,9 @@ static const NSUInteger kAlertInviteSent = 3;
             else{
                 UIAlertView *alert = [[UIAlertView alloc]
                                       initWithTitle:nil
-                                      message:@"Приглашение отправлено"
+                                      message:NSLocalizedString(@"MSG_INVITATION_SENT", nil)
                                       delegate:nil
-                                      cancelButtonTitle:@"Ок"
+                                      cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                       otherButtonTitles:nil];
                 [alert show];
             }
@@ -425,16 +425,16 @@ static const NSUInteger kAlertInviteSent = 3;
                                               initWithTitle:nil
                                               message:errorMessage
                                               delegate:nil
-                                              cancelButtonTitle:@"Ок"
+                                              cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                               otherButtonTitles:nil];
                         [alert show];
                     }
                     else{
                         UIAlertView *alert = [[UIAlertView alloc]
                                               initWithTitle:nil
-                                              message:@"Приглашение отправлено"
+                                              message:NSLocalizedString(@"MSG_INVITATION_SENT", nil)
                                               delegate:nil
-                                              cancelButtonTitle:@"Ок"
+                                              cancelButtonTitle:NSLocalizedString(@"BTN_OK", nil)
                                               otherButtonTitles:nil];
                         [alert show];
                     }

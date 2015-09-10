@@ -16,8 +16,6 @@
 #import "MBProgressHUD.h"
 #import "UIImage+Utilities.h"
 
-#define PHOTO_SIZE 40
-
 static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 
 @interface CitiesViewController () <UITableViewDataSource, UITableViewDelegate>
@@ -32,12 +30,12 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setNavTitle:@"Выберите город"];
+    [self setNavTitle:NSLocalizedString(@"TITLE_CHOOSE_CITY", nil)];
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *btnClose = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnClose setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnClose setTitle:@"Закрыть" forState:UIControlStateNormal];
+    [btnClose setTitle:NSLocalizedString(@"BTN_CLOSE", nil) forState:UIControlStateNormal];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     btnClose.titleLabel.font = [UIFont systemFontOfSize:12.0f];

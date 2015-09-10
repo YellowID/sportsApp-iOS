@@ -30,12 +30,12 @@ static const CGFloat kPhotoSize = 40.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setNavTitle:@"Участники"];
+    [self setNavTitle:NSLocalizedString(@"TITLE_MEMBERS", nil)];
     self.view.backgroundColor = [UIColor whiteColor];
     
     UIButton *btnClose = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [btnClose setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
-    [btnClose setTitle:@"Закрыть" forState:UIControlStateNormal];
+    [btnClose setTitle:NSLocalizedString(@"BTN_CLOSE", nil) forState:UIControlStateNormal];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
     [btnClose setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     btnClose.titleLabel.font = [UIFont systemFontOfSize:12.0f];
@@ -138,7 +138,7 @@ static const CGFloat kPhotoSize = 40.0f;
     if(member.name)
         cell.textLabel.text = member.name;
     else
-        cell.textLabel.text = @"Гость";
+        cell.textLabel.text = NSLocalizedString(@"TXT_GUEST", nil);
     
     cell.textLabel.textColor = [UIColor blackColor];
     cell.textLabel.font = [UIFont systemFontOfSize:15];
