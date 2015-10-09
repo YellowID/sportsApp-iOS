@@ -1,5 +1,5 @@
 //
-//  TestLayoutViewController.m
+//  MemberSettingViewController.m
 //  SportsApp
 //
 //  Created by sergeyZ on 23.05.15.
@@ -107,7 +107,7 @@ static const CGFloat kScrollItemHeight = 99.0f;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self setNavTitle:@"Мои настройки"];
+    [self setNavTitle:NSLocalizedString(@"TITLE_MY_SETTINGS", nil)];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
     [self setNavigationItems];
     

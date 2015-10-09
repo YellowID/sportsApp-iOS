@@ -23,6 +23,8 @@ static const CGFloat kPhotoSize = 40.0f;
 static const CGFloat kHorizontalPadding = 12.0f;
 static const CGFloat kSearchHeight = 38.0f;
 
+static const CGFloat kHUDProgressOffset = -60.0f;
+
 //static const NSUInteger kAlertError = 1;
 static const NSUInteger kAlertInviteUser = 2;
 //static const NSUInteger kAlertInviteSent = 3;
@@ -57,9 +59,9 @@ static const NSUInteger kAlertInviteUser = 2;
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    //self.title = @"Позвать друга";
     [self setNavTitle:NSLocalizedString(@"TITLE_INVITE_FRIEND", nil)];
     self.view.backgroundColor = [UIColor colorWithRGBA:BG_GRAY_COLOR];
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setNavigationItems];
     
@@ -96,9 +98,11 @@ static const NSUInteger kAlertInviteUser = 2;
     _tableView.separatorColor = [UIColor colorWithRGBA:VIEW_SEPARATOR_COLOR];
     [self.view addSubview:self.tableView];
     
-    tableHeigtContraint = [NSLayoutConstraint setHeight:self.view.bounds.size.height - kSearchHeight forView:_tableView];
-    [NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
+    //tableHeigtContraint = [NSLayoutConstraint setHeight:(self.view.bounds.size.height - kSearchHeight - 12) forView:_tableView];
+    //[NSLayoutConstraint setWidht:self.view.bounds.size.width forView:_tableView];
+    [NSLayoutConstraint stretchHorizontal:_tableView inContainer:self.view withPadding:0];
     [NSLayoutConstraint setTopDistance:0 fromView:_tableView toView:_searchFieldContainer inContainer:self.view];
+    [NSLayoutConstraint setBottomPadding:0.0f forView:_tableView inContainer:self.view];
     
     _tableView.hidden = YES;
 }
@@ -200,7 +204,8 @@ static const NSUInteger kAlertInviteUser = 2;
     [_btnInvite setTitle:NSLocalizedString(@"BTN_INVITE", nil) forState:UIControlStateNormal];
     
     _btnInvite.enabled = NO;
-    [_btnInvite setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateNormal];
+    //[_btnInvite setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateNormal];
+    [_btnInvite setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [_btnInvite setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR] forState:UIControlStateDisabled];
     
     _btnInvite.titleLabel.font = [UIFont systemFontOfSize:12.0f];
@@ -298,10 +303,21 @@ static const NSUInteger kAlertInviteUser = 2;
 - (void) setNavigationItems {
     UIBarButtonItem *btnBack = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"ic_back_arrow.png"] style:UIBarButtonItemStylePlain target:self action:@selector(btnCancelClick)];
     self.navigationItem.leftBarButtonItem = btnBack;
+    
+    UIButton *btnDone = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [btnDone setFrame:CGRectMake(0, 0.0f, 40.0f, 36.0f)];
+    [btnDone addTarget:self action:@selector(btnDoneClick) forControlEvents:UIControlEventTouchUpInside];
+    [btnDone setTitle:NSLocalizedString(@"BTN_READY", nil) forState:UIControlStateNormal];
+    [btnDone setTitleColor:[UIColor colorWithRGBA:BTN_TITLE_ACTIVE_COLOR] forState:UIControlStateNormal];
+    btnDone.titleLabel.font = [UIFont systemFontOfSize:12.0f];
+    btnDone.titleLabel.textAlignment = NSTextAlignmentLeft;
+    [btnDone sizeToFit];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnDone];
 }
 
 #pragma mark -
 #pragma mark Other methods
+
 # pragma mark -
 # pragma mark Navigation button click
 - (void) btnCancelClick {
@@ -314,6 +330,11 @@ static const NSUInteger kAlertInviteUser = 2;
         _inviteFromEmailViewGroup.hidden = NO;
         [_searchBar resignFirstResponder];
     }
+}
+
+- (void) btnDoneClick {
+    [self.view endEditing:YES]; // hide keyboard
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void) btnInviteClick {
@@ -412,7 +433,9 @@ static const NSUInteger kAlertInviteUser = 2;
     if(alertView.tag == kAlertInviteUser){
         if(buttonIndex == 1){
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
-            [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+            hud.yOffset = kHUDProgressOffset;
+            [hud show:YES];
             
             AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
             [appNetworking inviteUserWithId:selectedUserId forGame:_gameId completionHandler:^(NSString *errorMessage) {
@@ -462,19 +485,23 @@ static const NSUInteger kAlertInviteUser = 2;
 # pragma mark -
 # pragma mark Keyboard show/hide
 - (void)keyboardWillShow:(NSNotification*)notification {
+    /*
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameBeginUserInfoKey] CGRectValue].size;
     
     CGFloat bottom = _searchFieldContainer.frame.origin.y + kSearchHeight;
     tableHeigtContraint.constant = self.view.frame.size.height - kbSize.height - bottom;
     [self.view layoutIfNeeded];
+    */
 }
 
 - (void)keyboardWillHide:(NSNotification*)aNotification {
+    /*
     _tableView.contentInset = UIEdgeInsetsZero;
     _tableView.scrollIndicatorInsets = UIEdgeInsetsZero;
     
     tableHeigtContraint.constant = self.view.bounds.size.height - kSearchHeight;
+     */
 }
 
 @end

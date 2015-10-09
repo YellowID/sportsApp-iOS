@@ -12,6 +12,9 @@
 #import "AppColors.h"
 #import "AppNetworking.h"
 #import "AppDelegate.h"
+#import "MBProgressHUD.h"
+
+static const CGFloat kHUDProgressOffset = -60.0f;
 
 static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 
@@ -114,8 +117,16 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
 - (void) startSearchYandex:(NSTimer *)timer {
     NSString *searchText = timer.userInfo;
     
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.yOffset = kHUDProgressOffset;
+    [hud show:YES];
+    
     [AppNetworking findYandexAddress:searchText completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
             if(!resp){
                 items = [NSArray new];
             }

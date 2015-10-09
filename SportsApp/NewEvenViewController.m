@@ -27,6 +27,8 @@ static const NSUInteger kPickerPeopleNumber = 0;
 static const NSUInteger kPickerAge = 1;
 static const NSUInteger kPickerSport = 2;
 
+static const NSUInteger kDefaultPeopleNumber = 15;
+
 static const CGFloat kHorizontalPadding = 12.0f;
 static const CGFloat kScrollContentHeight = 340.0f;
 
@@ -173,7 +175,8 @@ static const CGFloat kScrollContentHeight = 340.0f;
                     newGame.placeName = editGameInfo.addressName;
                     
                     // UI
-                    [self setNavTitle:NSLocalizedString(@"TITLE_NEW_EVENT", nil)];
+                    //[self setNavTitle:NSLocalizedString(@"TITLE_NEW_EVENT", nil)];
+                    [self setNavTitle:editGameInfo.gameName];
                     [self setNavigationItems];
                     
                     [self setupContainers];
@@ -190,16 +193,23 @@ static const CGFloat kScrollContentHeight = 340.0f;
                     [_agePicker selectRow:editGameInfo.age-1 inComponent:0 animated:NO];
                     
                     if(editGameInfo.level == PlayerLevelBeginner)
-                        [self oneStarClick];
+                        [self setOneStar];
                     else if(editGameInfo.level == PlayerLevelMiddling)
-                        [self twoStarClick];
+                        [self setTwoStar];
                     else if(editGameInfo.level == PlayerLevelMaster)
-                        [self threeStarClick];
+                        [self setThreeStar];
                 }
             });
         }];
     }
     else{
+        NSDate *currentDate = [NSDate new];
+        
+        newGame.players = kDefaultPeopleNumber;
+        newGame.time = [currentDate toJsonFormat];
+        newGame.age = PlayerAge_20_28;
+        newGame.level = PlayerLevelBeginner;
+        
         [self setNavTitle:NSLocalizedString(@"TITLE_NEW_EVENT", nil)];
         [self setNavigationItems];
         
@@ -208,6 +218,13 @@ static const CGFloat kScrollContentHeight = 340.0f;
         [self setupTimeGroup];
         [self setupAgeGroup];
         [self setupLevelGroup];
+        
+        
+        [_dateTimePicker setDate:currentDate];
+        [_agePicker selectRow:newGame.age-1 inComponent:0 animated:NO];
+        [_peopleNumberPicker selectRow:newGame.players-1 inComponent:0 animated:NO];
+        
+        [self setOneStar];
     }
 }
 
@@ -349,7 +366,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     [NSLayoutConstraint stretchHorizontal:_ageGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     [self setupTitleForAgeGroup];
-    [self setupLableAge];
+    [self setupInputAge];
 }
 
 - (void) setupTitleForAgeGroup {
@@ -365,17 +382,21 @@ static const CGFloat kScrollContentHeight = 340.0f;
     [NSLayoutConstraint centerVertical:title withView:_ageGroupView inContainer:_ageGroupView];
 }
 
-- (void) setupLableAge {
+- (void) setupInputAge {
     _tfAge = [UITextField new];
     _tfAge.translatesAutoresizingMaskIntoConstraints = NO;
     _tfAge.delegate = self;
     _tfAge.placeholder = NSLocalizedString(@"TXT_AGE_20_28", nil);
+    _tfAge.text = NSLocalizedString(@"TXT_AGE_20_28", nil);
     
     [self setReadyButtonForTextField:_tfAge];
     
     if(_isEditGameMode){
         if(editGameInfo.age > 0 && editGameInfo.age <= ageItems.count)
             _tfAge.text = ageItems[editGameInfo.age - 1];
+    }
+    else{
+        _tfAge.text = ageItems[newGame.age - 1];
     }
     
     _tfAge.textAlignment = NSTextAlignmentRight;
@@ -404,7 +425,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     [NSLayoutConstraint stretchHorizontal:_timeGroupView inContainer:_containerView withPadding:kHorizontalPadding];
     
     [self setupTitleForTimeGroup];
-    [self setupLableTime];
+    [self setupInputTime];
 }
 
 - (void) setupTitleForTimeGroup {
@@ -415,12 +436,12 @@ static const CGFloat kScrollContentHeight = 340.0f;
     title.font = [UIFont systemFontOfSize:12.0f];
     [_timeGroupView addSubview:title];
     
-    [NSLayoutConstraint setWidht:60 height:21 forView:title];
+    [NSLayoutConstraint setWidht:48 height:21 forView:title];
     [NSLayoutConstraint setLeftPadding:kHorizontalPadding forView:title inContainer:_timeGroupView];
     [NSLayoutConstraint centerVertical:title withView:_timeGroupView inContainer:_timeGroupView];
 }
 
-- (void) setupLableTime {
+- (void) setupInputTime {
     _tfTime = [UITextField new];
     _tfTime.translatesAutoresizingMaskIntoConstraints = NO;
     _tfTime.delegate = self;
@@ -431,17 +452,22 @@ static const CGFloat kScrollContentHeight = 340.0f;
     
     NSDateFormatter *df = [[NSDateFormatter alloc] init];
     [df setDateFormat:@"d MMMM yyyy HH:mm"];
+    NSDate *currentDate = [NSDate date];
     
-    _tfTime.placeholder = [NSString stringWithFormat:@"%@",[df stringFromDate:[NSDate date]]];
+    _tfTime.placeholder = [NSString stringWithFormat:@"%@",[df stringFromDate:currentDate]];
+    
     
     if(_isEditGameMode){
         NSDate *dateToDisplay = [NSDate dateWithJsonString:editGameInfo.startAt];
         _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:dateToDisplay]];
     }
+    else{
+        _tfTime.text = [NSString stringWithFormat:@"%@",[df stringFromDate:currentDate]];
+    }
     
     [_timeGroupView addSubview:_tfTime];
     
-    [NSLayoutConstraint setWidht:200 height:30 forView:_tfTime];
+    [NSLayoutConstraint setWidht:220 height:30 forView:_tfTime];
     [NSLayoutConstraint setRightPadding:kHorizontalPadding forView:_tfTime inContainer:_timeGroupView];
     [NSLayoutConstraint centerVertical:_tfTime withView:_timeGroupView inContainer:_timeGroupView];
 }
@@ -514,6 +540,8 @@ static const CGFloat kScrollContentHeight = 340.0f;
     
     if(_isEditGameMode)
         _tfPeopleNumber.text = [NSString stringWithFormat:@"%lu", (unsigned long)editGameInfo.numbers];
+    else
+        _tfPeopleNumber.text = [NSString stringWithFormat:@"%lu", (unsigned long)newGame.players];
     
     _tfPeopleNumber.textAlignment = NSTextAlignmentRight;
     _tfPeopleNumber.font = [UIFont systemFontOfSize:12.0f];
@@ -631,6 +659,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
     else{
         [appNetworking createNewGame:newGame completionHandler:^(NSUInteger gameId, NSString *errorMessage) {
             dispatch_async(dispatch_get_main_queue(), ^{
+                //_gameId = gameId;
                 [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 
@@ -646,7 +675,7 @@ static const CGFloat kScrollContentHeight = 340.0f;
                 }
                 else{
                     if([self.delegate respondsToSelector:@selector(gameWasSavedWithController:gameId:)])
-                        [self.delegate gameWasSavedWithController:self gameId:_gameId];
+                        [self.delegate gameWasSavedWithController:self gameId:gameId];
                     else
                         [self dismissViewControllerAnimated:YES completion:nil];
                 }
@@ -676,56 +705,68 @@ static const CGFloat kScrollContentHeight = 340.0f;
         newGame.address = placeLocation.address;
         newGame.latitude = placeLocation.lat;
         newGame.longitude = placeLocation.lng;
+        
+        [self changeCreateButtonIfNeeded];
     }
 }
 
 #pragma mark -
-#pragma mark Star icon click
-- (void) oneStarClick {
+#pragma mark Star icons
+- (void) setOneStar {
     twoStarStatus = threeStarStatus = NO;
+    oneStarStatus = YES;
+    _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = grayStarImage;
     _ivThreeStar.image = grayStarImage;
     
-    oneStarStatus = YES;
-    _ivOneStar.image = activeStarImage;
-    newGame.level = PlayerLevelBeginner;
     
     /*
-    if(oneStarStatus){
-        oneStarStatus = NO;
-        _ivOneStar.image = grayStarImage;
-        
-        newGame.level = LEVEL_UNKNOWN;
-    }
-    else{
-        oneStarStatus = YES;
-        _ivOneStar.image = activeStarImage;
-        
-        newGame.level = LEVEL_1;
-    }
-    */
-    
-    [self changeCreateButtonIfNeeded];
+     if(oneStarStatus){
+     oneStarStatus = NO;
+     _ivOneStar.image = grayStarImage;
+     
+     newGame.level = LEVEL_UNKNOWN;
+     }
+     else{
+     oneStarStatus = YES;
+     _ivOneStar.image = activeStarImage;
+     
+     newGame.level = LEVEL_1;
+     }
+     */
 }
 
-- (void) twoStarClick {
+- (void) setTwoStar {
     oneStarStatus = twoStarStatus = YES;
     threeStarStatus = NO;
     _ivOneStar.image = activeStarImage;
     _ivTwoStar.image = activeStarImage;
     _ivThreeStar.image = grayStarImage;
-    
+}
+
+- (void) setThreeStar {
+    oneStarStatus = twoStarStatus = threeStarStatus = YES;
+    _ivOneStar.image = activeStarImage;
+    _ivTwoStar.image = activeStarImage;
+    _ivThreeStar.image = activeStarImage;
+}
+
+#pragma mark -
+#pragma mark Star icon click
+- (void) oneStarClick {
+    [self setOneStar];
+    newGame.level = PlayerLevelBeginner;
+    [self changeCreateButtonIfNeeded];
+}
+
+- (void) twoStarClick {
+    [self setTwoStar];
     newGame.level = PlayerLevelMiddling;
     [self changeCreateButtonIfNeeded];
 }
 
 - (void) threeStarClick {
-    oneStarStatus = twoStarStatus = threeStarStatus = YES;
-    
-    _ivOneStar.image = activeStarImage;
-    _ivTwoStar.image = activeStarImage;
-    _ivThreeStar.image = activeStarImage;
-    
+    [self setThreeStar];
     newGame.level = PlayerLevelMaster;
     [self changeCreateButtonIfNeeded];
 }
@@ -798,15 +839,39 @@ static const CGFloat kScrollContentHeight = 340.0f;
 -(void)textFieldDidBeginEditing:(UITextField *)textField {
     if (textField == _tfKindOfSport){
         textField.inputView = _sportPicker;
+        
+        if(textField.text.length == 0){
+            textField.text = sportItems[0];
+            newGame.sportType = SportTypeFootball;
+            [self changeCreateButtonIfNeeded];
+        }
     }
     else if (textField == _tfPeopleNumber){
         textField.inputView = _peopleNumberPicker;
+        
+        if(textField.text.length == 0){
+            textField.text = peopleNumberItems[0];
+            newGame.players = 1;
+            [self changeCreateButtonIfNeeded];
+        }
     }
     else if (textField == _tfAge){
         textField.inputView = _agePicker;
+        
+        if(textField.text.length == 0){
+            textField.text = ageItems[0];
+            newGame.age = PlayerAge_20;
+            [self changeCreateButtonIfNeeded];
+        }
     }
     else if(textField == _tfTime){
         textField.inputView = _dateTimePicker;
+        
+        if(textField.text.length == 0){
+            NSDate *today = [NSDate new];
+            textField.text = [today toFormat:@"d MMMM yyyy HH:mm"];
+            newGame.time = [today toJsonFormat];
+        }
     }
     else if(textField == _tfLocation){
         PlaceSearchViewController *controller = [[PlaceSearchViewController alloc] init];
@@ -843,6 +908,9 @@ static const CGFloat kScrollContentHeight = 340.0f;
         return;
     
     if(newGame.time == nil)
+        return;
+    
+    if(newGame.placeName == nil)
         return;
     
     if(newGame.age == 0)

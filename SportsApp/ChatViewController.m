@@ -37,6 +37,9 @@ static const CGFloat kFooterHeightNormal = 50.0f;
 static const CGFloat kMsgInputHeightNormal = 30.0f;
 static const CGFloat kMsgInputHeightMax = 120.0f;
 
+static const CGFloat kUserStatusButtonWidth = 83.0f;
+static const CGFloat kUserStatusButtonHeight = 24.5f;
+
 @interface ChatViewController () <UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UITextViewDelegate, AppChatDelegate, NewEvenViewControllerDelegate>
 
 #pragma mark -
@@ -62,7 +65,6 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *messages;
-//@property (strong, nonatomic) NSArray *sectionNames;
 
 @end
 
@@ -123,7 +125,6 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
                 game = gameInfo;
                 
                 [self setNavTitle:game.gameName];
-                
                 [self setNavigationItems];
                 
                 [self loadChatMessages];
@@ -160,6 +161,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
 #pragma mark -
 #pragma mark TEMP
 - (void) loadChatMessages {
+    /**/
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     
     AppChat *appChat = [[AppDelegate instance] appChatInstance];
@@ -168,10 +170,14 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
         
         _messages = [chatMessages mutableCopy];
         
+        if(!_messages)
+            _messages = [NSMutableArray new];
+        
         [_tableView reloadData];
         CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
         [_tableView setContentOffset:CGPointMake(0, y)];
     }];
+    
 }
 
 - (void) putNewMessageInArray:(ChatMessage *)newMessage {
@@ -465,6 +471,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     _chatFooterView.translatesAutoresizingMaskIntoConstraints = NO;
     _chatFooterView.backgroundColor = [UIColor colorWithRGBA:BG_CHAT_INPUT_CONTAINER_COLOR];
     [_chatContentView addSubview:_chatFooterView];
+    _chatFooterView.backgroundColor = [UIColor greenColor];
     
     [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView withPadding:0];
     [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView withPadding:0];
@@ -598,6 +605,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     locTitle.translatesAutoresizingMaskIntoConstraints = NO;
     [NSLayoutConstraint setHeight:15 forView:locTitle];
     [NSLayoutConstraint centerVertical:locTitle withView:locIcon inContainer:_curtainRowOneView];
+    //[NSLayoutConstraint ];
     
     UIImageView* timeIcon = [self makeFirstRowIconWithImage:[UIImage imageNamed:@"icon_time_gray.png"]];
     [_curtainRowOneView addSubview:timeIcon];
@@ -613,7 +621,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     
     NSDictionary* views = NSDictionaryOfVariableBindings(locTitle, locIcon, timeTitle, timeIcon, separator);
     
-    NSString* hc1_str = @"H:|-12-[locIcon]-5.5-[locTitle]";
+    NSString* hc1_str = @"H:|-12-[locIcon]-5.5-[locTitle]-(>=12)-|";
     NSArray* hz1Constraints = [NSLayoutConstraint constraintsWithVisualFormat:hc1_str options:0 metrics:nil views:views];
     [_curtainRowOneView addConstraints:hz1Constraints];
     
@@ -652,7 +660,7 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     lable.text = [self titleForTimeLable:game];
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:11.0f];
-    [lable sizeToFit];
+    //[lable sizeToFit];
     return lable;
 }
 
@@ -660,8 +668,9 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     UILabel* lable = [UILabel new];
     lable.text = [self titleForLocationLable:game];
     lable.textAlignment = NSTextAlignmentLeft;
+    lable.lineBreakMode = NSLineBreakByTruncatingTail;
     lable.font = [UIFont systemFontOfSize:11.0f];
-    [lable sizeToFit];
+    //[lable sizeToFit];
     return lable;
 }
 
@@ -787,20 +796,20 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     [self createYesButton];
     [_curtainRowThreeView addSubview:_btnAnswerYes];
     _btnAnswerYes.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:83 height:24.5 forView:_btnAnswerYes];
+    [NSLayoutConstraint setWidht:kUserStatusButtonWidth height:kUserStatusButtonHeight forView:_btnAnswerYes];
     [NSLayoutConstraint centerVertical:_btnAnswerYes withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
     
     [self createPerhapsButton];
     [_curtainRowThreeView addSubview:_btnAnswerPerhaps];
     _btnAnswerPerhaps.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:83 height:24.5 forView:_btnAnswerPerhaps];
+    [NSLayoutConstraint setWidht:kUserStatusButtonWidth height:kUserStatusButtonHeight forView:_btnAnswerPerhaps];
     [NSLayoutConstraint centerVertical:_btnAnswerPerhaps withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
     [NSLayoutConstraint centerHorizontal:_btnAnswerPerhaps withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
     
     [self createNoButton];
     [_curtainRowThreeView addSubview:_btnAnswerNo];
     _btnAnswerNo.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint setWidht:83 height:24.5 forView:_btnAnswerNo];
+    [NSLayoutConstraint setWidht:kUserStatusButtonWidth height:kUserStatusButtonHeight forView:_btnAnswerNo];
     [NSLayoutConstraint centerVertical:_btnAnswerNo withView:_curtainRowThreeView inContainer:_curtainRowThreeView];
     
     
@@ -904,6 +913,9 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
             }
             else{
                 [self changeStatusButtons:desireStatus];
+                
+                if([self.delegate respondsToSelector:@selector(needUpdateGamesWithController:)])
+                    [self.delegate needUpdateGamesWithController:self];
             }
         });
     }];
@@ -1182,6 +1194,8 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     
     CGRect newRect = self.view.frame;
     newRect.size.height = mainViewHeight - kbSize.height;
+    NSLog(@"%f, %f", newRect.size.width, newRect.size.height);
+    
     self.view.frame = newRect;
     [self.view layoutIfNeeded];
     
@@ -1194,6 +1208,9 @@ static const CGFloat kMsgInputHeightMax = 120.0f;
     newRect.size.height = mainViewHeight;
     self.view.frame = newRect;
     [self.view layoutIfNeeded];
+    
+    CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+    [_tableView setContentOffset:CGPointMake(0, y)];
 }
 
 @end

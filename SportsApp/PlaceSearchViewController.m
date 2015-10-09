@@ -24,6 +24,7 @@
 #import <MapKit/MapKit.h>
 
 static const CGFloat kNavbarHeight = 108.0f;
+static const CGFloat kHUDProgressOffset = -60.0f;
 
 static const NSUInteger kAlertGeoDeny = 1;
 
@@ -333,10 +334,14 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     NSString *searchText = timer.userInfo;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.yOffset = kHUDProgressOffset;
+    [hud show:YES];
     
     [AppNetworking findFoursquarePlacesInRegion:_searchAddressField.text search:searchText completionHandler:^(NSMutableArray *resp, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             
             if(!resp){
                 places = [NSArray new];
@@ -354,10 +359,14 @@ static NSString *const kSimpleTableIdentifier = @"SimpleTableIdentifier";
     NSString *searchText = timer.userInfo;
     
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.yOffset = kHUDProgressOffset;
+    [hud show:YES];
     
     [AppNetworking findYandexAddress:searchText completionHandler:^(NSMutableArray *items, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
             
             if(!items){
                 addresses = [NSArray new];

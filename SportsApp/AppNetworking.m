@@ -497,8 +497,11 @@
                         game.sportType = [gdic[@"sport_type_id"] integerValue];
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
-                        game.addressName = gdic[@"title"];
-                        game.address = gdic[@"address"];
+                        game.addressName = ([gdic[@"title"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"title"];
+                        game.address = ([gdic[@"address"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"address"];
+                        
+                        //game.addressName = gdic[@"title"];
+                        //game.address = gdic[@"address"];
                         
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
                         game.time = [gameDate toFormat:@"HH:mm"];
@@ -538,8 +541,11 @@
                         game.sportType = [gdic[@"sport_type_id"] integerValue];
                         game.adminId = [gdic[@"user_id"] integerValue];
                         
-                        game.addressName = gdic[@"title"];
-                        game.address = gdic[@"address"];
+                        game.addressName = ([gdic[@"title"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"title"];
+                        game.address = ([gdic[@"address"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"address"];
+                        
+                        //game.addressName = gdic[@"title"];
+                        //game.address = gdic[@"address"];
                         
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
                         game.time = [gameDate toFormat:@"HH:mm"];

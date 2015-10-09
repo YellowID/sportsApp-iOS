@@ -81,7 +81,7 @@
 		536FF2BA1B18684800D3561A /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536FF2B91B18684800D3561A /* SystemConfiguration.framework */; };
 		536FF2BC1B18690000D3561A /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 536FF2BB1B18690000D3561A /* CoreVideo.framework */; };
 		536FF2BF1B18E44400D3561A /* PlaceSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 536FF2BE1B18E44400D3561A /* PlaceSearchViewController.m */; };
-		53781D761B97069F00FE5869 /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */; };
+		537F15EB1BB0927100E37207 /* NSLayoutConstraint+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 537F15EA1BB0927100E37207 /* NSLayoutConstraint+Helper.m */; };
 		53820F631B17934C00F4EE3B /* MemberInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 53820F621B17934C00F4EE3B /* MemberInfo.m */; };
 		5384D5C11B0C9321009B6CD3 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C01B0C9321009B6CD3 /* main.m */; };
 		5384D5C41B0C9321009B6CD3 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5384D5C31B0C9321009B6CD3 /* AppDelegate.m */; };
@@ -301,8 +301,8 @@
 		536FF2BB1B18690000D3561A /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		536FF2BD1B18E44400D3561A /* PlaceSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceSearchViewController.h; sourceTree = "<group>"; };
 		536FF2BE1B18E44400D3561A /* PlaceSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceSearchViewController.m; sourceTree = "<group>"; };
-		53781D741B97069F00FE5869 /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
-		53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
+		537F15E91BB0927100E37207 /* NSLayoutConstraint+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSLayoutConstraint+Helper.h"; sourceTree = "<group>"; };
+		537F15EA1BB0927100E37207 /* NSLayoutConstraint+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSLayoutConstraint+Helper.m"; sourceTree = "<group>"; };
 		53820F611B17934C00F4EE3B /* MemberInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MemberInfo.h; sourceTree = "<group>"; };
 		53820F621B17934C00F4EE3B /* MemberInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MemberInfo.m; sourceTree = "<group>"; };
 		5384D5BB1B0C9321009B6CD3 /* SportsApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SportsApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -631,8 +631,8 @@
 		53B994DA1B0D083200558169 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
-				53781D741B97069F00FE5869 /* NSLayoutConstraint+Helper.h */,
-				53781D751B97069F00FE5869 /* NSLayoutConstraint+Helper.m */,
+				537F15E91BB0927100E37207 /* NSLayoutConstraint+Helper.h */,
+				537F15EA1BB0927100E37207 /* NSLayoutConstraint+Helper.m */,
 				538657C71B6656F20003A186 /* NSDate+Utilities.h */,
 				538657C81B6656F20003A186 /* NSDate+Utilities.m */,
 				53E519C31B15B74000B85DDD /* NSString+Common.h */,
@@ -1158,9 +1158,9 @@
 				534B51571B20BCBA001FAD9A /* ChatTableViewCell.m in Sources */,
 				5390F1651B28968400B02775 /* NetManager.m in Sources */,
 				53E519821B122C7400B85DDD /* SportItemUI.m in Sources */,
-				53781D761B97069F00FE5869 /* NSLayoutConstraint+Helper.m in Sources */,
 				5367C9521B724CAC00FF74AA /* UIView+Utility.m in Sources */,
 				5390F1731B289C3E00B02775 /* NewGame.m in Sources */,
+				537F15EB1BB0927100E37207 /* NSLayoutConstraint+Helper.m in Sources */,
 				53E519851B12472700B85DDD /* NewEvenViewController.m in Sources */,
 				538657C21B64D6D60003A186 /* NSDate+Formater.m in Sources */,
 				5390F1681B2896AA00B02775 /* Reachability.m in Sources */,
@@ -1295,6 +1295,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SportsApp",
@@ -1323,6 +1324,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Siarhei Zakharanka (DR2D9L4NZP)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Siarhei Zakharanka (DR2D9L4NZP)";
+				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/SportsApp",
@@ -1341,7 +1343,7 @@
 					"-lstdc++",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "4901bfc3-1eab-466f-bf6c-440640c4416b";
+				PROVISIONING_PROFILE = "271e1077-3975-4bd1-adcd-00c895c4ea0e";
 			};
 			name = Release;
 		};

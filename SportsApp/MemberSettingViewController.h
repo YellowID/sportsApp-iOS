@@ -1,5 +1,5 @@
 //
-//  TestLayoutViewController.h
+//  MemberSettingViewController.h
 //  SportsApp
 //
 //  Created by sergeyZ on 23.05.15.
