@@ -24,6 +24,7 @@
 "BTN_CANCEL_2" = "Cancel";
 "BTN_SAVE" = "Save";
 "BTN_CLOSE" = "Close";
+"BTN_VIEW" = "View";
 "BTN_CHANGE" = "Change";
 "BTN_CREATE" = "Create";
 "BTN_EXIT" = "Log out";
@@ -53,6 +54,8 @@
 "MSG_GEOLOCATION_IS_DISABLED" = "Location Services are turned off";
 "MSG_GEOLOCATION_ENABLE" = "To turn on, go to Settings.";
 
+"MSG_INVITE_NOTIFICATION" = "You have received a new invitation";
+
 "TXT_AUTORIZATION" = "Authorization...";
 "TXT_GUEST" = "Guest";
 
@@ -64,6 +67,7 @@
 "TXT_NUMBER_OF_PEOPLE" = "Number of people";
 "TXT_REQUIRED_LEVEL" = "Required skills";
 "TXT_TODAY" = "today";
+"TXT_TOMORROW" = "tomorrow";
 "TXT_GAME_OVER" = "Game over";
 "TXT_IN_DAYS" = "In %lu days";
 "TXT_GOTO_PEOPLE" = "%lu people are going";

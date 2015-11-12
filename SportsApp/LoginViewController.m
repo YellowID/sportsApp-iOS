@@ -15,6 +15,7 @@
 #import "AppColors.h"
 #import "UIColor+Helper.h"
 #import "MBProgressHUD.h"
+#import "NSDate+Utilities.h"
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
@@ -42,6 +43,24 @@ static NSArray* SCOPE = nil;
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNeedsStatusBarAppearanceUpdate];
+    
+    /*
+    NSDate *today = [NSDate new];
+    if([today isToday]){
+        NSLog(@"%@", today);
+    }
+    
+    NSDate *tomorrow = [today dateByAddingDays:1];
+    if([tomorrow isToday]){
+        NSLog(@"%@", tomorrow);
+    }
+    
+    NSDate *yesterday = [today dateBySubtractingDays:1];
+    if([yesterday isToday]){
+        NSLog(@"%@", yesterday);
+    }
+    */
+    
     
     //self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background.png"]];
     
@@ -369,6 +388,8 @@ static NSArray* SCOPE = nil;
                 [[AppDelegate instance] setLastProvider:user.provider];
                 [appNetworking setUserToken:user.appToken];
                 
+                [self sendDevicePushToken];
+                
                 AppChat *appChat = [[AppDelegate instance] appChatInstance];
                 if(user.isNewUser){
                     [appChat signUpWithLogin:user.chatLogin password:user.chatPassword externalID:user.uid fullName:user.name avatarUrl:user.avatar completionHandler:^(BOOL isSuccess) {
@@ -441,4 +462,31 @@ static NSArray* SCOPE = nil;
     }];
 }
 
+- (void) sendDevicePushToken {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSString *devicePushToken = [userDefaults objectForKey:@"devicePushToken"];
+    
+    if(devicePushToken){
+        AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+        
+        [appNetworking setDevicePushTokenForGame:devicePushToken completionHandler:^(NSString *errorMessage) {
+            if(errorMessage){
+                NSLog(@"%@", errorMessage.debugDescription);
+            }
+        }];
+    }
+}
+
 @end
+
+
+
+
+
+
+
+
+
+
+
+

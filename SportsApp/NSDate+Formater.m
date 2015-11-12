@@ -14,7 +14,8 @@
     NSDateFormatter *dateFormat = [[NSDateFormatter alloc] init];
     //[dateFormat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS"];
     //[dateFormat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ssZ"];
-    [dateFormat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.000'Z'"];
+    //[dateFormat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.000'Z'"]; //2015-10-18T10:34:14.998Z
+    [dateFormat setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"]; //2015-10-18T10:34:14.998Z
     
     //@"yyyy’-’MM’-’dd’T’HH’:’mm’:’ssZ"
     //2013-06-05T06:13:29+0000

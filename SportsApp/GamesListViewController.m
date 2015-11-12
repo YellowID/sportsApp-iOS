@@ -24,6 +24,8 @@
 #import "UIView+Utility.h"
 #import "NSLayoutConstraint+Helper.h"
 
+static const NSUInteger kAlertAPNS = 1;
+
 static const NSUInteger kSectionMyGames = 0;
 static const NSUInteger kSectionPublicGames = 1;
 
@@ -384,6 +386,8 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
                     _publicGames = publicGames;
                 
                 [_tableView reloadData];
+                
+                [self notifyForInviteIfNeeded];
             }
         });
     }];
@@ -395,6 +399,37 @@ static NSString *const kGamesListCellTableIdentifier = @"GamesListCellTableIdent
     selectedCity = city;
     navTitleLabel.text = selectedCity;
     [self updateGamesListForCity:selectedCity];
+}
+
+- (void) notifyForInviteIfNeeded {
+    NSString *notificationObjectId = [[AppDelegate instance] lastNotificationObjectId];
+    if(notificationObjectId){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notification"
+                                                            message:NSLocalizedString(@"MSG_INVITE_NOTIFICATION", nil)
+                                                           delegate:self
+                                                  cancelButtonTitle:NSLocalizedString(@"BTN_CANCEL_1", nil)
+                                                  otherButtonTitles:NSLocalizedString(@"BTN_VIEW", nil), nil];
+        alertView.tag = kAlertAPNS;
+        [alertView show];
+    }
+}
+
+#pragma mark -
+#pragma mark Notifications Alert
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == kAlertAPNS) {
+        if(buttonIndex == 0){ // cancel
+            
+        }
+        else if(buttonIndex == 1){ // open
+            ChatViewController *controller = [[ChatViewController alloc] init];
+            controller.gameId = [[[AppDelegate instance] lastNotificationObjectId] integerValue];
+            controller.delegate = nil;
+            [self.navigationController pushViewController:controller animated:YES];
+        }
+        
+        [[AppDelegate instance] setLastNotificationObjectId:nil];
+    }
 }
 
 @end

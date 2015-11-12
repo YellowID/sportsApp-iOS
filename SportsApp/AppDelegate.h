@@ -30,5 +30,8 @@
 - (void) setLastProvider:(NSString *)provider;
 - (NSString *) lastProvider;
 
+- (void) setLastNotificationObjectId:(NSString *)objId;
+- (NSString *) lastNotificationObjectId;
+
 @end
 

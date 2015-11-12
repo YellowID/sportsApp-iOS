@@ -9,13 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Constants.h"
 
-enum UserGameParticipateStatus : NSUInteger {
-    UserGameParticipateStatusNo = 1,
-    UserGameParticipateStatusYes,
-    UserGameParticipateStatusPossible
-};
-typedef enum UserGameParticipateStatus UserGameParticipateStatus;
-
 @interface GameInfo : NSObject
 
 @property (nonatomic) NSUInteger gameId;

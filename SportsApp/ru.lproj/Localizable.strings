@@ -24,6 +24,7 @@
 "BTN_CANCEL_2" = "Отменить";
 "BTN_SAVE" = "Сохранить";
 "BTN_CLOSE" = "Закрыть";
+"BTN_VIEW" = "Посмотреть";
 "BTN_CHANGE" = "Изменить";
 "BTN_CREATE" = "Создать";
 "BTN_EXIT" = "Выход";
@@ -53,6 +54,8 @@
 "MSG_GEOLOCATION_IS_DISABLED" = "Службы геолокации выключены";
 "MSG_GEOLOCATION_ENABLE" = "Чтобы включить, перейдите в Настройки.";
 
+"MSG_INVITE_NOTIFICATION" = "Вы получили новое приглашение";
+
 "TXT_AUTORIZATION" = "Авторизация...";
 "TXT_GUEST" = "Гость";
 
@@ -64,6 +67,7 @@
 "TXT_NUMBER_OF_PEOPLE" = "Количество людей";
 "TXT_REQUIRED_LEVEL" = "Требуемый уровень";
 "TXT_TODAY" = "сегодня";
+"TXT_TOMORROW" = "завтра";
 "TXT_GAME_OVER" = "Игра окончена";
 "TXT_IN_DAYS" = "через %lu дня";
 "TXT_GOTO_PEOPLE" = "Идут %lu человек";

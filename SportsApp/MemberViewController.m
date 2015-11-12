@@ -43,6 +43,18 @@ static const CGFloat kPhotoSize = 40.0f;
     [btnClose sizeToFit];
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:btnClose];
     
+    // filter & sorting
+    NSMutableArray *filteredMember = [NSMutableArray new];
+    for(int i = 0; i < _members.count; ++i){
+        MemberInfo *member = _members[i];
+        if(member.participateStatus != UserGameParticipateStatusNo)
+            [filteredMember addObject:member];
+    }
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"participateStatus" ascending:YES];
+    NSArray *sortDescriptors = [NSArray arrayWithObject:sortDescriptor];
+    _members = [filteredMember sortedArrayUsingDescriptors:sortDescriptors];
+    
     self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
     [self.tableView setAutoresizingMask:UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth];
     [self.tableView setDelegate:self];
@@ -78,19 +90,6 @@ static const CGFloat kPhotoSize = 40.0f;
 
 #pragma mark -
 #pragma mark UITableView delegate methods
--(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
-        [cell setSeparatorInset:UIEdgeInsetsZero];
-    
-    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
-        [cell setPreservesSuperviewLayoutMargins:NO];
-    
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
-        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
-    }
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     return 59;
 }
@@ -105,6 +104,8 @@ static const CGFloat kPhotoSize = 40.0f;
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:SimpleTableIdentifier];
     if(cell == nil){
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:SimpleTableIdentifier];
+        cell.textLabel.textColor = [UIColor blackColor];
+        cell.textLabel.font = [UIFont systemFontOfSize:15];
         
         UIImage *avatar = [UIImage imageForAvatarDefault:[UIImage imageNamed:@"ic_avatar.png"] text:nil];
         cell.imageView.image = avatar;
@@ -130,7 +131,6 @@ static const CGFloat kPhotoSize = 40.0f;
     }
     
     cell.imageView.contentMode = UIViewContentModeCenter;
-    
     cell.imageView.layer.borderWidth = 0.0;
     cell.imageView.layer.cornerRadius = kPhotoSize / 2;
     cell.imageView.layer.masksToBounds = YES;
@@ -140,10 +140,27 @@ static const CGFloat kPhotoSize = 40.0f;
     else
         cell.textLabel.text = NSLocalizedString(@"TXT_GUEST", nil);
     
-    cell.textLabel.textColor = [UIColor blackColor];
-    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    if(member.participateStatus == UserGameParticipateStatusNo)
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_status_no.png"]];
+    else if(member.participateStatus == UserGameParticipateStatusYes)
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_status_go.png"]];
+    else
+        cell.accessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"icon_status_q.png"]];
     
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
+        [cell setSeparatorInset:UIEdgeInsetsZero];
+    
+    if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)])
+        [cell setPreservesSuperviewLayoutMargins:NO];
+    
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+        [cell setLayoutMargins:UIEdgeInsetsMake(0, 14, 0, 14)];
+        [cell setSeparatorInset:UIEdgeInsetsMake(0, 14, 0, 14)];
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {

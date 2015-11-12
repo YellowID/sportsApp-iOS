@@ -11,11 +11,15 @@
 #import "UIColor+Helper.h"
 #import "AppColors.h"
 
+#import "ChatViewController.h"
+
 #import <Fabric/Fabric.h>
 #import <Crashlytics/Crashlytics.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <VKSdk/VKSdk.h>
 #import <Quickblox/Quickblox.h>
+
+#define ALERT_APNS 1
 
 @interface AppDelegate ()
 
@@ -24,10 +28,28 @@
 @implementation AppDelegate {
     AppNetworking *appNetworking;
     AppChat *appChat;
+    
+    NSUInteger notificationObjectId;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    
+    if (launchOptions) { //launchOptions is not nil
+        NSDictionary *userInfo = [launchOptions valueForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
+        
+        NSDictionary *appdata = [userInfo objectForKey:@"appdata"];
+        if (appdata) { //apsInfo is not nil
+            NSString *notificationAction = [appdata objectForKey:@"event"];
+            if([notificationAction isEqualToString:@"invite"]){
+                NSString *objectId = [appdata objectForKey:@"objectId"];
+                [self setLastNotificationObjectId:objectId];
+            }
+            
+            //[self handlePushNotification:userInfo];
+            application.applicationIconBadgeNumber = 0;
+        }
+    }
     
     LoginViewController *controller = [LoginViewController new];
     self.navigationController = [[UINavigationController alloc] initWithRootViewController:controller];
@@ -52,6 +74,10 @@
     [QBConnection registerServiceKey:@"JL8zy5TG4avnDE9"];
     [QBConnection registerServiceSecret:@"jFhh6pUh-SzBkKu"];
     [QBSettings setAccountKey:@"aawJFzj4EfZLsw9tGY6N"];
+    
+    #if !TARGET_IPHONE_SIMULATOR
+    [self registerForRemoteNotification];
+    #endif
 
     return YES;
 }
@@ -142,6 +168,86 @@
 
 - (NSString *) lastProvider {
     return [[NSUserDefaults standardUserDefaults] objectForKey:@"last_provider"];
+}
+
+#pragma mark -
+- (void) setLastNotificationObjectId:(NSString *)objId {
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:objId forKey:@"lastNotificationObjectId"];
+    [userDefaults synchronize];
+}
+
+- (NSString *) lastNotificationObjectId {
+    return [[NSUserDefaults standardUserDefaults] objectForKey:@"lastNotificationObjectId"];
+}
+
+#pragma mark -
+#pragma mark Remote notifications
+- (void)registerForRemoteNotification {
+    UIUserNotificationType types = UIUserNotificationTypeSound | UIUserNotificationTypeBadge | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:notificationSettings];
+}
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings {
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+    NSLog(@"Did register for remote notifications: %@", deviceToken);
+    
+    NSString *token = [[deviceToken description] stringByTrimmingCharactersInSet: [NSCharacterSet characterSetWithCharactersInString:@"<>"]];
+    token = [token stringByReplacingOccurrencesOfString:@" " withString:@""];
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:token forKey:@"devicePushToken"];
+    [userDefaults synchronize];
+}
+
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+    NSLog(@"Fail to register for remote notifications: %@", error);
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    application.applicationIconBadgeNumber = 0;
+    
+    if (application.applicationState == UIApplicationStateActive) {
+        NSDictionary *appdata = [userInfo objectForKey:@"appdata"];
+        NSString *notificationAction = [appdata objectForKey:@"event"];
+        notificationObjectId = [[appdata objectForKey:@"objectId"] integerValue];
+        
+        if([notificationAction isEqualToString:@"invite"]){
+            UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Notification"
+                                                                message:NSLocalizedString(@"MSG_INVITE_NOTIFICATION", nil)
+                                                               delegate:self
+                                                      cancelButtonTitle:NSLocalizedString(@"BTN_CANCEL_1", nil)
+                                                      otherButtonTitles:NSLocalizedString(@"BTN_VIEW", nil), nil];
+            alertView.tag = ALERT_APNS;
+            [alertView show];
+        }
+    }
+    else if(application.applicationState == UIApplicationStateInactive){
+        //NSLog(@"UIApplicationStateInactive: APNS (%@)", message);
+    }
+    else if(application.applicationState == UIApplicationStateBackground){
+        //NSLog(@"UIApplicationStateBackground: APNS (%@)", message);
+    }
+}
+
+#pragma mark -
+#pragma mark Notifications Alert
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (alertView.tag == ALERT_APNS) {
+        if(buttonIndex == 0){ // cancel
+            
+        }
+        else if(buttonIndex == 1){ // open
+            ChatViewController *controller = [[ChatViewController alloc] init];
+            controller.gameId = notificationObjectId;
+            controller.delegate = nil;
+            [self.navigationController pushViewController:controller animated:YES];
+        }
+    }
 }
 
 @end

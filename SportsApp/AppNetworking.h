@@ -41,6 +41,9 @@
 
 - (void) citiesCompletionHandler:(void(^)(NSMutableArray *arrayData, NSString *errorMessage))blockHandler;
 
+- (void) setDevicePushTokenForGame:(NSString *)token completionHandler:(void(^)(NSString *errorMessage))blockHandler;
+
+
 + (void) findYandexAddressForLatitude:(CGFloat)lat longitude:(CGFloat)lng completionHandler:(void(^)(YandexGeoResponse *resp, NSString *errorMessage))blockHandler;
 + (void) findYandexAddress:(NSString *)query completionHandler:(void(^)(NSMutableArray *items, NSString *errorMessage))blockHandler;
 

@@ -31,6 +31,7 @@
 #define API_PATH_EDIT_GAME @"games/%lu.json"
 #define API_PATH_GAME_BY_ID @"games/%lu.json"
 #define API_PATH_CITIES @"games/cityes.json"
+#define API_PATH_SET_DEVICE_PUSH_TOKEN @"users/set_device_id.json"
 
 #define URL_YANDEX_GEOCODE_REVERS @"https://geocode-maps.yandex.ru/1.x/?sco=longlat&format=json&kind=locality&geocode=%f,%f"
 #define URL_YANDEX_GEOCODE @"https://geocode-maps.yandex.ru/1.x/?format=json&kind=locality&geocode=%@"
@@ -53,6 +54,7 @@
     NSString *urlEditGame_Format;
     NSString *urlGameById_Format;
     NSString *urlCities;
+    NSString *urlSetDevicePushToken;
 }
 
 + (instancetype)sharedInstance {
@@ -82,6 +84,8 @@
         urlEditGame_Format = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_EDIT_GAME, API_KEY];
         urlGameById_Format = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_GAME_BY_ID, API_KEY];
         urlCities = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_CITIES, API_KEY];
+        
+        urlSetDevicePushToken = [NSString stringWithFormat:@"%@%@%@?api_key=%@", url, API_VERSION, API_PATH_SET_DEVICE_PUSH_TOKEN, API_KEY];
     }
     return self;
 }
@@ -207,6 +211,9 @@
                 NSString *result = resultDic[@"result"];
                 if(![result isEqualToString:@"success"])
                     errorMessage = NSLocalizedString(@"MSG_UNABLE_TO_INVITE_USER", nil);
+            }
+            else{
+                errorMessage = NSLocalizedString(@"MSG_UNABLE_TO_INVITE_USER", nil);
             }
         }
         else {
@@ -436,21 +443,33 @@
             id resultJson = nil;
             hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
             
-            /*
             if(!hasError){
                 NSMutableArray *arr = (NSMutableArray *)resultJson;
                 
                 for(NSMutableDictionary *dic in arr){
-                    MemberInfo* member = [MemberInfo new];
-                    member.userId = 1;
-                    member.name = @"User Name 111";
-                    member.icon = @"http://pics.news.meta.ua/90x90/316/77/31677048-Chaku-Norrisu-ispolnilos-75-let.gif";
-                    member.invited = YES;
+                    MemberInfo *member = [MemberInfo new];
+                    member.userId = [dic[@"id"] integerValue];
+                    
+                    if(![dic[@"name"] isKindOfClass:[NSNull class]])
+                        member.name = dic[@"name"];
+                    
+                    if(![dic[@"avatar"] isKindOfClass:[NSNull class]])
+                        member.icon = dic[@"avatar"];
+                    
+                    if(![dic[@"participate_status"] isKindOfClass:[NSNull class]]){
+                        if([dic[@"participate_status"] isEqualToString:@"confirmed"])
+                            member.participateStatus = UserGameParticipateStatusYes;
+                        else if([dic[@"participate_status"] isEqualToString:@"rejected"])
+                            member.participateStatus = UserGameParticipateStatusNo;
+                        else
+                            member.participateStatus = UserGameParticipateStatusPossible;
+                    }
+                    else
+                        member.participateStatus = UserGameParticipateStatusPossible;
                     
                     [members addObject:member];
                 }
             }
-            */
         }
         else {
             NSLog(@"error: %@", error.debugDescription);
@@ -492,43 +511,12 @@
                 // my
                 if([myG count] > 0){
                     for(NSMutableDictionary *gdic in myG){
-                        GameInfo* game = [GameInfo new];
-                        game.gameId = [gdic[@"id"] integerValue];
-                        game.sportType = [gdic[@"sport_type_id"] integerValue];
-                        game.adminId = [gdic[@"user_id"] integerValue];
-                        
-                        game.addressName = ([gdic[@"title"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"title"];
-                        game.address = ([gdic[@"address"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"address"];
-                        
-                        //game.addressName = gdic[@"title"];
-                        //game.address = gdic[@"address"];
-                        
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
-                        game.time = [gameDate toFormat:@"HH:mm"];
+                        NSInteger days = [gameDate daysAfterDate:[NSDate new]];
+                        if(days < 0)
+                            continue;
                         
-                        if([gameDate isToday]){
-                            game.date = NSLocalizedString(@"TXT_TODAY", nil);
-                        }
-                        else {
-                            NSInteger days = [gameDate daysAfterDate:[NSDate new]];
-                            
-                            if(days < 0)
-                                game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
-                            else
-                                game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
-                        }
-                        
-                        if(![gdic[@"participate_status"] isKindOfClass:[NSNull class]]){
-                            if([gdic[@"participate_status"] isEqualToString:@"confirmed"])
-                                game.participateStatus = UserGameParticipateStatusYes;
-                            else if([gdic[@"participate_status"] isEqualToString:@"rejected"])
-                                game.participateStatus = UserGameParticipateStatusNo;
-                            else
-                                game.participateStatus = UserGameParticipateStatusPossible; //possible
-                        }
-                        else
-                            game.participateStatus = UserGameParticipateStatusPossible;
-                        
+                        GameInfo *game = [self makeGameFromDictionary:gdic];
                         [myGames addObject:game];
                     }
                 }
@@ -536,34 +524,13 @@
                 // public
                 if([publicG count] > 0){
                     for(NSMutableDictionary *gdic in publicG){
-                        GameInfo* game = [GameInfo new];
-                        game.gameId = [gdic[@"id"] integerValue];
-                        game.sportType = [gdic[@"sport_type_id"] integerValue];
-                        game.adminId = [gdic[@"user_id"] integerValue];
-                        
-                        game.addressName = ([gdic[@"title"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"title"];
-                        game.address = ([gdic[@"address"] isKindOfClass:[NSNull class]]) ? @"" : gdic[@"address"];
-                        
-                        //game.addressName = gdic[@"title"];
-                        //game.address = gdic[@"address"];
-                        
                         NSDate *gameDate = [NSDate dateWithJsonString:gdic[@"start_at"]];
-                        game.time = [gameDate toFormat:@"HH:mm"];
+                        NSInteger days = [gameDate daysAfterDate:[NSDate new]];
+                        if(days < 0)
+                            continue;
                         
-                        if([gameDate isToday]){
-                            game.date = NSLocalizedString(@"TXT_TODAY", nil);
-                        }
-                        else {
-                            NSInteger days = [gameDate daysAfterDate:[NSDate new]];
-                            
-                            if(days < 0)
-                                game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
-                            else
-                                game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
-                        }
-                        
-                        game.participateStatus = UserGameParticipateStatusPossible;
-                        
+                        GameInfo *game = [self makeGameFromDictionary:gdic];
+                        //game.participateStatus = UserGameParticipateStatusPossible;
                         [publicGames addObject:game];
                     }
                 }
@@ -748,18 +715,7 @@
                 game.startAt = resultDic[@"start_at"];
                 NSDate *gameDate = [NSDate dateWithJsonString:resultDic[@"start_at"]];
                 game.time = [gameDate toFormat:@"HH:mm"];
-                
-                if([gameDate isToday]){
-                    game.date = NSLocalizedString(@"TXT_TODAY", nil);
-                }
-                else {
-                    NSInteger days = [gameDate daysAfterDate:[NSDate new]];
-                    
-                    if(days < 0)
-                        game.date = NSLocalizedString(@"TXT_GAME_OVER", nil);
-                    else
-                        game.date = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
-                }
+                game.date = [self gameDateString:resultDic[@"start_at"]];
                 
                 game.age = [resultDic[@"age"] integerValue];
                 game.level = [resultDic[@"level"] integerValue];
@@ -778,6 +734,17 @@
                     
                     if(![dic[@"avatar"] isKindOfClass:[NSNull class]])
                         member.icon = dic[@"avatar"];
+                    
+                    if(![dic[@"participate_status"] isKindOfClass:[NSNull class]]){
+                        if([dic[@"participate_status"] isEqualToString:@"confirmed"])
+                            member.participateStatus = UserGameParticipateStatusYes;
+                        else if([dic[@"participate_status"] isEqualToString:@"rejected"])
+                            member.participateStatus = UserGameParticipateStatusNo;
+                        else
+                            member.participateStatus = UserGameParticipateStatusPossible;
+                    }
+                    else
+                        member.participateStatus = UserGameParticipateStatusPossible;
                     
                     [game.members addObject:member];
                 }
@@ -826,6 +793,40 @@
             blockHandler(nil, errorMessage);
         else
             blockHandler(cities, nil);
+    }];
+}
+
+- (void) setDevicePushTokenForGame:(NSString *)devPushToken completionHandler:(void(^)(NSString *errorMessage))blockHandler {
+    NSMutableDictionary *params = [NSMutableDictionary new];
+    [params setValue:userToken forKey:@"user_token"];
+    [params setValue:devPushToken forKey:@"device_id"];
+    
+    
+    [NetManager sendPostMultipartFormData:urlSetDevicePushToken withParams:params completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        BOOL hasError = YES;
+        NSString *errorMessage;
+        
+        if(!error){
+            id resultJson = nil;
+            hasError = [self handleResponse:response data:data resultObject:&resultJson errorMessage:&errorMessage];
+            
+            if(!hasError){
+                NSMutableDictionary *resultDic = (NSMutableDictionary *)resultJson;
+                
+                NSString *result = resultDic[@"result"];
+                if(![result isEqualToString:@"success"])
+                    errorMessage = NSLocalizedString(@"MSG_SOMETHING_WRONG", nil);
+            }
+        }
+        else {
+            NSLog(@"error: %@", error.debugDescription);
+            errorMessage = error.description;
+        }
+        
+        if(hasError)
+            blockHandler(errorMessage);
+        else
+            blockHandler(nil);
     }];
 }
 
@@ -1069,4 +1070,73 @@
     return [NetManager isInternetAvaliable];
 }
 
+#pragma mark -
+- (GameInfo*) makeGameFromDictionary:(NSDictionary *)dic {
+    GameInfo* game = [GameInfo new];
+    game.gameId = [dic[@"id"] integerValue];
+    game.sportType = [dic[@"sport_type_id"] integerValue];
+    game.adminId = [dic[@"user_id"] integerValue];
+    
+    game.addressName = ([dic[@"title"] isKindOfClass:[NSNull class]]) ? @"" : dic[@"title"];
+    game.address = ([dic[@"address"] isKindOfClass:[NSNull class]]) ? @"" : dic[@"address"];
+    
+    NSDate *dicDate = [NSDate dateWithJsonString:dic[@"start_at"]];
+    game.time = [dicDate toFormat:@"HH:mm"];
+    game.date = [self gameDateString:dic[@"start_at"]];
+    
+    if(![dic[@"participate_status"] isKindOfClass:[NSNull class]]){
+        if([dic[@"participate_status"] isEqualToString:@"confirmed"])
+            game.participateStatus = UserGameParticipateStatusYes;
+        else if([dic[@"participate_status"] isEqualToString:@"rejected"])
+            game.participateStatus = UserGameParticipateStatusNo;
+        else
+            game.participateStatus = UserGameParticipateStatusPossible; //possible
+    }
+    else
+        game.participateStatus = UserGameParticipateStatusPossible;
+    
+    return game;
+}
+
+- (NSString *)gameDateString:(NSString *)jsonDateString {
+    NSString *resultDate;
+    
+    NSDate *dicDate = [NSDate dateWithJsonString:jsonDateString];
+    
+    if([dicDate isToday]){
+        resultDate = NSLocalizedString(@"TXT_TODAY", nil);
+    }
+    else {
+        NSInteger days = [dicDate daysAfterDate:[NSDate new]];
+        
+        if(days <= 0){
+            resultDate = NSLocalizedString(@"TXT_GAME_OVER", nil);
+        }
+        else if(days == 0){
+            NSInteger hours = [dicDate hoursAfterDate:[NSDate new]];
+            if(hours < 0)
+                resultDate = NSLocalizedString(@"TXT_GAME_OVER", nil);
+            else
+                resultDate = NSLocalizedString(@"TXT_TOMORROW", nil);
+        }
+        else{
+            resultDate = [NSString stringWithFormat:NSLocalizedString(@"TXT_IN_DAYS", nil), (long)days];
+        }
+    }
+    
+    return resultDate;
+}
+
 @end
+
+
+
+
+
+
+
+
+
+
+
+

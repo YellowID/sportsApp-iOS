@@ -432,7 +432,7 @@ static const NSUInteger kAlertInviteUser = 2;
 - (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if(alertView.tag == kAlertInviteUser){
         if(buttonIndex == 1){
-            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
             MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
             hud.yOffset = kHUDProgressOffset;
             [hud show:YES];
@@ -440,7 +440,7 @@ static const NSUInteger kAlertInviteUser = 2;
             AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
             [appNetworking inviteUserWithId:selectedUserId forGame:_gameId completionHandler:^(NSString *errorMessage) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+                    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
                     [MBProgressHUD hideHUDForView:self.view animated:YES];
                     
                     if(errorMessage){
@@ -471,9 +471,23 @@ static const NSUInteger kAlertInviteUser = 2;
 - (void)startSearch:(NSTimer *)timer {
     NSString *searchText = timer.userInfo;
     
+    if(searchText.length == 0){
+        [members removeAllObjects];
+        [_tableView reloadData];
+        return;
+    }
+    
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.yOffset = kHUDProgressOffset;
+    [hud show:YES];
+    
     AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
     [appNetworking findUser:searchText completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
             if(!errorMessage){
                 members = arrayData;
                 [_tableView reloadData];

@@ -38,4 +38,11 @@ enum PlayerLevel : NSUInteger {
 };
 typedef enum PlayerLevel PlayerLevel;
 
+enum UserGameParticipateStatus : NSUInteger {
+    UserGameParticipateStatusNo = 1,
+    UserGameParticipateStatusYes,
+    UserGameParticipateStatusPossible
+};
+typedef enum UserGameParticipateStatus UserGameParticipateStatus;
+
 #endif

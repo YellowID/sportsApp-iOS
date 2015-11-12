@@ -69,10 +69,12 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
 @end
 
 @implementation ChatViewController{
-    NSLayoutConstraint* footerViewHeightConstraint;
-    NSLayoutConstraint* messageHeightConstraint;
-    NSLayoutConstraint* curtainHeigtContraint;
+    NSLayoutConstraint *chatContentViewHeightConstraint;
+    NSLayoutConstraint *footerViewHeightConstraint;
+    NSLayoutConstraint *messageHeightConstraint;
+    NSLayoutConstraint *curtainHeigtContraint;
     BOOL isCurtainOpen;
+    BOOL isKeyboardUp;
     
     UILabel* locTitle;
     UILabel* timeTitle;
@@ -81,6 +83,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     
     NSUInteger currentUserId;
     GameInfo *game;
+    NSArray *members;
     
     NSMutableDictionary *avatarCache;
     NSMutableDictionary *chatRowHeightCache;
@@ -123,6 +126,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
             }
             else {
                 game = gameInfo;
+                members = game.members;
                 
                 [self setNavTitle:game.gameName];
                 [self setNavigationItems];
@@ -143,6 +147,8 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     // register for keyboard notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -150,18 +156,21 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     // unregister for keyboard notifications while not visible.
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardDidShowNotification object:nil];
 }
 
 - (void) viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
     mainViewHeight = self.view.frame.size.height;
+    
+    if(chatContentViewHeightConstraint)
+        chatContentViewHeightConstraint.constant = mainViewHeight;
 }
 
 #pragma mark -
 #pragma mark TEMP
 - (void) loadChatMessages {
-    /**/
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
     
     AppChat *appChat = [[AppDelegate instance] appChatInstance];
@@ -436,6 +445,11 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     [_tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    //CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+    //[_tableView setContentOffset:CGPointMake(0, y)];
+}
+
 #pragma mark -
 #pragma mark Navigation Items
 - (void) setNavigationItems {
@@ -471,7 +485,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     _chatFooterView.translatesAutoresizingMaskIntoConstraints = NO;
     _chatFooterView.backgroundColor = [UIColor colorWithRGBA:BG_CHAT_INPUT_CONTAINER_COLOR];
     [_chatContentView addSubview:_chatFooterView];
-    _chatFooterView.backgroundColor = [UIColor greenColor];
+    //_chatFooterView.backgroundColor = [UIColor greenColor];
     
     [NSLayoutConstraint stretchHorizontal:_tableView inContainer:_chatContentView withPadding:0];
     [NSLayoutConstraint stretchHorizontal:_chatFooterView inContainer:_chatContentView withPadding:0];
@@ -491,7 +505,10 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     _chatContentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_chatContentView];
     
-    [NSLayoutConstraint stretch:_chatContentView inContainer:self.view withPadding:0];
+    //[NSLayoutConstraint stretch:_chatContentView inContainer:self.view withPadding:0];
+    [NSLayoutConstraint stretchHorizontal:_chatContentView inContainer:self.view withPadding:0];
+    [NSLayoutConstraint setTopPadding:0 forView:_chatContentView inContainer:self.view];
+    chatContentViewHeightConstraint = [NSLayoutConstraint setHeight:mainViewHeight forView:_chatContentView];
 }
 
 - (void) layoutFooterContent {
@@ -514,7 +531,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     _tfMessage = [UITextView new];
     _tfMessage.translatesAutoresizingMaskIntoConstraints = NO;
     _tfMessage.delegate = self;
-    _tfMessage.font = [UIFont systemFontOfSize:14.0f];
+    //_tfMessage.font = [UIFont systemFontOfSize:14.0f];
     _tfMessage.autocorrectionType = UITextAutocorrectionTypeNo;
     
     _tfMessage.layer.borderWidth = 0.0;
@@ -576,7 +593,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     [self.view addSubview:_curtainArrowButton];
     
     [NSLayoutConstraint setWidht:57.5 height:27 forView:_curtainArrowButton];
-    [NSLayoutConstraint setTopDistance:0.5 fromView:_curtainArrowButton toView:_curtainView inContainer:self.view];
+    [NSLayoutConstraint setTopDistance:0.2 fromView:_curtainArrowButton toView:_curtainView inContainer:self.view];
     [NSLayoutConstraint centerHorizontal:_curtainArrowButton withView:_curtainView inContainer:self.view];
 }
 
@@ -660,7 +677,6 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     lable.text = [self titleForTimeLable:game];
     lable.textAlignment = NSTextAlignmentLeft;
     lable.font = [UIFont systemFontOfSize:11.0f];
-    //[lable sizeToFit];
     return lable;
 }
 
@@ -670,7 +686,6 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     lable.textAlignment = NSTextAlignmentLeft;
     lable.lineBreakMode = NSLineBreakByTruncatingTail;
     lable.font = [UIFont systemFontOfSize:11.0f];
-    //[lable sizeToFit];
     return lable;
 }
 
@@ -733,11 +748,11 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
 
 - (void) createPeopleInGameLable {
     _peopleInGame = [UILabel new];
-    _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)game.members.count];
+    _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)members.count];
     _peopleInGame.textAlignment = NSTextAlignmentLeft;
     _peopleInGame.font = [UIFont systemFontOfSize:12.0f];
     _peopleInGame.textColor = [UIColor colorWithRGBA:TXT_LINK_COLOR];
-    [_peopleInGame sizeToFit];
+    //[_peopleInGame sizeToFit];
     
     _peopleInGame.userInteractionEnabled = YES;
     UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(showGamers)];
@@ -745,7 +760,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
 }
 
 - (void) createPeopleNeedLable {
-    NSInteger diff = game.numbers - game.members.count;
+    NSInteger diff = game.numbers - members.count;
     
     NSUInteger needle = 0;
     if(diff > 0)
@@ -756,7 +771,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     _peopleNeed.textAlignment = NSTextAlignmentLeft;
     _peopleNeed.font = [UIFont systemFontOfSize:12.0f];
     _peopleNeed.textColor = [UIColor colorWithRGBA:BTN_TITLE_INACTIVE_COLOR];
-    [_peopleNeed sizeToFit];
+    //[_peopleNeed sizeToFit];
 }
 
 - (void) createInviteUserButton {
@@ -913,6 +928,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
             }
             else{
                 [self changeStatusButtons:desireStatus];
+                [self updateMembers];
                 
                 if([self.delegate respondsToSelector:@selector(needUpdateGamesWithController:)])
                     [self.delegate needUpdateGamesWithController:self];
@@ -997,7 +1013,7 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
 
 - (void) showGamers {
     MemberViewController *controller = [[MemberViewController alloc] init];
-    controller.members = game.members;
+    controller.members = members;
     [self.navigationController pushViewController:controller animated:YES];
 }
 
@@ -1029,14 +1045,15 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
             
             if(!errorMessage){
                 game = gameInfo;
+                members = game.members;
                 
                 [self setNavTitle:game.gameName];
                 locTitle.text = [self titleForLocationLable:game];
                 timeTitle.text = [self titleForTimeLable:game];
                 
-                _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)game.members.count];
+                _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)members.count];
                 
-                NSInteger diff = game.numbers - game.members.count;
+                NSInteger diff = game.numbers - members.count;
                 NSUInteger needle = 0;
                 if(diff > 0)
                     needle = diff;
@@ -1044,6 +1061,29 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
                 _peopleNeed.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_NEED_MORE", nil), (unsigned long)needle];
                 
                 [self changeStatusButtons:game.participateStatus];
+            }
+        });
+    }];
+}
+
+- (void) updateMembers {
+    AppNetworking *appNetworking = [[AppDelegate instance] appNetworkingInstance];
+    [appNetworking membersForGame:game.gameId completionHandler:^(NSMutableArray *arrayData, NSString *errorMessage) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            [MBProgressHUD hideHUDForView:self.view animated:YES];
+            
+            if(!errorMessage){
+                members = arrayData;
+                
+                _peopleInGame.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_GOTO_PEOPLE", nil), (unsigned long)members.count];
+                
+                NSInteger diff = game.numbers - members.count;
+                NSUInteger needle = 0;
+                if(diff > 0)
+                    needle = diff;
+                
+                _peopleNeed.text = [NSString stringWithFormat:NSLocalizedString(@"TXT_NEED_MORE", nil), (unsigned long)needle];
             }
         });
     }];
@@ -1188,13 +1228,13 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
 
 # pragma mark -
 # pragma mark Keyboard show/hide
+/*
 - (void)keyboardWillShow:(NSNotification*)notification {
     NSDictionary* info = [notification userInfo];
     CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
     
     CGRect newRect = self.view.frame;
     newRect.size.height = mainViewHeight - kbSize.height;
-    NSLog(@"%f, %f", newRect.size.width, newRect.size.height);
     
     self.view.frame = newRect;
     [self.view layoutIfNeeded];
@@ -1209,8 +1249,45 @@ static const CGFloat kUserStatusButtonHeight = 24.5f;
     self.view.frame = newRect;
     [self.view layoutIfNeeded];
     
-    CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
-    [_tableView setContentOffset:CGPointMake(0, y)];
+    //CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+    //[_tableView setContentOffset:CGPointMake(0, y)];
+}
+*/
+
+- (void)keyboardWillShow:(NSNotification*)notification {
+    NSDictionary* info = [notification userInfo];
+    CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    
+    /*
+    NSNumber *duration = [info objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+    NSNumber *curve = [info objectForKey: UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationCurve animationCurve = curve.intValue;
+    */
+    
+    CGFloat newContentHeight = mainViewHeight - kbSize.height;
+    chatContentViewHeightConstraint.constant = newContentHeight;
+    [self.view layoutIfNeeded];
+    
+    isKeyboardUp = YES;
+}
+- (void)keyboardDidShow:(NSNotification*)notification {
+    //NSDictionary* info = [notification userInfo];
+    //CGSize kbSize = [[info objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue].size;
+    //CGFloat newContentHeight = mainViewHeight - kbSize.height;
+    //chatContentViewHeightConstraint.constant = newContentHeight;
+}
+
+- (void)keyboardWillHide:(NSNotification*)notification {
+    if(isKeyboardUp){ //UIKeyboardWillHideNotification calling method twice when scroll
+        isKeyboardUp = NO;
+        
+        chatContentViewHeightConstraint.constant = mainViewHeight;
+ 
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.8 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            CGFloat y = _tableView.contentSize.height - _tableView.frame.size.height;
+            [_tableView setContentOffset:CGPointMake(0, y)];
+        });
+    }
 }
 
 @end
